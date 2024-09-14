@@ -5,12 +5,13 @@ import Workflow from "@/components/Workflow";
 import { Button, Divider } from '@mui/material';
 import PageHeading from '@/components/PageHeading';
 import CustomTable from '@/components/CustomTable';
+import Link from 'next/link';
 
-export default function Home() {
+export default function Page() {
   return (
     <div className="flex flex-col gap-8 px-4 py-6">
       <PageHeading title={"Quotes"}>
-        <Button className='bg-green-700 px-4 py-2 rounded-md text-white font-semibold'>New Quote</Button>
+        <Link href={"/quotes/new"} className='bg-green-700 px-4 py-2 rounded-md text-white font-semibold'>New Quote</Link>
       </PageHeading>
 
       <div className="flex flex-wrap gap-4 bg-gray-50 text-sm text-tprimary">
