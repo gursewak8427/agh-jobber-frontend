@@ -99,22 +99,6 @@ const rows = [
 ];
 
 
-// const getStatusBox = status => {
-//     switch (status) {
-//         case "active": return <div className="w-full h-full flex items-center justify-start capitalize">
-//             <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
-//             {status}
-//         </div>
-//         case "lead": return <div className="w-full h-full flex items-center justify-start capitalize">
-//             <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
-//             {status}
-//         </div>
-
-//         default:
-//             break;
-//     }
-// }
-
 export default function CustomTable() {
     return (
         <Box

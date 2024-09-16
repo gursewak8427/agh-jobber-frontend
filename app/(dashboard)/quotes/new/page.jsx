@@ -1,8 +1,8 @@
 "use client"
 import React from 'react';
-import { Button, TextField, IconButton, Avatar, Rating } from '@mui/material';
+import { Button, TextField, IconButton, Avatar, Rating, Divider } from '@mui/material';
 import { useState } from 'react';
-import { BoxSelect, BoxSelectIcon, CameraIcon, Delete, Plus, PlusIcon, Trash2 } from 'lucide-react';
+import { BoxSelect, BoxSelectIcon, CameraIcon, Delete, Divide, Plus, PlusIcon, Trash2 } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 
@@ -238,6 +238,51 @@ export default function Page() {
                 <p className='text-green-700 underline font-semibold'>Add required deposit</p>
               </div>
             </div>
+          </div>
+
+          <div className="mt-4">
+            <h1 className='font-bold mb-2'>Client message</h1>
+            <textarea name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+          </div>
+
+          <div className="mt-4">
+            <h1 className='font-bold mb-2'>Contract / Disclaimer</h1>
+            <textarea name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+              This quote is valid for the next 15 days, after which values may be subject to change.
+            </textarea>
+          </div>
+
+          <div className="border border-gray-300 p-4 rounded-lg">
+            <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
+            <div className="mt-4">
+              <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+            </div>
+
+            <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
+              <label htmlFor="" className='text-gray-500'>Drag your files here or <span className='ml-2 text-green-700 font-semibold border-2 rounded-xl p-2'>Select a file</span></label>
+              <input hidden type="file" name="" id="" />
+            </div>
+
+            <Divider className='my-2' />
+
+            <div className="mt-4 space-y-2">
+              <p className='font-normal text-sm text-tprimary'>Link not to related</p>
+              <div className="flex gap-2 text-sm items-center capitalize">
+                <div className="flex gap-2 items-center">
+                  <input type="checkbox" className='w-5 h-5' name="" id="jobs" />
+                  <label htmlFor="jobs">jobs</label>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <input type="checkbox" className='w-5 h-5' name="" id="invoices" />
+                  <label htmlFor="invoices">invoices</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-2 flex justify-between">
+            <CustomButton title="Cancel"></CustomButton>
+            <CustomButton variant="primary" title="Select Client"></CustomButton>
           </div>
         </div>
 
