@@ -4,7 +4,16 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 export const fetchClients = createAsyncThunk("fetchClients", async (data, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/?page=1&page_size=10`);
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/?page=${data}&page_size=10`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const createClient = createAsyncThunk("createClient", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/client/`, data);
         return response.data;
     } catch (error) {
 

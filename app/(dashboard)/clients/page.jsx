@@ -13,7 +13,7 @@ import CustomTable from '@/components/CustomTable';
 import Link from 'next/link';
 import CustomButton from '@/components/CustomButton';
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchClients } from "@/store/slices/client";
 
 const columns = [
@@ -43,60 +43,13 @@ const columns = [
     renderCell: (params) => getStatusBox(params.value),
   },
   {
-    field: "createdAt",
+    field: "updatedAt",
     headerName: "Last Activity",
     flex: 1,
     minWidth: 100,
   },
 ];
 
-const rows = [
-  {
-    id: 1,
-    client: "Jon Snow",
-    address: "Winterfell, North",
-    tags: "Loyalty, Honor",
-    createdAt: "2023-09-01",
-    status: "active",
-    total: 1200.0,
-  },
-  {
-    id: 2,
-    client: "Cersei Lannister",
-    address: "Red Keep, King's Landing",
-    tags: "Ambition, Power",
-    createdAt: "2023-08-25",
-    status: "lead",
-    total: 5000.0,
-  },
-  {
-    id: 3,
-    client: "Jaime Lannister",
-    address: "Casterly Rock",
-    tags: "Bravery, Loyalty",
-    createdAt: "2023-09-03",
-    status: "active",
-    total: 3000.0,
-  },
-  {
-    id: 4,
-    client: "Arya Stark",
-    address: "Braavos, Essos",
-    tags: "Vengeance, Stealth",
-    createdAt: "2023-09-05",
-    status: "lead",
-    total: 1500.0,
-  },
-  {
-    id: 5,
-    client: "Daenerys Targaryen",
-    address: "Dragonstone, Narrow Sea",
-    tags: "Leadership, Vision",
-    createdAt: "2023-09-07",
-    status: "active",
-    total: 6000.0,
-  },
-];
 
 // Function to handle status rendering
 const getStatusBox = status => {
@@ -117,10 +70,16 @@ const getStatusBox = status => {
 
 export default function Page() {
   const router = useRouter();
+  const { clients } = useSelector(state => state.clients)
   const dispatch = useDispatch();
   React.useEffect(() => {
-    dispatch(fetchClients());
+    dispatch(fetchClients(1));
   }, [])
+
+  React.useEffect(() => {
+    console.log({ clients });
+
+  }, [clients])
   return (
     <div className="flex flex-col gap-8 px-4 py-6">
       <PageHeading title={"Clients"}>
@@ -213,8 +172,18 @@ export default function Page() {
         >
           <DataGrid
             autoHeight
-            rows={rows}
             columns={columns}
+            rows={clients?.map(client => {
+              return {
+                id: client?.id,
+                client: client?.fname,
+                address: client?.properties,
+                tags: client?.tags || "--",
+                updatedAt: client?.updatedAt,
+                status: client?.status,
+                total: 1200.0,
+              }
+            })}
             sx={{
               minWidth: 900, // Ensures the table doesn't shrink too much
               "@media (max-width: 600px)": {

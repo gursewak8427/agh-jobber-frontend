@@ -136,7 +136,7 @@ const Topbar = () => {
     return (
         <>
 
-            <div className="flex justify-between items-center p-4 bg-white shadow-sm sticky top-0 z-50">
+            <div className="flex justify-between items-center p-4 bg-white shadow-sm sticky top-0 z-10">
                 <div className="text-sm text-gray-500">
                     <p className="font-bold">AGH RENOVATION LIMITED</p>
                 </div>
