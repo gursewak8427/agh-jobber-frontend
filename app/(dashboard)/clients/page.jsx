@@ -13,6 +13,8 @@ import CustomTable from '@/components/CustomTable';
 import Link from 'next/link';
 import CustomButton from '@/components/CustomButton';
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { fetchClients } from "@/store/slices/client";
 
 const columns = [
   {
@@ -115,7 +117,10 @@ const getStatusBox = status => {
 
 export default function Page() {
   const router = useRouter();
-
+  const dispatch = useDispatch();
+  React.useEffect(() => {
+    dispatch(fetchClients());
+  }, [])
   return (
     <div className="flex flex-col gap-8 px-4 py-6">
       <PageHeading title={"Clients"}>
