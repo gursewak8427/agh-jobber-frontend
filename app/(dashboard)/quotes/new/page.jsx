@@ -46,7 +46,7 @@ export default function Page() {
                 <button className='text-green-700'>change</button>
               </div>
               <div className="w-1/2">
-                <h1 className='font-bold mb-2'>Property address</h1>
+                <h1 className='font-bold mb-2'>Contact details</h1>
                 <p className='max-w-[140px]'>(587) 899-3252</p>
                 <button className='text-green-700'>Aghreno@gmail.com</button>
               </div>
@@ -194,12 +194,11 @@ export default function Page() {
 
           {/* Add Line Items Buttons */}
           <div className="flex space-x-4 mb-4">
-            <CustomButton variant="primary" title="Add Line Item" frontIcon={<PlusIcon className='text-white' />} className="bg-primary">
-
+            <CustomButton variant="primary" title="Add Line Item" frontIcon={<PlusIcon className='text-white' />} >
             </CustomButton>
             <CustomButton title="Add Optional Line Item"
               frontIcon={<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-testid="checkbox" className='w-6 h-6 inline-block fill-green-800'><path d="M8.72 11.211a1 1 0 1 0-1.415 1.414l2.68 3.086a1 1 0 0 0 1.414 0l5.274-4.992a1 1 0 1 0-1.414-1.414l-4.567 4.285-1.973-2.379Z"></path><path d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5Zm14 2v14H5V5h14Z"></path></svg>}
-            >
+            > 
 
             </CustomButton>
             <CustomButton title="Add Text" >

@@ -17,7 +17,7 @@ export default function Page() {
   return (
     <div className='max-w-[1200px] mx-auto space-y-4'>
       <div className='text-sm text-tprimary'>
-        Back to : <Link href={"/quotes"} className='text-green-700'>Clients</Link>
+        Back to : <Link href={"/clients"} className='text-green-700'>Clients</Link>
       </div>
       {/* Header */}
       <div className="flex justify-start items-center mb-6">

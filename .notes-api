@@ -1,0 +1,15 @@
+https://backenddev.aghrenovation.ca/
+
+client/
+send id as perameter
+get,put,post
+
+clients/
+get for all
+
+authentication/login/
+email user@test.com
+password Abcd1234@#
+
+always send headers of axios 
+Authorization Bearer authtoken
