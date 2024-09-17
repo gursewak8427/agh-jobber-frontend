@@ -4,11 +4,13 @@ import Topbar from "@/components/Topbar";
 import theme from "@/theme";
 import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ToastContainer } from "react-toastify";
 
 const MainLayout = ({ children }) => {
-  
+
   return (
     <ThemeProvider theme={theme}>
+      <ToastContainer />
       <CssBaseline />
       <div className="flex">
         <Sidebar />

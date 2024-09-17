@@ -1,17 +1,18 @@
-"use client"
-import { Provider } from "react-redux";
+import { Providers } from "@/store/providers";
 import "./globals.css";
-import { store } from "@/store";
-import { ToastContainer } from "react-toastify";
+
+export const metadata = {
+  title: "Prosbro",
+  description: "billing software for construction and renovation contractors in canada",
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <ToastContainer />
-        <Provider store={store}>
+        <Providers>
           {children}
-        </Provider>
+        </Providers>
       </body>
     </html>
   );
