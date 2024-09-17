@@ -3,9 +3,12 @@ import React, { useState } from 'react';
 import { Avatar, Divider, IconButton, MenuItem, Typography } from '@mui/material';
 import RightSidebar from './RightSidebar';
 import CustomMenu from './CustomMenu';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 
 const Topbar = () => {
+    const router = useRouter();
     const [state, setState] = useState({
         notification: false,
         help: false,
@@ -124,6 +127,12 @@ const Topbar = () => {
     ];
 
 
+    const logoutNow = async () => {
+        localStorage.removeItem('token')
+        await axios.post('/api/logout')
+        router.push("/auth/login")
+    }
+
     return (
         <>
 
@@ -172,7 +181,11 @@ const Topbar = () => {
                             </div>
                         </MenuItem>
                         <Divider />
-                        <MenuItem onClick={null}>Log Out</MenuItem>
+                        <MenuItem onClick={logoutNow}>
+                            <div className='text-red-400'>
+                                Log Out
+                            </div>
+                        </MenuItem>
                     </CustomMenu>
                 </div>
             </div >

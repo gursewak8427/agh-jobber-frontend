@@ -1,14 +1,15 @@
+import axiosInstance from '@/store/AxiosInstance';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 
-// Async thunks
-export const fetchClients = createAsyncThunk(
-    'clients/fetchClients',
-    ({ page, limit }: { page: number; limit: number }, { rejectWithValue }) => {
+export const fetchClients = createAsyncThunk("fetchClients", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/`);
+        return response.data;
+    } catch (error) {
 
     }
-);
-
+});
 
 // Initial State
 const initialState = {
@@ -35,12 +36,12 @@ const clientSlice = createSlice({
             .addCase(fetchClients.pending, (state) => {
                 state.loadingList = true;
             })
-            .addCase(fetchClients.fulfilled, (state, action: any) => {
+            .addCase(fetchClients.fulfilled, (state, action) => {
                 state.loadingList = false;
                 state.clients = action.payload.details.list;
                 state.pagination = action.payload.details.pagination;
             })
-            .addCase(fetchClients.rejected, (state, action: any) => {
+            .addCase(fetchClients.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             })

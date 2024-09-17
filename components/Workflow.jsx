@@ -16,7 +16,7 @@ const Workflow = () => {
             <Heading title="Workflow" />
             <div className="flex justify-between items-center">
                 {cards.map((card, index) => (
-                    <div className={`flex flex-col w-[24.9%] bg-gray-100 border-t-4 ${index == 0 ? 'rounded-l' : index == cards?.length - 1 ? 'rounded-r' : ''} ${card?.color} text-tprimary p-4`}>
+                    <div key={index} className={`flex flex-col w-[24.9%] bg-gray-100 border-t-4 ${index == 0 ? 'rounded-l' : index == cards?.length - 1 ? 'rounded-r' : ''} ${card?.color} text-tprimary p-4`}>
                         <div className="flex flex-col gap-1 p-2 hover:bg-primary-dark cursor-pointer rounded-lg">
                             <div className="flex gap-3 items-center mb-3">
                                 {card.icon}

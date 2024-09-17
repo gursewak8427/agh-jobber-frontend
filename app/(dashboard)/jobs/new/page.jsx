@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Button, TextField, IconButton, Avatar, Rating, Divider } from '@mui/material';
 import { useState } from 'react';
 import { BoxSelect, BoxSelectIcon, CameraIcon, Delete, Divide, Plus, PlusIcon, Trash2 } from 'lucide-react';
@@ -122,7 +122,7 @@ export default function Page() {
               <tbody>
                 {
                   [1, 2, 3].map((_, index) => {
-                    return <>
+                    return <Fragment key={index}>
                       <tr>
                         <td className='py-4'>
                           <div className="w-full pr-2">
@@ -180,7 +180,7 @@ export default function Page() {
                           </div>
                         </td>
                       </tr>
-                    </>
+                    </Fragment>
                   })
                 }
               </tbody>
