@@ -48,6 +48,8 @@ const defaultValues = {
 };
 
 export default function Page() {
+  const [open, setOpen] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -361,7 +363,8 @@ export default function Page() {
                       Additional client details
                     </AccordionSummary>
                     <AccordionDetails>
-                      <AddCustomFields />
+                      {/* <AddCustomFields /> */}
+                      <CustomButton title="Add Custom Field" onClick={() => setOpen(true)} />
                     </AccordionDetails>
                   </Accordion>
                 </div>
@@ -491,6 +494,10 @@ export default function Page() {
           </div>
         </div>
       </form>
+
+
+      {/* Modals will be show here */}
+      <AddCustomFields open={open} onClose={() => setOpen(false)} />
     </div>
   );
 }

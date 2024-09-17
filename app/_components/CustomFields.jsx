@@ -4,7 +4,7 @@ import { ChevronDown } from 'lucide-react'
 import React, { useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-const AddCustomFields = ({ show, onClose }) => {
+const AddCustomFields = ({ open, onClose }) => {
     const { control, register, handleSubmit, watch, reset } = useForm({
         defaultValues: {
             transferableField: false,
@@ -31,7 +31,6 @@ const AddCustomFields = ({ show, onClose }) => {
 
     return (
         <div>
-            <CustomButton title="Add Custom Field" onClick={onClose} />
             <CustomModal show={open} onClose={onClose}>
                 <div className="space-y-6">
                     <h2 className="text-xl font-semibold text-gray-800">New Custom Field</h2>
