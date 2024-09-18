@@ -35,7 +35,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
 import AddCustomFields from "@/app/_components/CustomFields";
-import { createClient } from "@/store/slices/client";
+import { createClient, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
 
 const defaultValues = {
   mobiles: [{ type: "personal", number: "", sms: false }],
@@ -144,6 +144,10 @@ export default function Page() {
     }
   };
 
+  useEffect(() => {
+    dispatch(fetchClientsCustomFields());
+    dispatch(fetchPropertyCustomFields());
+  }, [])
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-4">

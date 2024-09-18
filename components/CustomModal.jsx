@@ -1,11 +1,17 @@
 import React, { useState } from 'react'
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { Fragment } from 'react';
+import { useAppDispatch } from '@/store/hooks';
+import { createClientsCustomFields } from '@/store/slices/client';
 
 function CustomModal({ show, onClose, children }) {
+    const dispatch = useAppDispatch();
 
     const handleClose = () => {
         onClose()
+    }
+    const onSubmit = () => {
+        dispatch(createClientsCustomFields())
     }
 
     return (

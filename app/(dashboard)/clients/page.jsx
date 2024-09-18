@@ -177,8 +177,8 @@ export default function Page() {
               return {
                 id: client?.id,
                 client: client?.fname,
-                address: client?.properties,
-                tags: client?.tags || "--",
+                address: client?.property_display ?? '0 Properties',
+                tags: client?.tags,
                 updatedAt: client?.updatedAt,
                 status: client?.status,
                 total: 1200.0,
@@ -198,7 +198,7 @@ export default function Page() {
             initialState={{
               pagination: {
                 paginationModel: {
-                  pageSize: 5,
+                  pageSize: 10,
                 },
               },
             }}
