@@ -38,6 +38,7 @@ import { useAppDispatch } from "@/store/hooks";
 import AddCustomFields from "@/app/_components/CustomFields";
 import { createClient, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
 import { useSelector } from "react-redux";
+import CustomSingleField from "@/app/_components/CustomSingleField";
 
 const defaultValues = {
   mobiles: [{ type: "personal", number: "", sms: false }],
@@ -82,10 +83,49 @@ export default function Page() {
   const billingAddressSameProperty = watch("billingAddressSameProperty");
 
 
+  const isChanged = (field, newField) => {
+    switch (field?.field_type) {
+      case "text": return true;
+      default: return false;
+    }
+  }
+
+  // (_field) => _field?.id == field && _field?.field_value != newValue
 
   const onSubmit = async (data) => {
     try {
+      console.log({ data, clientcustomfields, propertycustomfields })
+      const changedValues = clientcustomfields
+        .map((item, index) => {
+
+          const change = data?.clientCustomFields?.[`${item.id}key`] || null;
+          if (!change) return null;
+
+          const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
+          if (hasChanged) {
+            return { custom_field_id: item.id, ...change };
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+      const changeAdditionalpropertydetails = propertycustomfields
+        .map((item, index) => {
+
+          const change = data?.propertyCustomFields?.[`${item.id}key`] || null;
+          if (!change) return null;
+
+          const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
+          if (hasChanged) {
+            return { custom_field_id: item.id, ...change };
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+
       const jsonData = {
+        "additionaldetails": changedValues,
         mobiles: data.mobiles.map((mobile) => {
           if (mobile.number.trim() == "") return null;
           return {
@@ -122,6 +162,7 @@ export default function Page() {
         }),
         property: [
           {
+            additionalpropertydetails: changeAdditionalpropertydetails,
             address1: data.street1,
             address2: data.street2,
             city: data.city,
@@ -185,18 +226,18 @@ export default function Page() {
                     <option value="Dr.">Dr.</option>
                   </select>
                   <input
-                    {...register("firstName")}
+                    {...register("firstName", { required: true })}
                     placeholder="First Name"
                     className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 border-r-0 border-l-0 focus:border-gray-400"
                   />
                   <input
-                    {...register("lastName")}
+                    {...register("lastName", { required: true })}
                     placeholder="Last Name"
                     className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none rounded-b-none"
                   />
                 </div>
                 <input
-                  {...register("companyName")}
+                  {...register("companyName", { required: true })}
                   placeholder="Company Name"
                   className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 border-t-0 focus:border-gray-400 rounded-lg rounded-t-none"
                 />
@@ -417,62 +458,7 @@ export default function Page() {
                       <div className="space-y-2">
                         {
                           clientcustomfields?.map((field, index) => {
-                            switch (field?.field_type) {
-                              case "text":
-                                return <div className={`w-full flex items-center justify-between ${clientcustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
-                                  <div className="font-normal capitalize">{field?.field_name}</div>
-                                  <div>
-                                    <input type="text" name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                                  </div>
-                                </div>
-
-                              case "numeric":
-                                return <div className={`w-full flex items-center justify-between ${clientcustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
-                                  <div className="font-normal capitalize">{field?.field_name}</div>
-                                  <div className="flex">
-                                    <input type="text" name="" id="" value={field?.value} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                                    <input type="text" name="" id="" value={field?.unit} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                                  </div>
-                                </div>
-
-                              case "boolean":
-                                return <div className={`w-full flex items-center justify-between ${clientcustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
-                                  <div className="font-normal capitalize">{field?.field_name}</div>
-                                  <div>
-                                    <select name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" >
-                                      <option value={"true"}>True</option>
-                                      <option value={"false"}>False</option>
-                                    </select>
-                                  </div>
-                                </div>
-
-                              case "area":
-                                return <div className={`w-full flex items-center justify-between ${clientcustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
-                                  <div className="font-normal capitalize">{field?.field_name}</div>
-                                  <div className="flex">
-                                    <input type="text" name="" id="" value={field?.length} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                                    <input type="text" name="" id="" value={field?.width} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                                    <input type="text" name="" id="" value={field?.unit} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                                  </div>
-                                </div>
-
-                              case "dropdown":
-                                return <div className={`w-full flex items-center justify-between ${clientcustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
-                                  <div className="font-normal capitalize">{field?.field_name}</div>
-                                  <div>
-                                    <select name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" >
-                                      {
-                                        field?.dropdown_options?.map(op => {
-                                          return <option value={op?.value}>{op?.option}</option>
-                                        })
-                                      }
-                                    </select>
-                                  </div>
-                                </div>
-
-                              default:
-                                break;
-                            }
+                            return <CustomSingleField register={register} prefix="clientCustomFields" field={field} index={index} customfields={clientcustomfields} />
                           })
                         }
                       </div>
@@ -596,64 +582,7 @@ export default function Page() {
                   {/* {JSON.stringify(clientcustomfields)} */}
                   <div className="space-y-2">
                     {
-                      propertycustomfields?.map((field, index) => {
-                        switch (field?.field_type) {
-                          case "text":
-                            return <div className={`w-full flex items-center justify-between ${propertycustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
-                              <div className="font-normal capitalize">{field?.field_name}</div>
-                              <div>
-                                <input type="text" name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                              </div>
-                            </div>
-
-                          case "numeric":
-                            return <div className={`w-full flex items-center justify-between ${propertycustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
-                              <div className="font-normal capitalize">{field?.field_name}</div>
-                              <div className="flex">
-                                <input type="text" name="" id="" value={field?.value} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                                <input type="text" name="" id="" value={field?.unit} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                              </div>
-                            </div>
-
-                          case "boolean":
-                            return <div className={`w-full flex items-center justify-between ${propertycustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
-                              <div className="font-normal capitalize">{field?.field_name}</div>
-                              <div>
-                                <select name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" >
-                                  <option value={"true"}>True</option>
-                                  <option value={"false"}>False</option>
-                                </select>
-                              </div>
-                            </div>
-
-                          case "area":
-                            return <div className={`w-full flex items-center justify-between ${propertycustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
-                              <div className="font-normal capitalize">{field?.field_name}</div>
-                              <div className="flex">
-                                <input type="text" name="" id="" value={field?.length} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                                <input type="text" name="" id="" value={field?.width} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                                <input type="text" name="" id="" value={field?.unit} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
-                              </div>
-                            </div>
-
-                          case "dropdown":
-                            return <div className={`w-full flex items-center justify-between ${propertycustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
-                              <div className="font-normal capitalize">{field?.field_name}</div>
-                              <div>
-                                <select name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" >
-                                  {
-                                    field?.dropdown_options?.map(op => {
-                                      return <option value={op?.value}>{op?.option}</option>
-                                    })
-                                  }
-                                </select>
-                              </div>
-                            </div>
-
-                          default:
-                            break;
-                        }
-                      })
+                      propertycustomfields?.map((field, index) => <CustomSingleField register={register} prefix="propertyCustomFields" field={field} index={index} customfields={propertycustomfields} />)
                     }
                   </div>
                   {/* <AddCustomFields /> */}

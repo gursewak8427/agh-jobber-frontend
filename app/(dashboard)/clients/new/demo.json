@@ -14,7 +14,7 @@
             "id": 1,
             "type": "personal",
             "email": "test@test.com",
-            "primary": false    
+            "primary": false
         }
     ],
     "automation": {
@@ -24,7 +24,7 @@
         "jobfollowup": true,
         "invoicefollowup": true
     },
-    "additionaldetails": [
+    "additionaldetails55": [
         {
             "id": 1,
             "custom_field": {
@@ -41,6 +41,16 @@
                 "contractor": 2
             },
             "value": "value for name",
+            "unit": null,
+            "length": null,
+            "width": null
+        }
+    ],
+    "additionaldetails": [
+        {
+            "custom_field_id": 1,
+            "dropdown_options": null,
+            "value": null,
             "unit": null,
             "length": null,
             "width": null

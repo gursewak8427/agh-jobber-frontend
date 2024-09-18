@@ -41,6 +41,7 @@ const AddCustomFields = ({ open, onClose, }) => {
 
         if (data.fieldType == "dropdown") {
             jsonData.dropdown_options = data.dropdownOptions
+            jsonData.value = 0
         }
 
         if (data.fieldType == "numeric") {
