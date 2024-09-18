@@ -22,6 +22,7 @@ import {
   Divide,
   Plus,
   PlusIcon,
+  Star,
   Trash2,
 } from "lucide-react";
 import CustomButton from "@/components/CustomButton";
@@ -36,6 +37,7 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
 import AddCustomFields from "@/app/_components/CustomFields";
 import { createClient, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
+import { useSelector } from "react-redux";
 
 const defaultValues = {
   mobiles: [{ type: "personal", number: "", sms: false }],
@@ -56,6 +58,7 @@ export default function Page() {
     watch,
     control,
     formState: { errors },
+    setValue
   } = useForm({
     defaultValues,
   });
@@ -63,6 +66,7 @@ export default function Page() {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { clientcustomfields, propertycustomfields } = useSelector(state => state.clients);
 
 
   const { fields: mobileFields, append: appendMobile, remove: removeMobile } = useFieldArray({
@@ -88,7 +92,7 @@ export default function Page() {
             type: mobile.type,
             number: mobile.number,
             sms: mobile.sms || false,
-            primary: mobile.primary || false,
+            primary: data.mobiles?.length == 1 ? true : mobile.primary || false,
           }
         }).filter(Boolean),
         emails: data.emails.map((email) => {
@@ -97,7 +101,7 @@ export default function Page() {
           return {
             type: email.type,
             email: email.email,
-            primary: email.primary || false,
+            primary: data.emails?.length == 1 ? true : email.primary || false,
           }
         }).filter(Boolean),
         automation: {
@@ -213,37 +217,59 @@ export default function Page() {
               <div className="space-y-2">
                 <div className="font-bold text-md">Contact Details</div>
                 <div className="space-y-2">
-                  {mobileFields.map((field, index) => (
-                    <div key={field.id} className="space-y-2">
-                      <div className="flex flex-row">
-                        <select
-                          {...register(`mobiles.${index}.type`)}
-                          className="w-[100px] focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none text-sm"
-                        >
-                          <option value="personal">Main</option>
-                          <option value="work">Work</option>
-                          <option value="mobile">Mobile</option>
-                          <option value="home">Home</option>
-                        </select>
-                        <input
-                          {...register(`mobiles.${index}.number`)}
-                          placeholder="Phone number"
-                          className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 border-r-0 border-l-0 focus:border-gray-400"
-                        />
+                  {
+                    mobileFields.map((field, index) => (
+                      <div key={field.id} className="space-y-3">
+                        <div>
+                          <div className="flex flex-row items-center">
+                            {
+                              mobileFields?.length > 1 && <IconButton
+                                onClick={() => {
+                                  mobileFields.forEach((_, i) => {
+                                    setValue(`mobiles.${i}.primary`, i === index);
+                                  });
+                                }}
+                              >
+                                {watch(`mobiles.${index}.primary`) ? (
+                                  <Star className="text-yellow-500" />
+                                ) : (
+                                  <Star />
+                                )}
+                              </IconButton>
+                            }
+                            <select
+                              {...register(`mobiles.${index}.type`)}
+                              className="w-[100px] h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none text-sm"
+                            >
+                              <option value="personal">Main</option>
+                              <option value="work">Work</option>
+                              <option value="mobile">Mobile</option>
+                              <option value="home">Home</option>
+                            </select>
+                            <input
+                              {...register(`mobiles.${index}.number`)}
+                              placeholder="Phone number"
+                              className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 border-r-0 border-l-0 focus:border-gray-400"
+                            />
+                          </div>
+                          {mobileFields.length > 1 && <div className="w-full flex justify-end">
+                            <button onClick={() => removeMobile(index)} className="text-red-600 underline">delete</button>
+                          </div>}
+                        </div>
+                        <div className={`flex gap-2 items-center select-none ${mobileFields?.length > 1 ? 'ml-10' : ''}`}>
+                          <input
+                            {...register(`mobiles.${index}.sms`)}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id={`sms${index}`}
+                          />
+                          <label className="cursor-pointer" htmlFor={`sms${index}`}>
+                            Receives text messages
+                          </label>
+                        </div>
                       </div>
-                      <div className="flex gap-2 items-center select-none">
-                        <input
-                          {...register(`mobiles.${index}.sms`)}
-                          type="checkbox"
-                          className="w-5 h-5"
-                          id={`sms${index}`}
-                        />
-                        <label className="cursor-pointer" htmlFor={`sms${index}`}>
-                          Receives text messages
-                        </label>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  }
                   <div className="py-2">
                     <CustomButton
                       onClick={() => appendMobile({ type: "personal", number: "", sms: false })}
@@ -254,20 +280,40 @@ export default function Page() {
 
                 <div className="space-y-2">
                   {emailFields.map((field, index) => (
-                    <div key={field.id} className="flex flex-row">
-                      <select
-                        {...register(`emails.${index}.type`)}
-                        className="w-[100px] focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none text-sm"
-                      >
-                        <option value="main">Main</option>
-                        <option value="work">Work</option>
-                        <option value="home">Home</option>
-                      </select>
-                      <input
-                        {...register(`emails.${index}.email`)}
-                        placeholder="Email address"
-                        className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
-                      />
+                    <div>
+                      <div key={field.id} className="flex flex-row">
+                        {
+                          emailFields?.length > 1 && <IconButton
+                            onClick={() => {
+                              emailFields.forEach((_, i) => {
+                                setValue(`emails.${i}.primary`, i === index);
+                              });
+                            }}
+                          >
+                            {watch(`emails.${index}.primary`) ? (
+                              <Star className="text-yellow-500" />
+                            ) : (
+                              <Star />
+                            )}
+                          </IconButton>
+                        }
+                        <select
+                          {...register(`emails.${index}.type`)}
+                          className="w-[100px] focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none text-sm"
+                        >
+                          <option value="main">Main</option>
+                          <option value="work">Work</option>
+                          <option value="home">Home</option>
+                        </select>
+                        <input
+                          {...register(`emails.${index}.email`)}
+                          placeholder="Email address"
+                          className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
+                        />
+                      </div>
+                      {emailFields.length > 1 && <div className="w-full flex justify-end">
+                        <button onClick={() => removeEmail(index)} className="text-red-600 underline">delete</button>
+                      </div>}
                     </div>
                   ))}
                   <div className="py-2">
@@ -367,8 +413,73 @@ export default function Page() {
                       Additional client details
                     </AccordionSummary>
                     <AccordionDetails>
+                      {/* {JSON.stringify(clientcustomfields)} */}
+                      <div className="space-y-2">
+                        {
+                          clientcustomfields?.map((field, index) => {
+                            switch (field?.field_type) {
+                              case "text":
+                                return <div className={`w-full flex items-center justify-between ${clientcustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
+                                  <div className="font-normal capitalize">{field?.field_name}</div>
+                                  <div>
+                                    <input type="text" name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                                  </div>
+                                </div>
+
+                              case "numeric":
+                                return <div className={`w-full flex items-center justify-between ${clientcustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
+                                  <div className="font-normal capitalize">{field?.field_name}</div>
+                                  <div className="flex">
+                                    <input type="text" name="" id="" value={field?.value} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                                    <input type="text" name="" id="" value={field?.unit} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                                  </div>
+                                </div>
+
+                              case "boolean":
+                                return <div className={`w-full flex items-center justify-between ${clientcustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
+                                  <div className="font-normal capitalize">{field?.field_name}</div>
+                                  <div>
+                                    <select name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" >
+                                      <option value={"true"}>True</option>
+                                      <option value={"false"}>False</option>
+                                    </select>
+                                  </div>
+                                </div>
+
+                              case "area":
+                                return <div className={`w-full flex items-center justify-between ${clientcustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
+                                  <div className="font-normal capitalize">{field?.field_name}</div>
+                                  <div className="flex">
+                                    <input type="text" name="" id="" value={field?.length} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                                    <input type="text" name="" id="" value={field?.width} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                                    <input type="text" name="" id="" value={field?.unit} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                                  </div>
+                                </div>
+
+                              case "dropdown":
+                                return <div className={`w-full flex items-center justify-between ${clientcustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
+                                  <div className="font-normal capitalize">{field?.field_name}</div>
+                                  <div>
+                                    <select name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" >
+                                      {
+                                        field?.dropdown_options?.map(op => {
+                                          return <option value={op?.value}>{op?.option}</option>
+                                        })
+                                      }
+                                    </select>
+                                  </div>
+                                </div>
+
+                              default:
+                                break;
+                            }
+                          })
+                        }
+                      </div>
                       {/* <AddCustomFields /> */}
-                      <CustomButton title="Add Custom Field" onClick={() => setOpen(true)} />
+                      <div className="my-4">
+                        <CustomButton title="Add Custom Field" onClick={() => setOpen("client")} />
+                      </div>
                     </AccordionDetails>
                   </Accordion>
                 </div>
@@ -482,7 +593,73 @@ export default function Page() {
                   Additional property details
                 </AccordionSummary>
                 <AccordionDetails>
-                  <CustomButton title="Add Custom Field" />
+                  {/* {JSON.stringify(clientcustomfields)} */}
+                  <div className="space-y-2">
+                    {
+                      propertycustomfields?.map((field, index) => {
+                        switch (field?.field_type) {
+                          case "text":
+                            return <div className={`w-full flex items-center justify-between ${propertycustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
+                              <div className="font-normal capitalize">{field?.field_name}</div>
+                              <div>
+                                <input type="text" name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                              </div>
+                            </div>
+
+                          case "numeric":
+                            return <div className={`w-full flex items-center justify-between ${propertycustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
+                              <div className="font-normal capitalize">{field?.field_name}</div>
+                              <div className="flex">
+                                <input type="text" name="" id="" value={field?.value} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                                <input type="text" name="" id="" value={field?.unit} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                              </div>
+                            </div>
+
+                          case "boolean":
+                            return <div className={`w-full flex items-center justify-between ${propertycustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
+                              <div className="font-normal capitalize">{field?.field_name}</div>
+                              <div>
+                                <select name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" >
+                                  <option value={"true"}>True</option>
+                                  <option value={"false"}>False</option>
+                                </select>
+                              </div>
+                            </div>
+
+                          case "area":
+                            return <div className={`w-full flex items-center justify-between ${propertycustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
+                              <div className="font-normal capitalize">{field?.field_name}</div>
+                              <div className="flex">
+                                <input type="text" name="" id="" value={field?.length} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                                <input type="text" name="" id="" value={field?.width} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                                <input type="text" name="" id="" value={field?.unit} className="w-20 h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" />
+                              </div>
+                            </div>
+
+                          case "dropdown":
+                            return <div className={`w-full flex items-center justify-between ${propertycustomfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
+                              <div className="font-normal capitalize">{field?.field_name}</div>
+                              <div>
+                                <select name="" id="" value={field?.value} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400" >
+                                  {
+                                    field?.dropdown_options?.map(op => {
+                                      return <option value={op?.value}>{op?.option}</option>
+                                    })
+                                  }
+                                </select>
+                              </div>
+                            </div>
+
+                          default:
+                            break;
+                        }
+                      })
+                    }
+                  </div>
+                  {/* <AddCustomFields /> */}
+                  <div className="my-4">
+                    <CustomButton title="Add Custom Field" onClick={() => setOpen("property")} />
+                  </div>
                 </AccordionDetails>
               </Accordion>
 

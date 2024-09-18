@@ -22,7 +22,7 @@ export const fetchClientsCustomFields = createAsyncThunk("fetchClientsCustomFiel
 
 export const createClientsCustomFields = createAsyncThunk("createClientsCustomFields", async (data, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/customclientfield/`,data);
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/customclientfield/`, data);
         return response.data;
     } catch (error) {
 
@@ -32,6 +32,16 @@ export const createClientsCustomFields = createAsyncThunk("createClientsCustomFi
 export const fetchPropertyCustomFields = createAsyncThunk("fetchPropertyCustomFields", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/custompropertyfield/`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+
+export const createPropertyCustomFields = createAsyncThunk("createPropertyCustomFields", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/custompropertyfield/`, data);
         return response.data;
     } catch (error) {
 
@@ -109,6 +119,14 @@ const clientSlice = createSlice({
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
+        builder
+            .addCase(createClientsCustomFields.fulfilled, (state, action) => {
+                state.clientcustomfields.push(action.payload);
+            })
+        builder
+            .addCase(createPropertyCustomFields.fulfilled, (state, action) => {
+                state.propertycustomfields.push(action.payload);
+            })
     },
 });
 

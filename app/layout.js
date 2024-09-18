@@ -1,5 +1,6 @@
 import { Providers } from "@/store/providers";
 import "./globals.css";
+import { ToastContainer } from "react-toastify";
 
 export const metadata = {
   title: "Prosbro",
@@ -10,6 +11,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        <ToastContainer />
         <Providers>
           {children}
         </Providers>

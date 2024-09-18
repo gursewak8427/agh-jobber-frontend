@@ -10,7 +10,6 @@ const MainLayout = ({ children }) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <ToastContainer />
       <CssBaseline />
       <div className="flex">
         <Sidebar />
