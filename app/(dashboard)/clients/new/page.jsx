@@ -125,7 +125,8 @@ export default function Page() {
 
 
       const jsonData = {
-        "additionaldetails": changedValues,
+        additionaldetails: changedValues,
+        additionalpropertydetails: changeAdditionalpropertydetails,
         mobiles: data.mobiles.map((mobile) => {
           if (mobile.number.trim() == "") return null;
           return {
@@ -162,7 +163,6 @@ export default function Page() {
         }),
         property: [
           {
-            additionalpropertydetails: changeAdditionalpropertydetails,
             address1: data.street1,
             address2: data.street2,
             city: data.city,
