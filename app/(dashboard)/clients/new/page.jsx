@@ -123,10 +123,6 @@ export default function Page() {
         })
         .filter(Boolean);
 
-      console.log({ changedValues, changeAdditionalpropertydetails })
-
-      return;
-
       const jsonData = {
         additionaldetails: changedValues,
         additionalpropertydetails: changeAdditionalpropertydetails,
