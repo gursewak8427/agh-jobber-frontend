@@ -5,6 +5,7 @@ import { ChevronDown } from 'lucide-react'
 import React, { useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
 
 const AddCustomFields = ({ open, onClose, }) => {
     const dispatch = useDispatch();
@@ -33,11 +34,11 @@ const AddCustomFields = ({ open, onClose, }) => {
 
         let jsonData = {
             status: true,
-            transferable: data.transferableField,
+            transferable: Boolean(data.transferableField),
         }
 
-        jsonData.field_name = data.fieldName;
-        jsonData.field_type = data.fieldType
+        jsonData.field_name = data.fieldName?.toString() || ""
+        jsonData.field_type = data.fieldType?.toString() || ""
 
         if (data.fieldType == "dropdown") {
             jsonData.dropdown_options = data.dropdownOptions
@@ -45,8 +46,8 @@ const AddCustomFields = ({ open, onClose, }) => {
         }
 
         if (data.fieldType == "numeric") {
-            jsonData.value = data.defaultValue
-            jsonData.unit = data.defaultUnit
+            jsonData.value = parseFloat(data.defaultValue) || 0
+            jsonData.unit = data.defaultUnit?.toString() || ""
         }
 
         if (data.fieldType == "boolean") {
@@ -54,13 +55,13 @@ const AddCustomFields = ({ open, onClose, }) => {
         }
 
         if (data.fieldType == "text") {
-            jsonData.value = data.defaultValue
+            jsonData.value = data.defaultValue?.toString() || ""
         }
 
         if (data.fieldType == "area") {
-            jsonData.length = data.defaultLength
-            jsonData.width = data.defaultWidth
-            jsonData.unit = data.defaultUnit
+            jsonData.length = parseFloat(data.defaultLength) || 0
+            jsonData.width = parseFloat(data.defaultWidth) || 0
+            jsonData.unit = data.defaultUnit?.toString() || ""
         }
 
 
@@ -194,11 +195,12 @@ const AddCustomFields = ({ open, onClose, }) => {
                                             <select
                                                 id="fieldType"
                                                 {...register('defaultValue', { required: true })}
+                                                defaultValue={"true"}
                                                 className="border w-full border-gray-300 rounded p-2 focus:outline-none focus:border-green-700"
                                             >
                                                 <option value="">Select</option>
                                                 <option value="true">True</option>
-                                                <option value="false">Fals</option>
+                                                <option value="false">False</option>
                                             </select>
                                         </div>
                                     </div>
