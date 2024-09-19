@@ -18,6 +18,7 @@ import {
   BoxSelectIcon,
   CameraIcon,
   ChevronDown,
+  CircleAlert,
   Delete,
   Divide,
   Plus,
@@ -51,6 +52,7 @@ const defaultValues = {
 };
 
 export default function Page() {
+  const [requiredError, setRequiredError] = useState([])
   const [open, setOpen] = useState(false)
 
   const {
@@ -93,8 +95,14 @@ export default function Page() {
   // (_field) => _field?.id == field && _field?.field_value != newValue
 
   const onSubmit = async (data) => {
+    setRequiredError([])
     try {
-      console.log({ data, clientcustomfields, propertycustomfields })
+
+      if (!Boolean(data.firstName) && !Boolean(data.lastName) && !Boolean(data.companyName)) {
+        setRequiredError(["fname", "lname", "companyname"])
+        return;
+      }
+
       const changedValues = clientcustomfields
         .map((item, index) => {
 
@@ -160,16 +168,18 @@ export default function Page() {
             country: data.billingCountry,
           },
         }),
-        property: [
-          {
-            address1: data.street1,
-            address2: data.street2,
-            city: data.city,
-            province: data.province,
-            postalcode: data.postalCode,
-            country: data.country,
-          },
-        ],
+        ...((data.street1 || data.street2 || data.city || data.province || data.postalCode || data.country) && {
+          property: [
+            {
+              address1: data.street1,
+              address2: data.street2,
+              city: data.city,
+              province: data.province,
+              postalcode: data.postalCode,
+              country: data.country,
+            },
+          ],
+        }),
         title: data.nameTitle || "No title",
         fname: data.firstName,
         lname: data.lastName,
@@ -212,6 +222,9 @@ export default function Page() {
             </div>
             <div className="flex flex-col text-sm space-y-4">
               <div>
+                {
+                  requiredError?.includes("fname") && <p className="text-red-500 flex items-center gap-2 mb-2"><CircleAlert /> Any one field is required from first name, last name or company name</p>
+                }
                 <div className="flex flex-row">
                   <select
                     {...register("nameTitle")}
@@ -225,20 +238,20 @@ export default function Page() {
                     <option value="Dr.">Dr.</option>
                   </select>
                   <input
-                    {...register("firstName", { required: true })}
+                    {...register("firstName")}
                     placeholder="First Name"
-                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 border-r-0 border-l-0 focus:border-gray-400"
+                    className={`w-full h-11 focus:outline-none border px-3 py-2  focus:border-gray-400 ${requiredError?.includes("fname") ? 'border-red-500 border-b-0' : "border-gray-300 border-r-0 border-l-0"}`}
                   />
                   <input
-                    {...register("lastName", { required: true })}
+                    {...register("lastName")}
                     placeholder="Last Name"
-                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none rounded-b-none"
+                    className={`w-full h-11 focus:outline-none border px-3 py-2 focus:border-gray-400 rounded-lg rounded-l-none rounded-b-none ${requiredError?.includes("lname") ? 'border-red-500 border-b-0' : "border-gray-300"}`}
                   />
                 </div>
                 <input
-                  {...register("companyName", { required: true })}
+                  {...register("companyName")}
                   placeholder="Company Name"
-                  className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 border-t-0 focus:border-gray-400 rounded-lg rounded-t-none"
+                  className={`w-full h-11 focus:outline-none border px-3 py-2  focus:border-gray-400 rounded-lg rounded-t-none ${requiredError?.includes("companyname") ? 'border-red-500' : "border-gray-300 border-t-0"}`}
                 />
               </div>
 
@@ -515,6 +528,7 @@ export default function Page() {
                   <select {...register("country")}
                     className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-l-none"
                   >
+                    <option className='text-tprimary' value="">Select Country</option>
                     <option className='text-tprimary' value="India">India</option>
                     <option className='text-tprimary' value="Canada">Canada</option>
                   </select>
