@@ -57,9 +57,19 @@ export const createClient = createAsyncThunk("createClient", async (data, { reje
     }
 });
 
+export const fetchClient = createAsyncThunk("fetchClient", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/client/?id=${data}`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
 // Initial State
 const initialState = {
     clients: [],
+    client: {},
     clientcustomfields: [],
     propertycustomfields: [],
     pagination: {
@@ -127,6 +137,14 @@ const clientSlice = createSlice({
             .addCase(createPropertyCustomFields.fulfilled, (state, action) => {
                 state.propertycustomfields.push(action.payload);
             })
+        builder
+            .addCase(fetchClient.fulfilled, (state, action) => {
+                state.client = (action.payload);
+            })
+            .addCase(fetchClient.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
     },
 });
 

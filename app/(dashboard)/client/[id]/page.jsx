@@ -49,10 +49,10 @@ import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import { useForm, useFieldArray } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { useAppDispatch } from "@/store/hooks";
+import { usePathname, useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import AddCustomFields from "@/app/_components/CustomFields";
-import { createClient, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
+import { createClient, fetchClient, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
 import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 import PageHeading from "@/components/PageHeading";
@@ -71,11 +71,11 @@ const defaultValues = {
 // Function to handle status rendering
 const getStatusBox = status => {
   switch (status) {
-    case "active": return <div className="h-full text-sm flex items-center justify-start capitalize bg-blue-400 bg-opacity-20 px-2 py-1 rounded-full">
+    case "Active": return <div className="h-full text-sm flex items-center justify-start capitalize bg-blue-400 bg-opacity-20 px-2 py-1 rounded-full">
       <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
       {status}
     </div>
-    case "lead": return <div className="h-full text-sm flex items-center justify-start capitalize bg-green-400 bg-opacity-20 px-2 py-1 rounded-full">
+    case "Lead": return <div className="h-full text-sm flex items-center justify-start capitalize bg-green-400 bg-opacity-20 px-2 py-1 rounded-full">
       <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
       {status}
     </div>
@@ -238,7 +238,8 @@ const TabBox = () => {
 export default function Page() {
   const [requiredError, setRequiredError] = useState([])
   const [open, setOpen] = useState(false)
-
+  const pathname = usePathname();
+  const { client } = useAppSelector(store => store.clients)
 
   const {
     register,
@@ -384,8 +385,9 @@ export default function Page() {
   };
 
   useEffect(() => {
-    dispatch(fetchClientsCustomFields());
-    dispatch(fetchPropertyCustomFields());
+    // dispatch(fetchClientsCustomFields());
+    // dispatch(fetchPropertyCustomFields());
+    dispatch(fetchClient(pathname.split('/')[2]));
   }, [])
 
 
@@ -422,8 +424,11 @@ export default function Page() {
           <div className="w-2/3 space-y-3">
             <div className="flex items-center gap-4 mb-8 w-full">
               <Avatar className="w-16 h-16" />
-              <div className="font-bold text-4xl">Md.Ashraful Islam</div>
-              {getStatusBox("active")}
+              <div className="font-bold text-4xl">
+                {client.fname ? client.fname + ' ' + client.lname : client.companyname}
+              </div>
+
+              {getStatusBox(client.status)}
             </div>
 
             {/* Properties */}
@@ -709,7 +714,7 @@ export default function Page() {
               </div>
             </div>
           </div>
-        </div >
+        </div>
 
         <div className="mt-4 space-y-2 flex justify-between">
           <CustomButton title="Cancel"></CustomButton>
@@ -718,12 +723,12 @@ export default function Page() {
             <CustomButton type="submit" variant="primary" title="Save Client"></CustomButton>
           </div>
         </div>
-      </form >
+      </form>
 
 
       {/* Modals will be show here */}
-      < AddCustomFields open={open} onClose={() => setOpen(false)
+      <AddCustomFields open={open} onClose={() => setOpen(false)
       } />
-    </div >
+    </div>
   );
 }
