@@ -52,7 +52,7 @@ const AddCustomFields = ({ open, onClose, }) => {
 
         if (data.fieldType == "boolean") {
             jsonData.value = data.defaultValue
-        }
+        }a
 
         if (data.fieldType == "text") {
             jsonData.value = data.defaultValue?.toString() || ""
