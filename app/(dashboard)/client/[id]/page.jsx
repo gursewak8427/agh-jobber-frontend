@@ -66,19 +66,11 @@ import {
 import CustomButton from "@/components/CustomButton";
 import Link from "next/link";
 
-import Accordion from "@mui/material/Accordion";
-import AccordionActions from "@mui/material/AccordionActions";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import { useForm, useFieldArray } from "react-hook-form";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import AddCustomFields from "@/app/_components/CustomFields";
-import { createClient, fetchClient, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
-import { useSelector } from "react-redux";
-import CustomSingleField from "@/app/_components/CustomSingleField";
-import PageHeading from "@/components/PageHeading";
+import { fetchClient } from "@/store/slices/client";
 import CustomMenu from "@/components/CustomMenu";
+import { HeadingBox, SectionBox } from "@/app/_components";
 
 // Function to handle status rendering
 const getStatusBox = status => {
@@ -260,17 +252,6 @@ export default function Page() {
     dispatch(fetchClient(id));
   }, [])
 
-  const SectionBox = ({ children, padding }) => {
-    return <div className={`border flex flex-col gap-4 items-start justify-start border-gray-200 rounded-lg text-tprimary text-sm ${padding || 'p-4'}`}>
-      {children}
-    </div>
-  }
-
-  const HeadingBox = ({ children }) => {
-    return <div className="w-full flex items-center justify-between gap-2">
-      {children}
-    </div>
-  }
 
   const MoreActionsMenuItems = () => {
     return (<Fragment>
@@ -408,15 +389,15 @@ export default function Page() {
                 Properties
               </div>
               <div className="flex gap-4">
-                <CustomButton onClick={() => null} title={"New Property"} frontIcon={<Plus className="w-4 h-4" />} />
+                <CustomButton onClick={() => router.push(`/properties/new?client_id=${client?.id}`)} title={"New Property"} frontIcon={<Plus className="w-4 h-4" />} />
               </div>
             </HeadingBox>
             <table className="w-full text-tprimary">
               <tbody>
                 {
                   client?.property?.map((property, index) => {
-                    return <tr>
-                      <td className="py-6">
+                    return <tr onClick={() => router.push(`/client/${id}/properties/${property.id}`)} className="cursor-pointer hover:bg-primary-dark">
+                      <td className="py-4 px-2">
                         <div className="w-10 h-10 rounded border-green-700 border grid place-content-center hover:bg-green-700 hover:bg-opacity-20 cursor-pointer">
                           <MapPin className="text-green-700" />
                         </div>
@@ -431,8 +412,8 @@ export default function Page() {
                   })
                 }
                 <tr>
-                  <td colSpan={2}>Tax rate</td>
-                  <td colSpan={4}>GST (5.0%) (Default)</td>
+                  <td className="py-4" colSpan={2}>Tax rate</td>
+                  <td className="py-4" colSpan={4}>GST (5.0%) (Default)</td>
                 </tr>
               </tbody>
             </table>
@@ -541,37 +522,39 @@ export default function Page() {
             </table>
           </SectionBox>
 
-          <SectionBox>
-            <HeadingBox>
-              <div className="text-xl font-bold text-tprimary">
-                Recent pricing for this property
-              </div>
-            </HeadingBox>
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th className="text-left">Line Item</th>
-                  <th className="text-left">Quoted</th>
-                  <th>Job</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="flex flex-grow flex-1 py-4">
-                    Doors Installation
-                  </td>
-                  <td className="max-w-[30%] w-[30%] py-4">
-                    <div className="font-semibold text-green-700">
-                      $1,200.00*
-                    </div>
-                  </td>
-                  <td className="max-w-[20%] w-[20%] py-4">
-                  </td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-            <div className="text-sm border-t border-t-gray-300 w-full pt-4">
+          <SectionBox padding={"p-0"}>
+            <div className="p-4 space-y-3 w-full">
+              <HeadingBox>
+                <div className="text-xl font-bold text-tprimary">
+                  Recent pricing for this property
+                </div>
+              </HeadingBox>
+              <table className="w-full">
+                <thead>
+                  <tr>
+                    <th className="text-left">Line Item</th>
+                    <th className="text-left">Quoted</th>
+                    <th>Job</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="flex flex-grow flex-1 py-4">
+                      Doors Installation
+                    </td>
+                    <td className="max-w-[30%] w-[30%] py-4">
+                      <div className="font-semibold text-green-700">
+                        $1,200.00*
+                      </div>
+                    </td>
+                    <td className="max-w-[20%] w-[20%] py-4">
+                    </td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="text-sm border-t border-t-gray-300 w-full p-2">
               * Hover for notes regarding this cost
             </div>
           </SectionBox>

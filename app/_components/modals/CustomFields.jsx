@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
+import ModalHeading from '../ModalHeading'
 
 const AddCustomFields = ({ open, onClose, }) => {
     const dispatch = useDispatch();
@@ -52,7 +53,7 @@ const AddCustomFields = ({ open, onClose, }) => {
 
         if (data.fieldType == "boolean") {
             jsonData.value = data.defaultValue
-        }a
+        } a
 
         if (data.fieldType == "text") {
             jsonData.value = data.defaultValue?.toString() || ""
@@ -82,8 +83,7 @@ const AddCustomFields = ({ open, onClose, }) => {
         <div>
             <CustomModal show={Boolean(open)} onClose={onClose}>
                 <div className="space-y-6">
-                    <h2 className="text-xl font-semibold text-gray-800">New Custom Field</h2>
-
+                    <ModalHeading onClose={onClose}>New Custom Field</ModalHeading>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="flex flex-col">
                             <label htmlFor="fieldType" className="mb-2 text-gray-700">
