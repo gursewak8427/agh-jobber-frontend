@@ -1,0 +1,53 @@
+{
+    "id": 51,
+    "mobile": [
+        {
+            "id": 56,
+            "type": "personal",
+            "number": 9041912980,
+            "sms": false,
+            "primary": true
+        }
+    ],
+    "email": [
+        {
+            "id": 42,
+            "type": "main",
+            "email": "gursewaksaggu2043@gmail.com",
+            "primary": true
+        }
+    ],
+    "automation": {
+        "id": 66,
+        "quotefollowup": true,
+        "assessmentandvisitreminders": true,
+        "jobfollowup": true,
+        "invoicefollowup": true
+    },
+    "additionaldetails": [],
+    "billingaddress": null,
+    "property": [
+        {
+            "id": 55,
+            "additionalpropertydetails": [],
+            "address1": "punjab",
+            "address2": "",
+            "city": "Mansa",
+            "province": "Punjab",
+            "postalcode": "151507",
+            "country": "India"
+        }
+    ],
+    "title": "No title",
+    "fname": "gursewak22",
+    "lname": "singh",
+    "companyname": "sadfsdf",
+    "tags": null,
+    "companynameasprimary": false,
+    "leadsource": "Google",
+    "billingaddresssame": true,
+    "status": "Lead",
+    "createdAt": "2024-09-20T16:11:20.799990Z",
+    "updatedAt": "2024-09-20T16:11:20.830989Z",
+    "contractor": 2
+}

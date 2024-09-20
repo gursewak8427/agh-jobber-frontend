@@ -191,7 +191,9 @@ export default function Page() {
       };
 
       console.log("Prepared Data:", jsonData);
-      dispatch(createClient(jsonData))
+      dispatch(createClient(jsonData)).then(({ payload }) => {
+        router.push(`/client/${payload?.id}`)
+      })
       // API call logic here, e.g., await axios.post("/api/clients", jsonData);
     } catch (error) {
       console.error("Error submitting form", error);

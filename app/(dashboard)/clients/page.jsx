@@ -173,6 +173,9 @@ export default function Page() {
           <DataGrid
             autoHeight
             columns={columns}
+            onRowClick={({ row }) => {
+              router.push(`/client/${row?.id}`)
+            }}
             rows={clients?.map(client => {
               return {
                 id: client?.id,
@@ -186,6 +189,14 @@ export default function Page() {
             })}
             sx={{
               minWidth: 900, // Ensures the table doesn't shrink too much
+              // disable cell selection style
+              '.MuiDataGrid-cell:focus': {
+                outline: 'none'
+              },
+              // pointer cursor on ALL rows
+              '& .MuiDataGrid-row:hover': {
+                cursor: 'pointer'
+              },
               "@media (max-width: 600px)": {
                 ".MuiDataGrid-columnHeaders": {
                   fontSize: "0.75rem",
@@ -193,6 +204,7 @@ export default function Page() {
                 ".MuiDataGrid-cell": {
                   fontSize: "0.75rem",
                 },
+
               },
             }}
             initialState={{
