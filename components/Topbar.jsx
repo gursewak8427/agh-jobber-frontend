@@ -158,7 +158,7 @@ const Topbar = () => {
                     <IconButton onClick={() => setPopup("help", true)}>
                         <HelpCircle />
                     </IconButton>
-                    <CustomMenu onClick={() => setPopup("settings", true)} isOpen={state.settings} onClose={() => setPopup("settings", false)} icon={<Settings />}>
+                    <CustomMenu icon={<IconButton><Settings /></IconButton>}>
                         <MenuItem onClick={null}>
                             <div className="flex items-center space-x-2">
                                 <Avatar>GS</Avatar>

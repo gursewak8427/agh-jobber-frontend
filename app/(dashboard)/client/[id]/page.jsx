@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { Fragment, useEffect } from "react";
 import {
   Button,
   TextField,
@@ -15,11 +15,17 @@ import {
   Tab,
   Box,
   Checkbox,
+  MenuItem,
+  Typography,
+  ListItemIcon,
 } from "@mui/material";
 import { useState } from "react";
 import {
+  ArchiveIcon,
   BoxSelect,
   BoxSelectIcon,
+  Briefcase,
+  Calendar,
   CameraIcon,
   ChevronDown,
   CircleAlert,
@@ -28,19 +34,35 @@ import {
   Divide,
   DollarSign,
   Download,
+  DownloadIcon,
+  FileIcon,
+  FileText,
+  GitPullRequestIcon,
   Hammer,
+  Home,
+  Icon,
+  ListIcon,
+  LogIn,
   Mail,
+  MailIcon,
   MapIcon,
   MapPin,
   MessageCircle,
   MoreHorizontal,
+  MoreVertical,
   Pencil,
+  PencilLine,
+  PencilOffIcon,
+  PencilRuler,
   Plus,
   PlusIcon,
+  ReceiptIcon,
   Star,
   Trash2,
+  WorkflowIcon,
   X,
 } from "lucide-react";
+
 import CustomButton from "@/components/CustomButton";
 import Link from "next/link";
 
@@ -56,6 +78,7 @@ import { createClient, fetchClient, fetchClientsCustomFields, fetchPropertyCusto
 import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 import PageHeading from "@/components/PageHeading";
+import CustomMenu from "@/components/CustomMenu";
 
 // Function to handle status rendering
 const getStatusBox = status => {
@@ -225,12 +248,10 @@ const TabBox = () => {
 }
 
 export default function Page() {
-  const [requiredError, setRequiredError] = useState([])
   const [open, setOpen] = useState(false)
   const pathname = usePathname();
   const { client } = useAppSelector(store => store.clients)
   const { id } = useParams();
-
 
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -239,10 +260,8 @@ export default function Page() {
     dispatch(fetchClient(id));
   }, [])
 
-
-
-  const SectionBox = ({ children, className }) => {
-    return <div className={`p-4 border flex flex-col gap-4 items-start justify-start border-gray-200 rounded-lg text-tprimary text-sm ${className}`}>
+  const SectionBox = ({ children, padding }) => {
+    return <div className={`border flex flex-col gap-4 items-start justify-start border-gray-200 rounded-lg text-tprimary text-sm ${padding || 'p-4'}`}>
       {children}
     </div>
   }
@@ -251,6 +270,109 @@ export default function Page() {
     return <div className="w-full flex items-center justify-between gap-2">
       {children}
     </div>
+  }
+
+  const MoreActionsMenuItems = () => {
+    return (<Fragment>
+      {/* Menu Items */}
+      <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
+        Create new...
+      </Typography>
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <Download className="text-orange-700" size={16} />
+        </ListItemIcon>
+        Request
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <PencilRuler className="text-purple-700" size={16} />
+        </ListItemIcon>
+        Quote
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <Hammer className="text-green-700" size={16} />
+        </ListItemIcon>
+        Job
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <ListIcon className="text-blue-700" size={16} />
+        </ListItemIcon>
+        Invoice
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <CreditCard className="text-orange-700" size={16} />
+        </ListItemIcon>
+        Collect Payment
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <FileIcon className="text-blue-700" size={16} />
+        </ListItemIcon>
+        Task
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <Calendar className="text-yellow-700" size={16} />
+        </ListItemIcon>
+        Calendar Event
+      </MenuItem>
+
+      <Divider />
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <Home className="text-tprimary" size={16} />
+        </ListItemIcon>
+        Property
+      </MenuItem>
+
+      <Divider />
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <ArchiveIcon className="text-tprimary" size={16} />
+        </ListItemIcon>
+        Archive Client
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <Download className="text-tprimary" size={16} />
+        </ListItemIcon>
+        Download VCard
+      </MenuItem>
+
+      <Divider />
+
+      <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
+        Client hub
+      </Typography>
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <Mail className="text-tprimary" size={16} />
+        </ListItemIcon>
+        Send Login Email
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm">
+        <ListItemIcon>
+          <LogIn className="text-tprimary" size={16} />
+        </ListItemIcon>
+        Log in as Client
+      </MenuItem>
+    </Fragment>)
   }
 
   return (
@@ -262,7 +384,9 @@ export default function Page() {
         <div className="flex gap-4">
           <CustomButton onClick={() => router.push("/clients/new")} title={"Email"} variant={"primary"} frontIcon={<Mail className="w-4 h-4" />} />
           <CustomButton onClick={() => router.push("/clients/new")} title={"Edit"} frontIcon={<Pencil className="w-4 h-4" />} />
-          <CustomButton title={"More Actions"} frontIcon={<MoreHorizontal />} />
+          <CustomMenu icon={<CustomButton title={"More Actions"} frontIcon={<MoreHorizontal />} />}>
+            <MoreActionsMenuItems />
+          </CustomMenu>
         </div>
       </HeadingBox>
 
@@ -322,7 +446,32 @@ export default function Page() {
                 Overview
               </div>
               <div className="flex gap-4">
-                <CustomButton onClick={() => null} title={"New"} frontIcon={<ChevronDown className="w-4 h-4" />} />
+                <CustomMenu icon={<CustomButton onClick={() => null} title={"New"} frontIcon={<ChevronDown className="w-4 h-4" />} />}>
+                  <MenuItem className="py-2 px-4 text-sm">
+                    <ListItemIcon>
+                      <Download fontSize="small" className="w-5 h-5 text-orange-700" />
+                    </ListItemIcon>
+                    Request
+                  </MenuItem>
+                  <MenuItem className="py-2 px-4 text-sm">
+                    <ListItemIcon>
+                      <PencilRuler fontSize="small" className="w-5 h-5 text-purple-700" />
+                    </ListItemIcon>
+                    Quote
+                  </MenuItem>
+                  <MenuItem className="py-2 px-4 text-sm">
+                    <ListItemIcon>
+                      <Hammer fontSize="small" className="w-5 h-5 text-green-700" />
+                    </ListItemIcon>
+                    Job
+                  </MenuItem>
+                  <MenuItem className="py-2 px-4 text-sm">
+                    <ListItemIcon>
+                      <DollarSign fontSize="small" className="w-5 h-5 text-blue-700" />
+                    </ListItemIcon>
+                    Invoice
+                  </MenuItem>
+                </CustomMenu>
               </div>
             </HeadingBox>
             <TabBox />
@@ -336,7 +485,26 @@ export default function Page() {
                 Schedule
               </div>
               <div className="flex gap-4">
-                <CustomButton onClick={() => null} title={"New"} frontIcon={<ChevronDown className="w-4 h-4" />} />
+                <CustomMenu icon={<CustomButton onClick={() => null} title={"New"} frontIcon={<ChevronDown className="w-4 h-4" />} />}>
+                  <MenuItem className="py-2 px-4 text-sm">
+                    <ListItemIcon>
+                      <Download fontSize="small" className="w-5 h-5 text-orange-700" />
+                    </ListItemIcon>
+                    Request
+                  </MenuItem>
+                  <MenuItem className="py-2 px-4 text-sm">
+                    <ListItemIcon>
+                      <FileIcon fontSize="small" className="w-5 h-5 text-blue-700" />
+                    </ListItemIcon>
+                    Task
+                  </MenuItem>
+                  <MenuItem className="py-2 px-4 text-sm">
+                    <ListItemIcon>
+                      <Calendar fontSize="small" className="w-5 h-5 text-yellow-700" />
+                    </ListItemIcon>
+                    Calender Event
+                  </MenuItem>
+                </CustomMenu>
               </div>
             </HeadingBox>
 
@@ -515,14 +683,28 @@ export default function Page() {
           </SectionBox>
 
           {/* Billing History */}
-          <SectionBox className="p-0">
+          <SectionBox padding="0">
             <div className="p-4 space-y-3 w-full">
               <HeadingBox>
                 <div className="text-xl font-bold text-tprimary">
                   Billing history
                 </div>
                 <div>
-                  <CustomButton onClick={() => null} title={"New"} frontIcon={<Plus className="w-4 h-4" />} />
+                  <CustomMenu icon={<CustomButton onClick={() => null} title={"New"} frontIcon={<ChevronDown className="w-4 h-4" />} />}>
+                    <MenuItem className="py-2 px-4 text-sm text-gray-700">
+                      Collect Payment
+                    </MenuItem>
+                    <MenuItem className="py-2 px-4 text-sm text-gray-700">
+                      Record Deposit
+                    </MenuItem>
+                    <MenuItem className="py-2 px-4 text-sm text-gray-700">
+                      Invoice
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem className="py-2 px-4 text-sm text-gray-700">
+                      Set Initial Balance
+                    </MenuItem>
+                  </CustomMenu>
                 </div>
               </HeadingBox>
               <div className="w-full">
@@ -566,11 +748,6 @@ export default function Page() {
           <CustomButton type="submit" variant="primary" title="Save Client"></CustomButton>
         </div>
       </div>
-
-
-      {/* Modals will be show here */}
-      <AddCustomFields open={open} onClose={() => setOpen(false)
-      } />
     </div>
   );
 }
