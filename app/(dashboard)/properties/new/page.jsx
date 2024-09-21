@@ -44,8 +44,6 @@ import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 import SelectClient from "@/app/_components/modals/SelectClient";
 
-const defaultValues = {};
-
 export default function Page() {
     const searchParams = useSearchParams();
     const client_id = searchParams.get("client_id");
@@ -60,10 +58,7 @@ export default function Page() {
         control,
         formState: { errors },
         setValue
-    } = useForm({
-        defaultValues,
-        client:client_id
-    });
+    } = useForm();
 
     const router = useRouter();
     const dispatch = useAppDispatch();
@@ -71,8 +66,35 @@ export default function Page() {
     const { clientslist } = useSelector(state => state.clients);
 
     const onSubmit = async (data) => {
+
+        const changeAdditionalpropertydetails = propertycustomfields
+            .map((item, index) => {
+
+                const change = data?.propertyCustomFields?.[`${item.id}key`] || null;
+                if (!change) return null;
+
+                const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
+                if (hasChanged) {
+                    return { custom_field_id: item.id, ...change };
+                }
+                return null;
+            })
+            .filter(Boolean);
+
         try {
-            console.log(data);
+            console.log({
+                address1: data.address1,
+                address2: data.address2,
+                city: data.city,
+                province: data.province,
+                postalcode: data.postalcode,
+                country: data.country,
+
+                clientId: client_id,
+                ...(changeAdditionalpropertydetails && changeAdditionalpropertydetails?.length > 0 && {
+                    additionalpropertydetails: changeAdditionalpropertydetails,
+                })
+            });
         } catch (error) {
             console.error("Error submitting form", error);
         }
@@ -88,7 +110,7 @@ export default function Page() {
     useEffect(() => {
         setClient(clientslist.find(client => client.id == client_id));
     }, [clientslist])
-    
+
     useEffect(() => {
         dispatch(fetchPropertyCustomFields());
         dispatch(fetchallClients());
@@ -172,13 +194,12 @@ export default function Page() {
                                         Additional property details
                                     </AccordionSummary>
                                     <AccordionDetails>
-                                        {/* {JSON.stringify(clientcustomfields)} */}
-                                        {/* <div className="space-y-2">
+                                        <div className="space-y-2">
                                             {
                                                 propertycustomfields?.map((field, index) => <CustomSingleField register={register} prefix="propertyCustomFields" field={field} index={index} customfields={propertycustomfields} />)
                                             }
-                                        </div> */}
-                                        {/* <AddCustomFields /> */}
+                                        </div>
+                                        <AddCustomFields />
                                         <div className="my-4">
                                             <CustomButton title="Add Custom Field" onClick={() => setOpen("property")} />
                                         </div>
@@ -200,7 +221,7 @@ export default function Page() {
 
             {/* Modals will be show here */}
             <AddCustomFields open={open} onClose={() => setOpen(false)} />
-            <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={data => { setSelectClientModal(false) }} clients={clientslist}/>
+            <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={data => { setSelectClientModal(false) }} clients={clientslist} />
         </div>
     );
 }
