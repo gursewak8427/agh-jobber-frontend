@@ -44,15 +44,7 @@ import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 import SelectClient from "@/app/_components/modals/SelectClient";
 
-const defaultValues = {
-    mobiles: [{ type: "personal", number: "", sms: false }],
-    emails: [{ type: "main", email: "" }],
-    billingAddressSameProperty: true,
-    quoteFollowUp: true,
-    assessmentAndVisitReminders: true,
-    jobFollowUp: true,
-    invoiceFollowUp: true,
-};
+const defaultValues = {};
 
 export default function Page() {
     const searchParams = useSearchParams();
@@ -70,6 +62,7 @@ export default function Page() {
         setValue
     } = useForm({
         defaultValues,
+        client:client_id
     });
 
     const router = useRouter();
@@ -125,14 +118,14 @@ export default function Page() {
                             <div className="flex flex-col text-sm space-y-4">
                                 <div>
                                     <div>
-                                        <input {...register("street1")}
+                                        <input {...register("address1")}
                                             type="text"
                                             placeholder='Street 1'
                                             className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                                         />
                                     </div>
                                     <div>
-                                        <input {...register("street2")}
+                                        <input {...register("address2")}
                                             type="text"
                                             placeholder='Street 2'
                                             className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-b-none"
@@ -152,7 +145,7 @@ export default function Page() {
                                     </div>
 
                                     <div className="flex flex-row">
-                                        <input {...register("postalCode")}
+                                        <input {...register("postalcode")}
                                             placeholder='Postal Code'
                                             className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-r-none"
                                         />
@@ -180,11 +173,11 @@ export default function Page() {
                                     </AccordionSummary>
                                     <AccordionDetails>
                                         {/* {JSON.stringify(clientcustomfields)} */}
-                                        <div className="space-y-2">
+                                        {/* <div className="space-y-2">
                                             {
                                                 propertycustomfields?.map((field, index) => <CustomSingleField register={register} prefix="propertyCustomFields" field={field} index={index} customfields={propertycustomfields} />)
                                             }
-                                        </div>
+                                        </div> */}
                                         {/* <AddCustomFields /> */}
                                         <div className="my-4">
                                             <CustomButton title="Add Custom Field" onClick={() => setOpen("property")} />
@@ -197,7 +190,7 @@ export default function Page() {
                                 <CustomButton title="Cancel" onClick={() => {
                                     onClose()
                                 }}></CustomButton>
-                                <CustomButton variant="primary" title="Create Property"></CustomButton>
+                                <CustomButton type={'submit'} variant="primary" title="Create Property"></CustomButton>
                             </div>
                         </div>
                     </SectionBox>
