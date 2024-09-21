@@ -90,7 +90,7 @@ export default function Page() {
                 postalcode: data.postalcode,
                 country: data.country,
 
-                clientId: client_id,
+                client : client_id,
                 ...(changeAdditionalpropertydetails && changeAdditionalpropertydetails?.length > 0 && {
                     additionalpropertydetails: changeAdditionalpropertydetails,
                 })
@@ -109,7 +109,7 @@ export default function Page() {
 
     useEffect(() => {
         setClient(clientslist.find(client => client.id == client_id));
-    }, [clientslist])
+    }, [client_id, clientslist])
 
     useEffect(() => {
         dispatch(fetchPropertyCustomFields());
@@ -221,7 +221,10 @@ export default function Page() {
 
             {/* Modals will be show here */}
             <AddCustomFields open={open} onClose={() => setOpen(false)} />
-            <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={data => { setSelectClientModal(false) }} clients={clientslist} />
+            <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={id => {
+                router.push(`/properties/new?client_id=${id}`)
+                setSelectClientModal(false)
+            }} clients={clientslist} />
         </div>
     );
 }
