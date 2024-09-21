@@ -39,7 +39,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
 import AddCustomFields from "@/app/_components/modals/CustomFields";
-import { createClient, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
+import { createClient, fetchallClients, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
 import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 import SelectClient from "@/app/_components/modals/SelectClient";
@@ -59,6 +59,7 @@ export default function Page() {
     const client_id = searchParams.get("client_id");
     const [open, setOpen] = useState(false)
     const [selectClientModal, setSelectClientModal] = useState(false)
+    const [client, setClient] = useState({})
 
     const {
         register,
@@ -74,9 +75,11 @@ export default function Page() {
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { propertycustomfields } = useSelector(state => state.clients);
+    const { clientslist } = useSelector(state => state.clients);
 
     const onSubmit = async (data) => {
         try {
+            console.log(data);
         } catch (error) {
             console.error("Error submitting form", error);
         }
@@ -89,13 +92,21 @@ export default function Page() {
         </div>
     }
 
+    useEffect(() => {
+        setClient(clientslist.find(client => client.id == client_id));
+    }, [clientslist])
+    
+    useEffect(() => {
+        dispatch(fetchPropertyCustomFields());
+        dispatch(fetchallClients());
+    }, [])
     return (
         <div className="max-w-[1200px] mx-auto space-y-4">
             <div className="text-sm text-tprimary flex items-center gap-2">
                 Back to:
                 <Breadcrumbs>
                     <Link href={"/clients"} className="text-green-700 underline">Clients</Link>
-                    <Link href={`/client/${client_id}`} className="text-green-700 underline">test test</Link>
+                    <Link href={`/client/${client_id}`} className="text-green-700 underline">{client?.fname ? client?.fname + ' ' + client?.lname : client?.companyname}</Link>
                 </Breadcrumbs>
             </div>
 
@@ -108,7 +119,7 @@ export default function Page() {
                                 <Avatar className="w-16 h-16"><Home className="text-tprimary" /></Avatar>
                                 <div className="text-2xl font-semibold text-tprimary">New Property for</div>
                                 <Button onClick={() => setSelectClientModal(true)} className='capitalize flex items-center border-b border-dashed'>
-                                    <div className="text-2xl font-semibold text-tprimary">Client Name</div>
+                                    <div className="text-2xl font-semibold text-tprimary">{client?.fname ? client?.fname + ' ' + client?.lname : client?.companyname}</div>
                                 </Button>
                             </div>
                             <div className="flex flex-col text-sm space-y-4">
@@ -196,7 +207,7 @@ export default function Page() {
 
             {/* Modals will be show here */}
             <AddCustomFields open={open} onClose={() => setOpen(false)} />
-            <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={data => { setSelectClientModal(false) }} />
-        </div >
+            <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={data => { setSelectClientModal(false) }} clients={clientslist}/>
+        </div>
     );
 }

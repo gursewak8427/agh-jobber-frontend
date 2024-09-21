@@ -75,7 +75,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { createClient, fetchClient, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
+import { createClient, fetchClient, fetchClientsCustomFields, fetchProperty, fetchPropertyCustomFields } from "@/store/slices/client";
 import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 import PageHeading from "@/components/PageHeading";
@@ -251,8 +251,8 @@ const TabBox = () => {
 
 export default function Page() {
     const [open, setOpen] = useState(false)
-    const pathname = usePathname();
     const { client } = useAppSelector(store => store.clients)
+    const { property } = useAppSelector(store => store.clients)
     const { id, property_id } = useParams();
 
     const router = useRouter();
@@ -260,6 +260,7 @@ export default function Page() {
 
     useEffect(() => {
         dispatch(fetchClient(id));
+        dispatch(fetchProperty(property_id));
     }, [])
 
     const MoreActionsMenuItems = () => {
@@ -318,7 +319,7 @@ export default function Page() {
                     Back to:
                     <Breadcrumbs>
                         <Link href={"/clients"} className="text-green-700 underline">Clients</Link>
-                        <Link href={`/client/${id}`} className="text-green-700 underline">test test</Link>
+                        <Link href={`/client/${id}`} className="text-green-700 underline">{client.fname ? client.fname + ' ' + client.lname : client.companyname}</Link>
                     </Breadcrumbs>
                 </div>
                 <div className="flex gap-4">
@@ -344,13 +345,13 @@ export default function Page() {
                         <div className="space-y-3">
                             <div>
                                 <p className="font-semibold">Client</p>
-                                <p className="text-green-700">Gursewak</p>
+                                <p className="text-green-700">{client.fname ? client.fname + ' ' + client.lname : client.companyname}</p>
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded border-green-700 border grid place-content-center hover:bg-green-700 hover:bg-opacity-20 cursor-pointer">
                                     <MapPin className="text-green-700" />
                                 </div>
-                                <p className="max-w-[200px]">3 Hampshire Close Northwest Calgary, Alberta T3A 4X9</p>
+                                <p className="max-w-[200px]">{property.address1 + ' ' + property.address2 + ' ' + property.city + ' ' + property.province + ' ' + property.country + ' ' + property.postalcode}</p>
                             </div>
                         </div>
                     </SectionBox>

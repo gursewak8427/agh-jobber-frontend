@@ -241,7 +241,6 @@ const TabBox = () => {
 
 export default function Page() {
   const [open, setOpen] = useState(false)
-  const pathname = usePathname();
   const { client } = useAppSelector(store => store.clients)
   const { id } = useParams();
 

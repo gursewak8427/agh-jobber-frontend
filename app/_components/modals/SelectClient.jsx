@@ -9,7 +9,7 @@ import { ImageIcon, UserIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 
-const SelectClient = ({ open, onClose, onSelect }) => {
+const SelectClient = ({ open, onClose, onSelect, clients }) => {
     const router = useRouter();
 
     return (
@@ -27,20 +27,20 @@ const SelectClient = ({ open, onClose, onSelect }) => {
                             <CustomButton onClick={() => router.push(`/clients/new`)}
                                 variant={"primary"} title="Create New Client" />
                         </div>
-                        <div className="text-blue-500">Leeds</div>
+                        <div className="text-blue-500">Leads</div>
                     </div>
                     <Divider />
                     <List className='w-full max-h-[40vh] overflow-y-auto'>
                         {
-                            [0, 1, 2, 3, 4, 5].map((item, index) => {
+                            clients.map((client, index) => {
                                 return <ListItem onClick={onSelect} className='border-b border-gray-500 relative h-24 hover:bg-primary cursor-pointer'>
                                     <ListItemAvatar>
                                         <Avatar className='text-tprimary'>
                                             <UserIcon />
                                         </Avatar>
                                     </ListItemAvatar>
-                                    <ListItemText primary="test test" secondary="2 Properties | 123-456-8903" />
-                                    <div className="text-sm absolute top-5 right-5">Activity about 2 horus ago</div>
+                                    <ListItemText primary={client?.fname ? client?.fname + ' ' + client?.lname : client?.companyname} secondary="" />
+                                    <div className="text-sm absolute top-5 right-5">{client.updatedAt}</div>
                                 </ListItem>
                             })
                         }

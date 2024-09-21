@@ -73,7 +73,7 @@ export default function Page() {
   const { clients } = useSelector(state => state.clients)
   const dispatch = useDispatch();
   React.useEffect(() => {
-    dispatch(fetchClients(1));
+    dispatch(fetchClients({ page: 1, page_size: 20 }));
   }, [])
 
   React.useEffect(() => {

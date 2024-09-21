@@ -4,7 +4,16 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 export const fetchClients = createAsyncThunk("fetchClients", async (data, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/?page=${data}`);
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/?page=${data.page}&page_size=${data.page_size}`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const fetchallClients = createAsyncThunk("fetchallClients", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/?list=true`);
         return response.data;
     } catch (error) {
 
@@ -66,10 +75,21 @@ export const fetchClient = createAsyncThunk("fetchClient", async (data, { reject
     }
 });
 
+export const fetchProperty = createAsyncThunk("fetchProperty", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/property/?id=${data}`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
 // Initial State
 const initialState = {
     clients: [],
+    clientslist:[],
     client: {},
+    property: {},
     clientcustomfields: [],
     propertycustomfields: [],
     pagination: {
@@ -142,6 +162,22 @@ const clientSlice = createSlice({
                 state.client = (action.payload);
             })
             .addCase(fetchClient.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchProperty.fulfilled, (state, action) => {
+                state.property = (action.payload);
+            })
+            .addCase(fetchProperty.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchallClients.fulfilled, (state, action) => {
+                state.clientslist = (action.payload);
+            })
+            .addCase(fetchallClients.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
