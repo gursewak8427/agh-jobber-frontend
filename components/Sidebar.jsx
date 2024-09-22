@@ -12,7 +12,7 @@ const Section = ({ children, border }) => {
 }
 
 const Sidebar = () => {
-    const [collapse, setCollapse] = useState(true)
+    const [collapse, setCollapse] = useState(false)
 
     return (
         <div className={`bg-primary text-tprimary h-screen sticky top-0 ${!collapse ? 'w-48' : 'w-16'} transition-all`}>

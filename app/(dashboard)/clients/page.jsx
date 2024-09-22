@@ -89,7 +89,7 @@ export default function Page() {
         </div>
       </PageHeading>
 
-      <div className="flex flex-wrap gap-4 bg-gray-50 text-sm text-tprimary">
+      <div className="flex flex-wrap gap-4 text-sm text-tprimary">
         {/* Conversion rate */}
         <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary cursor-pointer">
           <div className="flex items-center justify-between">
