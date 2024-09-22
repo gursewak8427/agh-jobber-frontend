@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import client, { fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createQuote, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -204,11 +204,6 @@ export default function Page() {
     let jsonData = {
       "product": data?.products?.map(product => ({
         ...product,
-        cost: product?.totolcost,
-        qty: product?.quantity,
-        "optional": product?.type == "optional",
-        "recommend": product?.type == "default",
-        "textfield": product?.type == "text"
       })),
       "title": null,
       "quoteno": isQuoteNo ? data?.quoteno : quotecount,
@@ -224,15 +219,16 @@ export default function Page() {
       "clientmessage": "",
       // "disclaimer": "",
       // "status": "Draft",
-      // "contractor": 2,
+      // "contractor": 2,//aa tusi nhi bhejna ok remove krdo
       "property": selectedProperty?.id,
       "client": client_id,
-      // "salesperson": 3,
+      "salesperson": 3,//aa tusi sales team wali id bhejni ya
       // "clientpdfstyle": null,
       "custom_field": changeAdditionalquotedetails
     }
 
     console.log({ jsonData });
+    dispatch(createQuote(jsonData))
   };
 
 
