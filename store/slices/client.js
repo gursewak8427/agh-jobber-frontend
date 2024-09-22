@@ -2,6 +2,15 @@ import axiosInstance from '@/store/AxiosInstance';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 
+export const fetchTeam = createAsyncThunk("fetchTeam", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/team/`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
 export const fetchClients = createAsyncThunk("fetchClients", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/?page=${data.page}&page_size=${data.page_size}`);
@@ -86,7 +95,34 @@ export const fetchProperty = createAsyncThunk("fetchProperty", async (data, { re
 
 export const createProperty = createAsyncThunk("createProperty", async (data, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/property/`,data);
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/property/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const fetchQuotecount = createAsyncThunk("fetchQuotecount", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quotecount/`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const createQuoteCustomFields = createAsyncThunk("createQuoteCustomFields", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/customquotefield/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const fetchQuoteCustomFields = createAsyncThunk("fetchQuoteCustomFields", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/customquotefield/`);
         return response.data;
     } catch (error) {
 
@@ -95,12 +131,15 @@ export const createProperty = createAsyncThunk("createProperty", async (data, { 
 
 // Initial State
 const initialState = {
+    team: [],
     clients: [],
-    clientslist:[],
+    clientslist: [],
     client: {},
     property: {},
+    quotecount: 0,
     clientcustomfields: [],
     propertycustomfields: [],
+    quotecustomfields: [],
     pagination: {
         count: 0,
         next: '',
@@ -119,6 +158,15 @@ const clientSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
+        builder
+            .addCase(fetchTeam.fulfilled, (state, action) => {
+                state.loadingList = false;
+                state.team = action.payload;
+            })
+            .addCase(fetchTeam.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch team';
+            });
         builder
             .addCase(fetchClients.pending, (state) => {
                 state.loadingList = true;
@@ -187,6 +235,30 @@ const clientSlice = createSlice({
                 state.clientslist = (action.payload);
             })
             .addCase(fetchallClients.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchQuotecount.fulfilled, (state, action) => {
+                state.quotecount = (action.payload?.quoteno);
+            })
+            .addCase(fetchQuotecount.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(createQuoteCustomFields.fulfilled, (state, action) => {
+                state.quotecustomfields.push(action.payload);
+            })
+            .addCase(createQuoteCustomFields.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchQuoteCustomFields.fulfilled, (state, action) => {
+                state.quotecustomfields = action.payload;
+            })
+            .addCase(fetchQuoteCustomFields.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });

@@ -6,10 +6,13 @@ import { BoxSelect, BoxSelectIcon, CameraIcon, Delete, Divide, Plus, PlusIcon, T
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 import SelectClient from '@/app/_components/modals/SelectClient';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/modals/CustomFields';
+import { fetchallClients, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { useAppDispatch } from '@/store/hooks';
+import CustomSingleField from '@/app/_components/CustomSingleField';
 
 const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 0, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 0, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
@@ -28,8 +31,12 @@ export default function Page() {
   const [selectClientModal, setSelectClientModal] = useState(false);
 
   // Custom fields, change with quote custom fields
-  const { propertycustomfields } = useSelector(state => state.clients);
-
+  const { quotecustomfields } = useSelector(state => state.clients);
+  const { quotecount } = useSelector(state => state.clients);
+  const { team } = useSelector(state => state.clients);
+  
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -90,7 +97,7 @@ export default function Page() {
 
   const onSubmit = async (data) => {
 
-    const changeAdditionalquotedetails = propertycustomfields
+    const changeAdditionalquotedetails = quotecustomfields
       .map((item, index) => {
 
         const change = data?.quoteCustomFields?.[`${item.id}key`] || null;
@@ -114,7 +121,12 @@ export default function Page() {
 
 
   };
-
+  useEffect(() => {
+    dispatch(fetchallClients());
+    dispatch(fetchQuotecount());
+    dispatch(fetchQuoteCustomFields());
+    dispatch(fetchTeam());
+  }, [])
   return (
     <div className='max-w-[1200px] mx-auto space-y-4'>
       <div className='text-sm text-tprimary'>
@@ -163,7 +175,7 @@ export default function Page() {
             <div className="p-4 rounded-lg w-1/2">
               <h1 className='font-bold mb-2'>Quote details</h1>
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium min-w-[200px]">Quote number #1</div>
+                <div className="font-medium min-w-[200px]">Quote number #{quotecount}</div>
                 <button className='text-green-700 underline font-semibold'>change</button>
               </div>
 
@@ -198,11 +210,11 @@ export default function Page() {
 
               <div className="space-y-2">
                 {
-                  propertycustomfields?.map((field, index) => <CustomSingleField register={register} prefix="propertyCustomFields" field={field} index={index} customfields={propertycustomfields} />)
+                  quotecustomfields?.map((field, index) => <CustomSingleField register={register} prefix="QuoteCustomFields" field={field} index={index} customfields={quotecustomfields} />)
                 }
               </div>
               <div className="my-4">
-                <CustomButton title="Add Custom Field" onClick={() => setOpen("property")} />
+                <CustomButton title="Add Custom Field" onClick={() => setOpen("quote")} />
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import CustomButton from '@/components/CustomButton'
 import CustomModal from '@/components/CustomModal'
-import { createClientsCustomFields, createPropertyCustomFields } from '@/store/slices/client'
+import { createClientsCustomFields, createPropertyCustomFields, createQuoteCustomFields } from '@/store/slices/client'
 import { ChevronDown } from 'lucide-react'
 import React, { useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -53,7 +53,7 @@ const AddCustomFields = ({ open, onClose, }) => {
 
         if (data.fieldType == "boolean") {
             jsonData.value = data.defaultValue
-        } a
+        }
 
         if (data.fieldType == "text") {
             jsonData.value = data.defaultValue?.toString() || ""
@@ -69,9 +69,14 @@ const AddCustomFields = ({ open, onClose, }) => {
 
         if (open == "client") {
             dispatch(createClientsCustomFields(jsonData))
-        } else if (open == "property") {
+        } 
+        else if (open == "property") {
             dispatch(createPropertyCustomFields(jsonData))
-        } else {
+        } 
+        else if (open == "quote") {
+            dispatch(createQuoteCustomFields(jsonData))
+        } 
+        else {
             console.log("Invalid Field - Client and Property is allowed")
         }
 
