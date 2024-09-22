@@ -1,8 +1,8 @@
 "use client"
 import React, { useEffect } from 'react';
-import { Button, TextField, IconButton, Avatar, Rating, Divider } from '@mui/material';
+import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon } from '@mui/material';
 import { useState } from 'react';
-import { BoxSelect, BoxSelectIcon, CameraIcon, Delete, Divide, Plus, PlusIcon, Trash2 } from 'lucide-react';
+import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, Delete, Divide, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, Plus, PlusIcon, Trash2 } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
@@ -16,10 +16,11 @@ import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
 import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
+import CustomMenu from '@/components/CustomMenu';
 
-const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 0, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
-const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 0, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
-const defaultProductTextItem = { type: "text", name: "", description: "", quantity: 0, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
+const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
+const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
+const defaultProductTextItem = { type: "text", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -29,6 +30,7 @@ export default function Page() {
 
   const { clientslist } = useSelector(state => state.clients);
   const [rating, setRating] = useState(0);
+  const [isQuoteNo, setQuoteNo] = useState(false);
   const [isDiscount, setDiscount] = useState(false);
   const [isRequiredDeposit, setRequiredDeposit] = useState(false);
   const [selectClientModal, setSelectClientModal] = useState(false);
@@ -65,9 +67,31 @@ export default function Page() {
 
   const watchProducts = watch("products");
   const subtotal = watch("subtotal");
+  const discounttype = watch("discounttype");
   const discount = watch("discount");
+  const discountAmount = watch("discountAmount");
   const gst = watch("gst");
   const totalcost = watch("totalcost");
+
+  const requiredtype = watch("requiredtype");
+  const requireddeposit = watch("requireddeposit");
+  const requiredAmount = watch("requiredAmount");
+
+
+  useEffect(() => {
+    let _requireddeposit = 0
+    if (isRequiredDeposit) {
+      if (requiredtype == "percentage") {
+        _requireddeposit = totalcost * (requireddeposit / 100)
+      }
+
+      if (requiredtype == "amount") {
+        _requireddeposit = requireddeposit
+      }
+    }
+    console.log({ _requireddeposit })
+    setValue(`requiredAmount`, _requireddeposit)
+  }, [requireddeposit, requiredtype])
 
   // Calculation logic for each product line
   // useEffect(() => {
@@ -94,39 +118,35 @@ export default function Page() {
       }
     });
 
-    let _discount = isDiscount ? discount : 0
 
-    setValue(`subtotal`, newSubtotal);
-    setValue(`gst`, newSubtotal * 0.05);
-    setValue(`totalcost`, Math.max(newSubtotal + newSubtotal * 0.05 - _discount, 0));
-  }
+    let _totatcost = newSubtotal;
 
-  const onSubmit = async (data) => {
+    let _discount = 0
+    if (isDiscount) {
+      if (discounttype == "percentage") {
+        _discount = _totatcost * (discount / 100)
+      }
 
-    const changeAdditionalquotedetails = quotecustomfields
-      .map((item, index) => {
-
-        const change = data?.quoteCustomFields?.[`${item.id}key`] || null;
-        if (!change) return null;
-
-        const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
-        if (hasChanged) {
-          return { custom_field_id: item.id, ...change };
-        }
-        return null;
-      })
-      .filter(Boolean);
-
-    let jsonData = {
-      additionalfields: changeAdditionalquotedetails,
-      client_id,
-      ...data,
+      if (discounttype == "amount") {
+        _discount = discount
+      }
     }
 
-    console.log({ jsonData });
+    _totatcost -= _discount;
+
+    let gst = 5;
+    let gstAmount = _totatcost * (gst / 100)
+    _totatcost += gstAmount
+
+    setValue(`subtotal`, newSubtotal);
+    setValue(`gst`, gstAmount);
+    setValue(`totalcost`, _totatcost);
+
+    console.log({ _discount, discounttype })
+    setValue(`discountAmount`, _discount)
+  }
 
 
-  };
   useEffect(() => {
     dispatch(fetchallClients());
     dispatch(fetchQuotecount());
@@ -160,6 +180,39 @@ export default function Page() {
     }
   }, [client])
 
+
+
+  const onSubmit = async (data) => {
+
+    const changeAdditionalquotedetails = quotecustomfields
+      .map((item, index) => {
+
+        const change = data?.quoteCustomFields?.[`${item.id}key`] || null;
+        if (!change) return null;
+
+        const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
+        if (hasChanged) {
+          return { custom_field_id: item.id, ...change };
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    let _data = { ...data };
+    delete _data?.quoteno
+
+    let jsonData = {
+      ...(isQuoteNo && { quoteno: data?.quoteno }),
+      additionalfields: changeAdditionalquotedetails,
+      client_id,
+      rating,
+      ..._data,
+    }
+
+    console.log({ jsonData });
+
+
+  };
 
 
 
@@ -224,8 +277,16 @@ export default function Page() {
             <div className="p-4 rounded-lg w-1/2">
               <h1 className='font-bold mb-2'>Quote details</h1>
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium min-w-[200px]">Quote number #{quotecount}</div>
-                <button className='text-green-700 underline font-semibold'>change</button>
+                <div className="font-medium min-w-[200px]">Quote number {!isQuoteNo && <>#{quotecount}</>}</div>
+                {
+                  isQuoteNo ? <div className="flex gap-2 items-center">
+                    <input type="text" {...register("quoteno")} onBlur={onBlur} defaultValue={quotecount}
+                      className="w-16 h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
+                    <CustomButton onClick={() => { setValue("quoteno", quotecount); setQuoteNo(false) }} title={"Cancel"} />
+                  </div> :
+                    <Button onClick={() => setQuoteNo(true)} className='px-0 text-green-700 underline font-semibold'>change</Button>
+                }
+
               </div>
 
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
@@ -426,14 +487,27 @@ export default function Page() {
               <div className="p-4 rounded-lg w-1/2">
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px]">Subtotal</div>
-                  <p className='text-gray-700'>${subtotal}</p>
+                  <p className='text-gray-700'>${subtotal || `0.00`}</p>
                 </div>
 
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px]">Discount</div>
                   {
-                    isDiscount ? <input type="text" {...register("discount")} onBlur={onBlur}
-                      className="w-16 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" /> :
+                    isDiscount ?
+                      <div className="flex items-center gap-2 justify-between w-full">
+                        <div className="flex items-center">
+                          <input type="text" {...register("discount")} onBlur={onBlur}
+                            className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
+                          <select name="discounttype" id="discounttype" {...register("discounttype")} onBlur={onBlur} className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
+                            <option value="amount">$</option>
+                            <option value="percentage">%</option>
+                          </select>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="font-normal flex items-center"><Minus className='font-normal w-4 h-5' /> ${discountAmount || 0}</span>
+                          <Trash2 onClick={() => setDiscount(false)} className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
+                        </div>
+                      </div> :
                       <p onClick={() => setDiscount(true)} className='text-green-700 underline font-semibold cursor-pointer'>Add discount</p>
                   }
                 </div>
@@ -441,22 +515,34 @@ export default function Page() {
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px]">GST (5.0)%</div>
                   <div className="flex items-center gap-2">
-                    <p className='text-gray-700'>${gst}</p>
-                    <Trash2 className='w-5 h-5' color='red' />
+                    <p className='text-gray-700'>${gst || `0.00`}</p>
+                    <Trash2 className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
                   </div>
                 </div>
 
                 <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
                   <div className="font-semibold min-w-[200px]">Total</div>
-                  <p className='text-gray-700 font-semibold'>${totalcost}</p>
+                  <p className='text-gray-700 font-semibold'>${totalcost || `0.00`}</p>
                 </div>
 
                 <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
                   <div className="font-medium min-w-[200px]">Required Deposit</div>
 
                   {
-                    isRequiredDeposit ? <input type="text" {...register("requireddeposit")} onBlur={onBlur}
-                      className="w-16 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" /> :
+                    isRequiredDeposit ? <div className="flex items-center gap-2 justify-between w-full">
+                      <div className="flex items-center">
+                        <input type="text" {...register("requireddeposit")} onBlur={onBlur}
+                          className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
+                        <select name="requiredtype" id="requiredtype" {...register("requiredtype")} onBlur={onBlur} className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
+                          <option value="amount">$</option>
+                          <option value="percentage">%</option>
+                        </select>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="font-normal flex items-center">${requiredAmount || 0}</span>
+                        <Trash2 onClick={() => setRequiredDeposit(false)} className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
+                      </div>
+                    </div> :
                       <p onClick={() => setRequiredDeposit(true)} className='text-green-700 underline font-semibold cursor-pointer'>Add required deposit</p>
                   }
                 </div>
@@ -505,7 +591,48 @@ export default function Page() {
 
             <div className="mt-4 space-y-2 flex justify-between">
               <CustomButton title="Cancel"></CustomButton>
-              <CustomButton type={"submit"} variant="primary" title="Select Client"></CustomButton>
+              {
+                !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
+                  <div className="flex gap-2 items-center">
+                    <CustomButton type={"submit"} title="Save Quote"></CustomButton>
+                    <CustomMenu icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"submit"} variant="primary" title="Save and"></CustomButton>}>
+                      {/* Menu Items */}
+                      <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
+                        Save and...
+                      </Typography>
+
+                      <MenuItem className="text-tprimary text-sm">
+                        <ListItemIcon>
+                          <MessageSquareText className="text-orange-700" size={16} />
+                        </ListItemIcon>
+                        Send as text mesage
+                      </MenuItem>
+
+                      <MenuItem className="text-tprimary text-sm">
+                        <ListItemIcon>
+                          <Mail className="text-gray-700" size={16} />
+                        </ListItemIcon>
+                        Send as email
+                      </MenuItem>
+
+                      <MenuItem className="text-tprimary text-sm">
+                        <ListItemIcon>
+                          <Hammer className="text-green-700" size={16} />
+                        </ListItemIcon>
+                        Convert to Job
+                      </MenuItem>
+
+                      <MenuItem className="text-tprimary text-sm">
+                        <ListItemIcon>
+                          <MessageCircle className="text-orange-700" size={16} />
+                        </ListItemIcon>
+                        Mark as awaiting Response
+                      </MenuItem>
+                    </CustomMenu>
+                  </div>
+                </>
+              }
+
             </div>
           </div>
         </form>
