@@ -39,7 +39,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
 import AddCustomFields from "@/app/_components/modals/CustomFields";
-import { createClient, fetchallClients, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
+import { createClient, createProperty, fetchallClients, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
 import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 import SelectClient from "@/app/_components/modals/SelectClient";
@@ -82,7 +82,7 @@ export default function Page() {
             .filter(Boolean);
 
         try {
-            console.log({
+            const jsonData = {
                 address1: data.address1,
                 address2: data.address2,
                 city: data.city,
@@ -90,11 +90,12 @@ export default function Page() {
                 postalcode: data.postalcode,
                 country: data.country,
 
-                client : client_id,
+                client: client_id,
                 ...(changeAdditionalpropertydetails && changeAdditionalpropertydetails?.length > 0 && {
                     additionalpropertydetails: changeAdditionalpropertydetails,
                 })
-            });
+            }
+            dispatch(createProperty(jsonData));
         } catch (error) {
             console.error("Error submitting form", error);
         }

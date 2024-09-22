@@ -84,6 +84,15 @@ export const fetchProperty = createAsyncThunk("fetchProperty", async (data, { re
     }
 });
 
+export const createProperty = createAsyncThunk("createProperty", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/property/`,data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
 // Initial State
 const initialState = {
     clients: [],
