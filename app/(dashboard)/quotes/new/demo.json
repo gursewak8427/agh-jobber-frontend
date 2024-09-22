@@ -1,0 +1,53 @@
+{
+    "id": 2,
+    "product": [
+        {
+            "id": 2,
+            "name": "test 2",
+            "description": "test 2",
+            "qty": 1.0,
+            "cost": 0.0,
+            "markup": 0.0,
+            "unitprice": 0.0,
+            "total": 0.0,
+            "file": null,
+            "optional": false,
+            "recommend": false,
+            "textfield": false
+        },
+        {
+            "id": 1,
+            "name": "test",
+            "description": "test",
+            "qty": 1.0,
+            "cost": 0.0,
+            "markup": 0.0,
+            "unitprice": 0.0,
+            "total": 0.0,
+            "file": null,
+            "optional": false,
+            "recommend": false,
+            "textfield": false
+        }
+    ],
+    "title": null,
+    "quoteno": "1",
+    "rateopportunity": "1",
+    "subtotal": 0.0,
+    "discount": 0.0,
+    "discounttype": "amount",
+    "tax": 0.0,
+    "costs": 0.0,
+    "estimatemargin": 0.0,
+    "requireddeposite": 0.0,
+    "depositetype": "amount",
+    "clientmessage": "",
+    "disclaimer": "",
+    "status": "Draft",
+    "contractor": 2,
+    "property": 46,
+    "client": 33,
+    "salesperson": 3,
+    "clientpdfstyle": null,
+    "custom_field": []
+}

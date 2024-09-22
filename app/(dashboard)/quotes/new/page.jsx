@@ -56,7 +56,7 @@ export default function Page() {
     defaultValues: {
       products: [defaultProductLineItem],
       discount: 0,
-      requireddeposit: 0
+      requireddeposite: 0
     },
   });
 
@@ -74,7 +74,7 @@ export default function Page() {
   const totalcost = watch("totalcost");
 
   const requiredtype = watch("requiredtype");
-  const requireddeposit = watch("requireddeposit");
+  const requireddeposite = watch("requireddeposite");
   const requiredAmount = watch("requiredAmount");
 
 
@@ -82,16 +82,16 @@ export default function Page() {
     let _requireddeposit = 0
     if (isRequiredDeposit) {
       if (requiredtype == "percentage") {
-        _requireddeposit = totalcost * (requireddeposit / 100)
+        _requireddeposit = totalcost * (requireddeposite / 100)
       }
 
       if (requiredtype == "amount") {
-        _requireddeposit = requireddeposit
+        _requireddeposit = requireddeposite
       }
     }
     console.log({ _requireddeposit })
     setValue(`requiredAmount`, _requireddeposit)
-  }, [requireddeposit, requiredtype])
+  }, [requireddeposite, requiredtype])
 
   // Calculation logic for each product line
   // useEffect(() => {
@@ -135,12 +135,12 @@ export default function Page() {
     _totatcost -= _discount;
 
     let gst = 5;
-    let gstAmount = _totatcost * (gst / 100)
+    let gstAmount = parseFloat(_totatcost * (gst / 100)).toFixed()
     _totatcost += gstAmount
 
-    setValue(`subtotal`, newSubtotal);
+    setValue(`subtotal`, parseFloat(newSubtotal)?.toFixed());
     setValue(`gst`, gstAmount);
-    setValue(`totalcost`, _totatcost);
+    setValue(`totalcost`, parseFloat(_totatcost)?.toFixed());
 
     console.log({ _discount, discounttype })
     setValue(`discountAmount`, _discount)
@@ -202,16 +202,38 @@ export default function Page() {
     delete _data?.quoteno
 
     let jsonData = {
-      ...(isQuoteNo && { quoteno: data?.quoteno }),
-      additionalfields: changeAdditionalquotedetails,
-      client_id,
-      rating,
-      ..._data,
+      "id": 2,
+      "product": data?.products?.map(product => ({
+        ...product,
+        cost: product?.totolcost,
+        qty: product?.quantity,
+        "optional": product?.type == "optional",
+        "recommend": product?.type == "default",
+        "textfield": product?.type == "text"
+      })),
+      "title": null,
+      "quoteno": isQuoteNo ? data?.quoteno : quotecount,
+      "rateopportunity": rating,
+      "subtotal": subtotal,
+      "discount": data?.discountAmount,
+      "discounttype": data?.discounttype,
+      "tax": gst,
+      "costs": totalcost,
+      // "estimatemargin": 0.0,
+      // "requireddeposite": 0.0,
+      "depositetype": "amount",
+      "clientmessage": "",
+      // "disclaimer": "",
+      // "status": "Draft",
+      // "contractor": 2,
+      "property": selectedProperty?.id,
+      "client": client_id,
+      // "salesperson": 3,
+      // "clientpdfstyle": null,
+      "custom_field": changeAdditionalquotedetails
     }
 
     console.log({ jsonData });
-
-
   };
 
 
@@ -531,7 +553,7 @@ export default function Page() {
                   {
                     isRequiredDeposit ? <div className="flex items-center gap-2 justify-between w-full">
                       <div className="flex items-center">
-                        <input type="text" {...register("requireddeposit")} onBlur={onBlur}
+                        <input type="text" {...register("requireddeposite")} onBlur={onBlur}
                           className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
                         <select name="requiredtype" id="requiredtype" {...register("requiredtype")} onBlur={onBlur} className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
                           <option value="amount">$</option>
@@ -556,7 +578,7 @@ export default function Page() {
 
             <div className="mt-4">
               <h1 className='font-bold mb-2'>Contract / Disclaimer</h1>
-              <textarea {...register("contract")} name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+              <textarea {...register("disclaimer")} name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
                 This quote is valid for the next 15 days, after which values may be subject to change.
               </textarea>
             </div>
