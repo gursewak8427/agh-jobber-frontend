@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
-import ModalHeading from '../ModalHeading'
+import ModalHeading from './ModalHeading'
 
 const AddCustomFields = ({ open, onClose, }) => {
     const dispatch = useDispatch();
@@ -69,13 +69,13 @@ const AddCustomFields = ({ open, onClose, }) => {
 
         if (open == "client") {
             dispatch(createClientsCustomFields(jsonData))
-        } 
+        }
         else if (open == "property") {
             dispatch(createPropertyCustomFields(jsonData))
-        } 
+        }
         else if (open == "quote") {
             dispatch(createQuoteCustomFields(jsonData))
-        } 
+        }
         else {
             console.log("Invalid Field - Client and Property is allowed")
         }

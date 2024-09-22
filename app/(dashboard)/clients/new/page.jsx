@@ -36,7 +36,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
-import AddCustomFields from "@/app/_components/modals/CustomFields";
+import AddCustomFields from "@/app/_components/CustomFields";
 import { createClient, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
 import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";

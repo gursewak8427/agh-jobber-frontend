@@ -5,16 +5,17 @@ import { useState } from 'react';
 import { BoxSelect, BoxSelectIcon, CameraIcon, Delete, Divide, Plus, PlusIcon, Trash2 } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
-import SelectClient from '@/app/_components/modals/SelectClient';
+import SelectClient from '@/app/_components/client/SelectClient';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
-import AddCustomFields from '@/app/_components/modals/CustomFields';
+import AddCustomFields from '@/app/_components/CustomFields';
 import client, { fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
-import SelectProperty from '@/app/_components/modals/SelectProperty';
+import SelectProperty from '@/app/_components/property/SelectProperty';
+import NewProperty from '@/app/_components/property/NewProperty';
 
 const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 0, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 0, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
@@ -141,17 +142,21 @@ export default function Page() {
   }, [client_id])
 
   useEffect(() => {
+    if (!client_id) return;
+
+
     console.log({ client }, '===client')
 
     if (client?.property?.length > 1) {
-      setPropertyModal(true)
+      setSelectedProperty(null)
+      setPropertyModal("SELECT")
     } else {
       if (client?.property?.length == 0) {
-
+        setSelectedProperty(null)
+        setPropertyModal("NEW")
       } else {
         setSelectedProperty(client?.property?.[0])
       }
-      setPropertyModal(false)
     }
   }, [client])
 
@@ -185,7 +190,7 @@ export default function Page() {
           <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300 pb-4">
             <div className="w-1/2 flex flex-col space-y-4">
               <div className="flex flex-col space-y-2">
-                <label htmlFor="" className='text-tprimary font-bold'>Job Title</label>
+                <label htmlFor="" className='text-tprimary font-bold'>{selectPropertyModal} Job Title</label>
                 <input
                   {...register("title")}
                   label="Title"
@@ -201,8 +206,8 @@ export default function Page() {
                       <>
                         <h1 className='font-bold mb-2'>Property address</h1>
                         <p className='max-w-[150px]'>{getAddress(selectedProperty)}</p>
-                        <Button className='text-green-700 p-0' onClick={()=>{
-                          setPropertyModal(true)
+                        <Button className='text-green-700 p-0' onClick={() => {
+                          setPropertyModal("SELECT")
                         }}>change</Button>
                       </>
                     }
@@ -512,10 +517,18 @@ export default function Page() {
         router.push(`/quotes/new?client_id=${id}`)
         setSelectClientModal(false)
       }} clients={clientslist} />
-      <SelectProperty open={selectPropertyModal} onClose={() => setPropertyModal(false)} onSelect={property => {
+
+      <SelectProperty onCreateNew={() => {
+        setPropertyModal("NEW")
+      }} open={selectPropertyModal == "SELECT"} onClose={() => setPropertyModal(false)} onSelect={property => {
         setSelectedProperty(property)
         setPropertyModal(false)
       }} properties={client?.property} />
+
+      <NewProperty open={selectPropertyModal == "NEW"} onClose={() => setPropertyModal(false)} onCreate={property => {
+        setSelectedProperty(property)
+        setPropertyModal(false)
+      }} client={client} />
     </div >
   );
 }

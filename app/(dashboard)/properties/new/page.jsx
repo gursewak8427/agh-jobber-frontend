@@ -38,11 +38,11 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
-import AddCustomFields from "@/app/_components/modals/CustomFields";
+import AddCustomFields from "@/app/_components/CustomFields";
 import { createClient, createProperty, fetchallClients, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
 import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
-import SelectClient from "@/app/_components/modals/SelectClient";
+import SelectClient from "@/app/_components/client/SelectClient";
 import { getClientName } from "@/utils";
 
 export default function Page() {

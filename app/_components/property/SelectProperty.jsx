@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import { getAddress } from '@/utils'
 
 
-const SelectProperty = ({ open, onClose, onSelect, properties }) => {
+const SelectProperty = ({ open, onClose, onSelect, properties, onCreateNew }) => {
     const router = useRouter();
 
     return (
@@ -25,7 +25,7 @@ const SelectProperty = ({ open, onClose, onSelect, properties }) => {
                                 <input type="text" placeholder='Search properties...' className={`${inputClass}`} />
                             </div>
                             <span className='grid place-content-center'>or</span>
-                            <CustomButton onClick={() => router.push(`/properties/new`)}
+                            <CustomButton onClick={() => onCreateNew()}
                                 variant={"primary"} title="Create New Property" />
                         </div>
                         <div className="text-blue-500">Leads</div>
