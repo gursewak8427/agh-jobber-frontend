@@ -10,9 +10,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/modals/CustomFields';
-import { fetchallClients, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import client, { fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
+import { getAddress, getClientName, getPrimary } from '@/utils';
+import SelectProperty from '@/app/_components/modals/SelectProperty';
 
 const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 0, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 0, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
@@ -29,12 +31,15 @@ export default function Page() {
   const [isDiscount, setDiscount] = useState(false);
   const [isRequiredDeposit, setRequiredDeposit] = useState(false);
   const [selectClientModal, setSelectClientModal] = useState(false);
+  const [selectPropertyModal, setPropertyModal] = useState(false);
+
+  const [selectedProperty, setSelectedProperty] = useState(null);
 
   // Custom fields, change with quote custom fields
   const { quotecustomfields } = useSelector(state => state.clients);
   const { quotecount } = useSelector(state => state.clients);
-  const { team } = useSelector(state => state.clients);
-  
+  const { client } = useSelector(state => state.clients);
+
   const dispatch = useAppDispatch();
   const router = useRouter();
   const {
@@ -127,6 +132,32 @@ export default function Page() {
     dispatch(fetchQuoteCustomFields());
     dispatch(fetchTeam());
   }, [])
+
+
+  useEffect(() => {
+    if (!client_id) return;
+
+    dispatch(fetchClient(client_id));
+  }, [client_id])
+
+  useEffect(() => {
+    console.log({ client }, '===client')
+
+    if (client?.property?.length > 1) {
+      setPropertyModal(true)
+    } else {
+      if (client?.property?.length == 0) {
+
+      } else {
+        setSelectedProperty(client?.property?.[0])
+      }
+      setPropertyModal(false)
+    }
+  }, [client])
+
+
+
+
   return (
     <div className='max-w-[1200px] mx-auto space-y-4'>
       <div className='text-sm text-tprimary'>
@@ -137,10 +168,15 @@ export default function Page() {
         <div className="flex justify-start items-center mb-6">
           <div className="text-4xl font-semibold text-tprimary">Quote for</div>
           <Button onClick={() => setSelectClientModal(true)} className='ml-2 capitalize flex items-center gap-2 border-b border-dashed'>
-            <div className="text-4xl font-semibold text-tprimary">Client Name</div>
-            <div className="bg-green-700 px-4 py-1 rounded">
-              <PlusIcon className='text-white' />
-            </div>
+            {
+              !client_id ? <>
+                <div className="text-4xl font-semibold text-tprimary">Client Name</div>
+                <div className="bg-green-700 px-4 py-1 rounded">
+                  <PlusIcon className='text-white' />
+                </div>
+              </> : <div className="text-4xl font-semibold text-tprimary">{getClientName(client)}</div>
+            }
+
           </Button>
         </div>
 
@@ -157,19 +193,27 @@ export default function Page() {
                   className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
                 />
               </div>
-              <div className="flex text-sm">
-                <div className="w-1/2">
-                  <h1 className='font-bold mb-2'>Property address</h1>
-                  <p className='max-w-[150px]'>10130 103 Street NW
-                    Edmonton, AB T5J 3N9</p>
-                  <button className='text-green-700'>change</button>
+              {
+                client_id && <div className="flex text-sm">
+                  <div className="w-1/2">
+                    {
+                      selectedProperty &&
+                      <>
+                        <h1 className='font-bold mb-2'>Property address</h1>
+                        <p className='max-w-[150px]'>{getAddress(selectedProperty)}</p>
+                        <Button className='text-green-700 p-0' onClick={()=>{
+                          setPropertyModal(true)
+                        }}>change</Button>
+                      </>
+                    }
+                  </div>
+                  <div className="w-1/2">
+                    <h1 className='font-bold mb-2'>Contact details</h1>
+                    <p className='max-w-[140px]'>{getPrimary(client?.mobile)?.number}</p>
+                    <p className='max-w-[140px]'>{getPrimary(client?.email)?.email}</p>
+                  </div>
                 </div>
-                <div className="w-1/2">
-                  <h1 className='font-bold mb-2'>Contact details</h1>
-                  <p className='max-w-[140px]'>(587) 899-3252</p>
-                  <button className='text-green-700'>Aghreno@gmail.com</button>
-                </div>
-              </div>
+              }
             </div>
             {/* Quote Details */}
             <div className="p-4 rounded-lg w-1/2">
@@ -460,7 +504,7 @@ export default function Page() {
             </div>
           </div>
         </form>
-      </div>
+      </div >
 
 
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
@@ -468,6 +512,10 @@ export default function Page() {
         router.push(`/quotes/new?client_id=${id}`)
         setSelectClientModal(false)
       }} clients={clientslist} />
-    </div>
+      <SelectProperty open={selectPropertyModal} onClose={() => setPropertyModal(false)} onSelect={property => {
+        setSelectedProperty(property)
+        setPropertyModal(false)
+      }} properties={client?.property} />
+    </div >
   );
 }

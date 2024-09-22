@@ -43,6 +43,7 @@ import { createClient, createProperty, fetchallClients, fetchClientsCustomFields
 import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 import SelectClient from "@/app/_components/modals/SelectClient";
+import { getClientName } from "@/utils";
 
 export default function Page() {
     const searchParams = useSearchParams();
@@ -135,7 +136,7 @@ export default function Page() {
                                 <Avatar className="w-16 h-16"><Home className="text-tprimary" /></Avatar>
                                 <div className="text-2xl font-semibold text-tprimary">New Property for</div>
                                 <Button onClick={() => setSelectClientModal(true)} className='capitalize flex items-center border-b border-dashed'>
-                                    <div className="text-2xl font-semibold text-tprimary">{client?.fname ? client?.fname + ' ' + client?.lname : client?.companyname}</div>
+                                    <div className="text-2xl font-semibold text-tprimary">{client_id ? getClientName(client) : "Client Name"}</div>
                                 </Button>
                             </div>
                             <div className="flex flex-col text-sm space-y-4">
