@@ -90,7 +90,7 @@ export default function Page() {
       }
     }
     console.log({ _requireddeposit })
-    setValue(`requiredAmount`, _requireddeposit)
+    setValue(`requiredAmount`, parseFloat(_requireddeposit)?.toFixed(2))
   }, [requireddeposite, requiredtype])
 
   // Calculation logic for each product line
@@ -202,7 +202,6 @@ export default function Page() {
     delete _data?.quoteno
 
     let jsonData = {
-      "id": 2,
       "product": data?.products?.map(product => ({
         ...product,
         cost: product?.totolcost,
