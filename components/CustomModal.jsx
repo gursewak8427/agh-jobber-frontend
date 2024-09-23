@@ -4,7 +4,7 @@ import { Fragment } from 'react';
 import { useAppDispatch } from '@/store/hooks';
 import { createClientsCustomFields } from '@/store/slices/client';
 
-function CustomModal({ show, onClose, children }) {
+function CustomModal({ show, onClose, children, wide }) {
     const dispatch = useAppDispatch();
 
     const handleClose = () => {
@@ -40,7 +40,7 @@ function CustomModal({ show, onClose, children }) {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <DialogPanel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                            <DialogPanel className={`w-full ${wide ? 'max-w-4xl' : 'max-w-md'} transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}>
                                 {children}
                             </DialogPanel>
                         </TransitionChild>

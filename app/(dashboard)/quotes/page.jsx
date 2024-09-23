@@ -1,13 +1,117 @@
+"use client"
 import { Clock, FileText, DollarSign, CheckCircle, XCircle, Wallet, Info, ArrowRight, ChevronDown, ChevronRight, Calendar, Search } from 'lucide-react';
 
 import Greeting from "@/components/Greeting";
 import Workflow from "@/components/Workflow";
-import { Button, Divider } from '@mui/material';
+import { Box, Button, Divider } from '@mui/material';
 import PageHeading from '@/components/PageHeading';
 import CustomTable from '@/components/CustomTable';
 import Link from 'next/link';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { fetchQuotes } from '@/store/slices/client';
+import { DataGrid } from '@mui/x-data-grid';
+import { useRouter } from 'next/navigation';
+
+
+
+const columns = [
+  {
+    field: "client",
+    headerName: "Client",
+    flex: 1, // Allow the column to take available space
+    minWidth: 150,
+  },
+  {
+    field: "quoteno",
+    headerName: "Quote number",
+    flex: 1,
+    minWidth: 200,
+  },
+  {
+    field: "property",
+    headerName: "Property",
+    flex: 1,
+    minWidth: 150,
+    // renderCell: (params) => getStatusBox(params.value),
+  },
+  {
+    field: "createdAt",
+    headerName: "Created",
+    flex: 1,
+    minWidth: 100,
+    valueFormatter: (value) => {
+      if (value == null) {
+        return '--';
+      }
+      return new Date(value)?.toLocaleString();
+    },
+  },
+  {
+    field: "status",
+    headerName: "Status",
+    flex: 1,
+    minWidth: 100,
+    renderCell: (params) => getStatusBox(params?.value?.toString()),
+  },
+  {
+    field: "costs",
+    headerName: "Total",
+    type: 'number',
+    flex: 1,
+    minWidth: 150,
+    valueFormatter: (value) => {
+      if (value == null) {
+        return '--';
+      }
+      return `$${parseFloat(value)?.toFixed(2)}`;
+    },
+  },
+];
+
+
+
+// Function to handle status rendering
+const getStatusBox = status => {
+  console.log(status)
+  switch (status) {
+    case "Draft": return <div className="w-full h-full flex items-center justify-start capitalize">
+      <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+      {status}
+    </div>
+    case "Lead": return <div className="w-full h-full flex items-center justify-start capitalize">
+      <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+      {status}
+    </div>
+    case "Awaiting Response": return <div className="w-full h-full flex items-center justify-start capitalize">
+      <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+      {status}
+    </div>
+
+    default:
+      break;
+  }
+}
 
 export default function Page() {
+  const router = useRouter()
+  const dispatch = useDispatch();
+
+  const [rows, setRows] = useState([])
+  const { quotes } = useSelector(state => state.clients)
+
+  useEffect(() => {
+    dispatch(fetchQuotes())
+  }, [])
+
+  console.log({ quotes });
+
+  const getRows = quotes => {
+    return quotes?.map((quote, index) => ({
+      ...quote
+    }))
+  }
+
   return (
     <div className="flex flex-col gap-8 px-4 py-6">
       <PageHeading title={"Quotes"}>
@@ -115,7 +219,51 @@ export default function Page() {
 
 
         {/* Table */}
-        <CustomTable />
+        <Box
+          sx={{
+            width: "100%", // Make sure the container takes the full width
+            overflowX: "auto", // Handle horizontal overflow
+          }}
+        >
+          <DataGrid
+            autoHeight
+            onRowClick={({ row }) => {
+              router.push(`/quotes/q/${row?.id}`)
+            }}
+            rows={getRows(quotes)}
+            columns={columns}
+            sx={{
+              minWidth: 900, // Ensures the table doesn't shrink too much
+              // disable cell selection style
+              '.MuiDataGrid-cell:focus': {
+                outline: 'none'
+              },
+              // pointer cursor on ALL rows
+              '& .MuiDataGrid-row:hover': {
+                cursor: 'pointer'
+              },
+              "@media (max-width: 600px)": {
+                ".MuiDataGrid-columnHeaders": {
+                  fontSize: "0.75rem",
+                },
+                ".MuiDataGrid-cell": {
+                  fontSize: "0.75rem",
+                },
+
+              },
+            }}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 5,
+                },
+              },
+            }}
+            pageSizeOptions={[5]}
+            checkboxSelection
+            disableRowSelectionOnClick
+          />
+        </Box>
       </div>
     </div>
   );

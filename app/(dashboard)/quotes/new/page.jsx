@@ -102,14 +102,13 @@ export default function Page() {
     let newSubtotal = 0;
 
     watchProducts.forEach((product, index) => {
-      console.log({ product })
       if (product.type !== "text") {
         const material = parseFloat(product.material) || 0;
         const labour = parseFloat(product.labour) || 0;
         const markupPercentage = parseFloat(product.markuppercentage) || 0;
 
         const markupAmount = (material + labour) * (markupPercentage / 100);
-        const totalAmount = material + labour + markupAmount;
+        const totalAmount = (material + labour + markupAmount) * (product?.quantity || 1);
 
         setValue(`products.${index}.markupamount`, markupAmount.toFixed(2));
         setValue(`products.${index}.total`, totalAmount.toFixed(2));
@@ -119,7 +118,7 @@ export default function Page() {
     });
 
 
-    let _totatcost = newSubtotal;
+    let _totatcost = parseFloat(newSubtotal);
 
     let _discount = 0
     if (isDiscount) {
@@ -132,11 +131,11 @@ export default function Page() {
       }
     }
 
-    _totatcost -= _discount;
+    _totatcost -= parseFloat(_discount);
 
     let gst = 5;
     let gstAmount = parseFloat(_totatcost * (gst / 100)).toFixed()
-    _totatcost += gstAmount
+    _totatcost += parseFloat(gstAmount)
 
     setValue(`subtotal`, parseFloat(newSubtotal)?.toFixed());
     setValue(`gst`, gstAmount);
