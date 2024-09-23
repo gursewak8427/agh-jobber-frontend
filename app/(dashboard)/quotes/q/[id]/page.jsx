@@ -20,14 +20,15 @@ import CustomMenu from '@/components/CustomMenu';
 import Heading from '@/components/Heading';
 import PageHeading from '@/components/PageHeading';
 import TextMessageModal from '@/app/_components/quote/TextMessageModal';
+import SendEmailModal from '@/app/_components/quote/SendEmailModal';
 
 
 export default function Page() {
   const [sendtextmsg, setsendtextmsg] = useState(false)
   const [sendemail, setsendemail] = useState(false)
+  const [menu, setmenu] = useState(false)
 
   const getStatusBox = status => {
-    console.log(status)
     switch (status) {
       case "Draft": return <div className="w-full h-full flex items-center justify-start capitalize">
         <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
@@ -69,7 +70,10 @@ export default function Page() {
         <Typography className='text-sm text-gray-500'>Send as...</Typography>
       </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem onClick={() => {
+        setsendemail(true)
+        setmenu(false)
+      }} className="text-tprimary text-sm">
         <ListItemIcon>
           <Mail className="text-gray-700" size={16} />
         </ListItemIcon>
@@ -142,7 +146,7 @@ export default function Page() {
         <div className="flex items-center gap-2">
           <CustomButton onClick={() => setsendtextmsg(true)} title={"Send text message"} variant={"primary"} />
           <CustomButton title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
-          <CustomMenu icon={<CustomButton title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
+          <CustomMenu open={menu} icon={<CustomButton onClick={() => setmenu(true)} title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
             <MoreActionsMenuItems />
           </CustomMenu>
         </div>
@@ -350,6 +354,7 @@ export default function Page() {
 
 
       <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} />
+      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} />
     </div >
   );
 }

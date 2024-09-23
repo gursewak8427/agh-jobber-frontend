@@ -3,7 +3,7 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import { MoreVerticalIcon } from 'lucide-react';
 
-export default function CustomMenu({ children, icon }) {
+export default function CustomMenu({ children, icon, open }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = (event) => {
@@ -19,8 +19,8 @@ export default function CustomMenu({ children, icon }) {
             <div
                 aria-label="more"
                 id="long-button"
-                aria-controls={true ? 'long-menu' : undefined}
-                aria-expanded={true ? 'true' : undefined}
+                aria-controls={open ? 'long-menu' : undefined}
+                aria-expanded={open ? 'true' : undefined}
                 aria-haspopup="true"
                 onClick={handleClick}
             >
@@ -32,7 +32,7 @@ export default function CustomMenu({ children, icon }) {
                     'aria-labelledby': 'long-button',
                 }}
                 anchorEl={anchorEl}
-                open={true && Boolean(anchorEl)}
+                open={open && Boolean(anchorEl)}
                 onClose={handleClose}
             >
                 {children}

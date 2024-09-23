@@ -325,7 +325,7 @@ export default function Page() {
                 <div className="flex gap-4">
                     <CustomButton onClick={() => router.push("/clients/new")} title={"Show on Map"} variant={"primary"} frontIcon={<MapPin className="w-4 h-4" />} />
                     <CustomButton onClick={() => router.push("/clients/new")} title={"Edit"} frontIcon={<Pencil className="w-4 h-4" />} />
-                    <CustomMenu icon={<CustomButton title={"More Actions"} frontIcon={<MoreHorizontal />} />}>
+                    <CustomMenu open={true} icon={<CustomButton title={"More Actions"} frontIcon={<MoreHorizontal />} />}>
                         <MoreActionsMenuItems />
                     </CustomMenu>
                 </div>
@@ -410,7 +410,7 @@ export default function Page() {
                                 Overview
                             </div>
                             <div className="flex gap-4">
-                                <CustomMenu icon={<CustomButton onClick={() => null} title={"New"} frontIcon={<ChevronDown className="w-4 h-4" />} />}>
+                                <CustomMenu open={true} icon={<CustomButton onClick={() => null} title={"New"} frontIcon={<ChevronDown className="w-4 h-4" />} />}>
                                     <MenuItem className="py-2 px-4 text-sm">
                                         <ListItemIcon>
                                             <Download fontSize="small" className="w-5 h-5 text-orange-700" />
@@ -449,7 +449,7 @@ export default function Page() {
                                 Schedule
                             </div>
                             <div className="flex gap-4">
-                                <CustomMenu icon={<CustomButton onClick={() => null} title={"New"} frontIcon={<ChevronDown className="w-4 h-4" />} />}>
+                                <CustomMenu open={true} icon={<CustomButton onClick={() => null} title={"New"} frontIcon={<ChevronDown className="w-4 h-4" />} />}>
                                     <MenuItem className="py-2 px-4 text-sm">
                                         <ListItemIcon>
                                             <Download fontSize="small" className="w-5 h-5 text-orange-700" />
