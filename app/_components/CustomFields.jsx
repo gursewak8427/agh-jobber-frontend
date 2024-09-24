@@ -77,7 +77,8 @@ const AddCustomFields = ({ open, onClose, }) => {
             dispatch(createQuoteCustomFields(jsonData))
         }
         else {
-            console.log("Invalid Field - Client and Property is allowed")
+            // #TODO -- add job custom fields also in If condition
+            console.log("Invalid Field - Client, Property and Quote is allowed")
         }
 
         onClose();

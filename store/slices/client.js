@@ -111,6 +111,16 @@ export const fetchQuotecount = createAsyncThunk("fetchQuotecount", async (data, 
     }
 });
 
+// #TODO - Change quote to job API
+export const fetchJobcount = createAsyncThunk("fetchJobcount", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quotecount/`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
 export const createQuoteCustomFields = createAsyncThunk("createQuoteCustomFields", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/customquotefield/`, data);
@@ -140,7 +150,7 @@ export const fetchQuote = createAsyncThunk("fetchQuote", async (data, { rejectWi
 
 export const createQuote = createAsyncThunk("createQuote", async (data, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quote/`,data);
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quote/`, data);
         return response.data;
     } catch (error) {
 
@@ -164,11 +174,12 @@ const initialState = {
     client: {},
     property: {},
     quotecount: 0,
+    jobcount: 0,
     clientcustomfields: [],
     propertycustomfields: [],
     quotecustomfields: [],
-    quote:{},
-    quotes:[],
+    quote: {},
+    quotes: [],
     pagination: {
         count: 0,
         next: '',
@@ -312,6 +323,15 @@ const clientSlice = createSlice({
                 state.quotes = action.payload;
             })
             .addCase(fetchQuotes.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+
+        builder
+            .addCase(fetchJobcount.fulfilled, (state, action) => {
+                state.jobcount = (action.payload?.quoteno);
+            })
+            .addCase(fetchJobcount.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
