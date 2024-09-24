@@ -111,10 +111,9 @@ export const fetchQuotecount = createAsyncThunk("fetchQuotecount", async (data, 
     }
 });
 
-// #TODO - Change quote to job API
 export const fetchJobcount = createAsyncThunk("fetchJobcount", async (data, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quotecount/`);
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/jobcount/`);
         return response.data;
     } catch (error) {
 
@@ -166,6 +165,25 @@ export const fetchQuotes = createAsyncThunk("fetchQuotes", async (data, { reject
     }
 });
 
+export const fetchJobCustomFields = createAsyncThunk("fetchJobCustomFields", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/customjobfield/`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+
+export const createJobCustomFields = createAsyncThunk("createJobCustomFields", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/customjobfield/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
 // Initial State
 const initialState = {
     team: [],
@@ -178,6 +196,7 @@ const initialState = {
     clientcustomfields: [],
     propertycustomfields: [],
     quotecustomfields: [],
+    jobcustomfields: [],
     quote: {},
     quotes: [],
     pagination: {
@@ -332,6 +351,14 @@ const clientSlice = createSlice({
                 state.jobcount = (action.payload?.quoteno);
             })
             .addCase(fetchJobcount.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchJobCustomFields.fulfilled, (state, action) => {
+                state.jobcustomfields = (action.payload?.quoteno);
+            })
+            .addCase(fetchJobCustomFields.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });

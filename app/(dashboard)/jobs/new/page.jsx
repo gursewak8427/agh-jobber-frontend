@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchJobcount, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -39,8 +39,7 @@ export default function Page() {
 
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  // #TODO - change with client custom fields
-  const { quotecustomfields } = useSelector(state => state.clients);
+  const { jobcustomfields } = useSelector(state => state.clients);
   const { jobcount } = useSelector(state => state.clients);
   const { client } = useSelector(state => state.clients);
 
@@ -129,9 +128,7 @@ export default function Page() {
     dispatch(fetchJobcount());
     dispatch(fetchallClients());
     dispatch(fetchTeam());
-
-    // #TODO -- Fetch Job Custom Fields
-    dispatch(fetchQuoteCustomFields());
+    dispatch(fetchJobCustomFields());
   }, [])
 
 
@@ -312,11 +309,9 @@ export default function Page() {
                     </div>
                 }
               </div>
-
-              {/* #TODO - Job Custom Fields */}
               <div className="space-y-2">
                 {
-                  quotecustomfields?.map((field, index) => <CustomSingleField register={register} prefix="QuoteCustomFields" field={field} index={index} customfields={quotecustomfields} />)
+                  jobcustomfields?.map((field, index) => <CustomSingleField register={register} prefix="JobCustomFields" field={field} index={index} customfields={jobcustomfields} />)
                 }
               </div>
               <div className="my-4">
