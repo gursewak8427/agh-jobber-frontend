@@ -6,12 +6,12 @@ import { Archive, BoxSelect, BoxSelectIcon, CameraIcon, Check, ChevronDown, Copy
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
-import { useAppDispatch } from '@/store/hooks';
+import { createQuote, fetchallClients, fetchClient, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
 import SelectProperty from '@/app/_components/property/SelectProperty';
@@ -27,6 +27,9 @@ export default function Page() {
   const [sendtextmsg, setsendtextmsg] = useState(false)
   const [sendemail, setsendemail] = useState(false)
   const [menu, setmenu] = useState(false)
+  const { id } = useParams()
+  const dispatch = useAppDispatch()
+  const { quote } = useAppSelector(store => store.clients)
 
   const getStatusBox = status => {
     switch (status) {
@@ -135,7 +138,9 @@ export default function Page() {
 
     </Fragment>)
   }
-
+  useEffect(()=>{
+    dispatch(fetchQuote(id))
+  },[])
 
   return (
     <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary'>

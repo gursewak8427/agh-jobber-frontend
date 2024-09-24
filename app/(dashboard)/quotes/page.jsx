@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation';
 
 const columns = [
   {
-    field: "client",
+    field: "name",
     headerName: "Client",
     flex: 1, // Allow the column to take available space
     minWidth: 150,
@@ -29,14 +29,14 @@ const columns = [
     minWidth: 200,
   },
   {
-    field: "property",
+    field: "address",
     headerName: "Property",
     flex: 1,
     minWidth: 150,
     // renderCell: (params) => getStatusBox(params.value),
   },
   {
-    field: "createdAt",
+    field: "created",
     headerName: "Created",
     flex: 1,
     minWidth: 100,
