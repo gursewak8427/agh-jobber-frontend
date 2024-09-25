@@ -184,6 +184,33 @@ export const createJobCustomFields = createAsyncThunk("createJobCustomFields", a
     }
 });
 
+export const fetchJob = createAsyncThunk("fetchJob", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/job/?id=${data}`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const createJob = createAsyncThunk("createJob", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/job/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const fetchJobs = createAsyncThunk("fetchJobs", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/job/`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
 // Initial State
 const initialState = {
     team: [],
@@ -199,6 +226,8 @@ const initialState = {
     jobcustomfields: [],
     quote: {},
     quotes: [],
+    job: {},
+    jobs: [],
     pagination: {
         count: 0,
         next: '',
@@ -356,9 +385,41 @@ const clientSlice = createSlice({
             });
         builder
             .addCase(fetchJobCustomFields.fulfilled, (state, action) => {
-                state.jobcustomfields = (action.payload?.quoteno);
+                state.jobcustomfields = action.payload;
             })
             .addCase(fetchJobCustomFields.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(createJobCustomFields.fulfilled, (state, action) => {
+                state.jobcustomfields.push(action.payload);
+            })
+            .addCase(createJobCustomFields.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchJob.fulfilled, (state, action) => {
+                state.job = action.payload;
+            })
+            .addCase(fetchJob.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(createJob.fulfilled, (state, action) => {
+                state.job = action.payload;
+            })
+            .addCase(createJob.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchJobs.fulfilled, (state, action) => {
+                state.jobs = action.payload;
+            })
+            .addCase(fetchJobs.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });

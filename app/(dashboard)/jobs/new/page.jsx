@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createJob, createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -210,9 +210,9 @@ export default function Page() {
       "totalprice": data?.totalcost,
       "status": "Upcoming",
       // "contractor": 2,
-      "property": selectedProperty?.id,
-      "client": client_id,
-      "salesperson": selectedSalesPerson?.id,
+      "property_id": selectedProperty?.id,
+      "client_id": client_id,
+      "salesperson_id": selectedSalesPerson?.id,
       // "quote": 3,
       "custom_field": changeAdditionaljobdetails,
 
@@ -226,7 +226,7 @@ export default function Page() {
       }),
       "team": teamList?.map(t => t?.id),
     }
-
+    dispatch(createJob(jsonData));
     console.log({ jsonData });
   };
 

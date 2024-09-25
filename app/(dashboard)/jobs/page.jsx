@@ -10,9 +10,14 @@ import Link from 'next/link';
 import CustomButton from '@/components/CustomButton';
 import { useRouter } from 'next/navigation';
 import { DataGrid } from '@mui/x-data-grid';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchJobs } from '@/store/slices/client';
 
 export default function Page() {
   const router = useRouter();
+  const { jobs } = useSelector(state => state.clients);
+  const dispatch = useDispatch();
 
 
   const columns = [
@@ -74,6 +79,9 @@ export default function Page() {
     }
   }
 
+  useEffect(()=>{
+    dispatch(fetchJobs());
+  },[])
 
   return (
     <div className="flex flex-col gap-8 px-4 py-6">
