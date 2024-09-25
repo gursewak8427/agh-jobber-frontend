@@ -2,7 +2,7 @@
 import React, { Fragment, useEffect } from 'react';
 import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon } from '@mui/material';
 import { useState } from 'react';
-import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, Delete, Divide, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, Plus, PlusIcon, Trash2 } from 'lucide-react';
+import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, Delete, Divide, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, Plus, PlusIcon, Trash2, X } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
@@ -18,6 +18,7 @@ import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 import JobType from '@/components/JobType';
+import Heading from '@/components/Heading';
 
 const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
@@ -27,9 +28,12 @@ export default function Page() {
   const searchParams = useSearchParams();
   const client_id = searchParams.get("client_id");
 
+  const [menu, setMenu] = useState("")
+  const [selectedSalesPerson, setSalesPerson] = useState(null)
+  const [teamList, setTeamList] = useState([])
+
   const [open, setOpen] = useState(false);
 
-  const { clientslist } = useSelector(state => state.clients);
   const [rating, setRating] = useState(0);
   const [isJobno, setJobNo] = useState(false);
   const [isDiscount, setDiscount] = useState(false);
@@ -39,9 +43,7 @@ export default function Page() {
 
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  const { jobcustomfields } = useSelector(state => state.clients);
-  const { jobcount } = useSelector(state => state.clients);
-  const { client } = useSelector(state => state.clients);
+  const { clientslist, client, team, jobcount, jobcustomfields } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -56,7 +58,8 @@ export default function Page() {
     defaultValues: {
       products: [defaultProductLineItem],
       discount: 0,
-      requireddeposite: 0
+      requireddeposite: 0,
+      invocieReceiveType: "per_visit"
     },
   });
 
@@ -64,6 +67,7 @@ export default function Page() {
     control,
     name: "products",
   });
+
 
   const watchProducts = watch("products");
   const subtotal = watch("subtotal");
@@ -76,6 +80,7 @@ export default function Page() {
   const requiredtype = watch("requiredtype");
   const requireddeposite = watch("requireddeposite");
   const requiredAmount = watch("requiredAmount");
+  const jobtype = watch("jobtype");
 
 
   useEffect(() => {
@@ -97,6 +102,8 @@ export default function Page() {
   // useEffect(() => {
 
   // }, [watchProducts, discount, setValue]);
+
+  const closeMenu = () => setMenu("")
 
   const onBlur = () => {
     let newSubtotal = 0;
@@ -161,18 +168,17 @@ export default function Page() {
 
   const onSubmit = async (data) => {
 
-    const changeAdditionaljobdetails = quotecustomfields
-      .map((item, index) => {
+    const changeAdditionaljobdetails = jobcustomfields?.map((item, index) => {
 
-        const change = data?.quoteCustomFields?.[`${item.id}key`] || null;
-        if (!change) return null;
+      const change = data?.JobCustomFields?.[`${item.id}key`] || null;
+      if (!change) return null;
 
-        const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
-        if (hasChanged) {
-          return { custom_field_id: item.id, ...change };
-        }
-        return null;
-      })
+      const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
+      if (hasChanged) {
+        return { custom_field_id: item.id, ...change };
+      }
+      return null;
+    })
       .filter(Boolean);
 
     let _data = { ...data };
@@ -193,7 +199,6 @@ export default function Page() {
       "arrivalwindow": null,
       "schedulelater": data?.schedulelater,
       "addunscheduledvisit": true,
-      "invoiceupdate": data?.invoiceupdate,
       "sendemailtoteam": data?.sendemailtoteam,
       "repeats": data?.repeats,
       "duration": data?.duration,
@@ -207,10 +212,19 @@ export default function Page() {
       // "contractor": 2,
       "property": selectedProperty?.id,
       "client": client_id,
-      "salesperson": 3,
+      "salesperson": selectedSalesPerson?.id,
       // "quote": 3,
-      // "team": 3,
-      "custom_field": changeAdditionaljobdetails
+      "custom_field": changeAdditionaljobdetails,
+
+
+      // #TODO - new fields, please manage
+      ...(data?.jobtype == "oneoff" ? {
+        "invoiceupdate": data?.invoiceupdate,
+      } : {
+        "invocieReceiveType": data?.invocieReceiveType,
+        "invoiceTiming": data?.invoiceTiming,
+      }),
+      "team": teamList?.map(t => t?.id),
     }
 
     console.log({ jsonData });
@@ -294,19 +308,25 @@ export default function Page() {
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium min-w-[200px]">Salesperson</div>
                 {
-                  false ? <div className="flex items-center">
-                    <Avatar className="mr-2">GS</Avatar>
-                    <span>Gurvinder Singh</span>
-                    <IconButton color="error">
-                      <Delete />
+                  selectedSalesPerson ? <div className="flex items-center bg-primary p-2 rounded-full">
+                    <Avatar className="mr-2 bg-slate-600 text-sm">{selectedSalesPerson?.name[0]}</Avatar>
+                    <div className="text-sm">{selectedSalesPerson?.name}</div>
+                    <IconButton color="error" onClick={() => setSalesPerson(null)}>
+                      <X />
                     </IconButton>
                   </div> :
-                    <div className="flex items-center">
-                      <div className='text-tprimary border border-gray-500 space-x-2 flex items-center px-3 py-[5px] rounded-full hover:bg-primary cursor-pointer'>
-                        <span>Add</span>
-                        <PlusIcon />
-                      </div>
-                    </div>
+                    <CustomMenu open={menu == "salesperson"} icon={<CustomButton onClick={() => setMenu("salesperson")} title={"Add"} frontIcon={<PlusIcon className='w-4 h-4' />} />}>
+                      {
+                        team?.map((t, i) => {
+                          return <MenuItem key={`salesperson-${i}`} onClick={() => {
+                            closeMenu();
+                            setSalesPerson(t)
+                          }}>
+                            <Typography>{t?.name}</Typography>
+                          </MenuItem>
+                        })
+                      }
+                    </CustomMenu>
                 }
               </div>
               <div className="space-y-2">
@@ -328,9 +348,46 @@ export default function Page() {
                 <div className='border border-gray-400 rounded-xl p-4 space-y-4'>
                   <div className="flex justify-between items-center">
                     <h2 className="text-xl font-semibold mb-2">Team</h2>
-                    <CustomButton title={"Assign"} frontIcon={<PlusIcon className='w-4 h-4' />} />
+                    <CustomMenu open={menu == "team"} icon={<CustomButton onClick={() => setMenu("team")} title={"Assign"} frontIcon={<PlusIcon className='w-4 h-4' />} />}>
+                      {
+                        team?.map((t, i) => {
+                          return <MenuItem key={`team-${i}`}>
+                            <div className="flex items-center gap-2">
+                              <input type="checkbox" id={`teamCheckbox-${t?.id}`} checked={teamList?.some(_t => _t?.id == t?.id)} onChange={(e) => {
+                                if (!e?.target?.checked) {
+                                  setTeamList(teamList?.filter(teamId => teamId?.id != t?.id))
+                                } else {
+                                  setTeamList([...teamList, t])
+                                }
+                              }} />
+                              <label className='cursor-pointer' htmlFor={`teamCheckbox-${t?.id}`}>{t?.name}</label>
+                            </div>
+                          </MenuItem>
+                        })
+                      }
+                      <div className="p-2 px-3">
+                        <CustomButton onClick={() => {
+                          router?.push(`/clients/new`)
+                        }} frontIcon={<PlusIcon className='w-4 h-4' />} title={"Create User"} />
+                      </div>
+                    </CustomMenu>
                   </div>
-                  <p className="text-sm mt-2 text-gray-700 italic">No users are currently assigned</p>
+                  {
+                    teamList?.length == 0 ?
+                      <p className="text-sm mt-2 text-gray-700 italic">No users are currently assigned</p> :
+                      <div className="flex items-start justify-start gap-4 flex-wrap">
+                        {
+                          teamList?.map(t => {
+                            return <div className='px-3 py-1 bg-primary rounded-full'>
+                              <span className='text-xs'>{t?.name}</span>
+                              <IconButton>
+                                <X className='w-5 h-5' />
+                              </IconButton>
+                            </div>
+                          })
+                        }
+                      </div>
+                  }
                 </div>
               </div>
 
@@ -342,15 +399,55 @@ export default function Page() {
 
 
           {/* Invoicing */}
-          <div className='border mb-4 border-gray-400 rounded-xl p-4 space-y-4'>
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold mb-2">Invoicing</h2>
+          {
+            jobtype == "recurring" ? <div className='border mb-4 border-gray-400 rounded-xl p-4 space-y-4'>
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold mb-2">Invoicing</h2>
+              </div>
+              <div className="flex w-full gap-2">
+                <div className="w-1/2 space-y-4">
+                  <div className="space-y-1">
+                    <div className='text-sm font-semibold cursor-pointer'>How do you want to invoice?</div>
+                    <div className="flex gap-4 items-center">
+                      <div className="gap-2 flex">
+                        <input type="radio" {...register("invocieReceiveType")} value={"per_visit"} id="per-visit" className='focus:outline-none' />
+                        <label className='cursor-pointer text-sm text-gray-500' htmlFor="per-visit">Per Visit</label>
+                      </div>
+                      <div className="gap-2 flex">
+                        <input type="radio" {...register("invocieReceiveType")} value={"fixed_price"} id="fixed-price" className='focus:outline-none' />
+                        <label className='cursor-pointer text-sm text-gray-500' htmlFor="fixed-price">Fixed price</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className='text-sm font-semibold cursor-pointer'>When do you want to invoice?</div>
+                    <div className="mb-4 flex flex-col">
+                      <select {...register('invoiceTiming')} name="invoiceTiming" id="invoiceTiming" className='max-w-full w-[400px] border-gray-400 focus:outline-gray-500 border p-2 rounded-md h-11 text-sm'>
+                        <option className='text-sm' value="monthly_last">Monthly on the last of the month</option>
+                        <option className='text-sm' value="after_each_vist">After each visit is complete</option>
+                        <option className='text-sm' value="as_we_need">As needed -- no reminder</option>
+                        <option className='text-sm' value="when_job_close">Once when job is closed</option>
+                        <option disabled>or</option>
+                        <option className='text-sm' value="custom_schedule">Custom Schedule</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-1/2 space-y-3">
+                  <span className='font-semibold text-md'>Get paid automatically</span>
+                  <p className='text-md text-gray-500'>Sit back as the money rolls in. Clients are automatically invoiced and charged based on their billing frequency once they save a payment method on file. Learn more in <Link href={"#"} className='text-green-600'>Help Center</Link></p>
+                </div>
+              </div>
+            </div> : jobtype == "oneoff" && <div className='border mb-4 border-gray-400 rounded-xl p-4 space-y-4'>
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold mb-2">Invoicing</h2>
+              </div>
+              <div className="flex items-center mb-4">
+                <input  {...register("invoiceupdate")} type="checkbox" className="mr-2 w-5 h-5" id='invoiceupdate' />
+                <label className='text-sm font-semibold cursor-pointer' htmlFor='invoiceupdate'>Remind me to invoice when I close the job</label>
+              </div>
             </div>
-            <div className="flex items-center mb-4">
-              <input  {...register("invoiceupdate")} type="checkbox" className="mr-2 w-5 h-5" id='invoiceupdate' />
-              <label className='text-sm font-semibold cursor-pointer' htmlFor='invoiceupdate'>Remind me to invoice when I close the job</label>
-            </div>
-          </div>
+          }
 
           {/* Line Items */}
           <div className='border border-gray-400 rounded-xl p-4 space-y-4'>
@@ -534,7 +631,7 @@ export default function Page() {
             }
           </div>
         </form>
-      </div>
+      </div >
 
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
       <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={id => {
@@ -553,6 +650,6 @@ export default function Page() {
         setSelectedProperty(property)
         setPropertyModal(false)
       }} client={client} />
-    </div>
+    </div >
   );
 }
