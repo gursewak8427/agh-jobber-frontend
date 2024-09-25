@@ -1,19 +1,40 @@
-import React from 'react';
+"use client"
+import SelectClient from '@/app/_components/client/SelectClient';
+import CustomButton from '@/components/CustomButton';
+import PageHeading from '@/components/PageHeading';
+import { useAppDispatch } from '@/store/hooks';
+import { fetchallClients } from '@/store/slices/client';
+import { MoreHorizontal } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const InvoiceDashboard = () => {
+  const router = useRouter();
+
+  const dispatch = useAppDispatch();
+  const { clientslist } = useSelector(state => state.clients);
+  const [open, setOpen] = useState(null)
+
+
+  useEffect(() => {
+    dispatch(fetchallClients());
+  }, [])
+
+
+
   return (
     <>
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Invoices</h1>
-        <div>
-          <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">
-            New Invoice
-          </button>
-          <button className="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md">
-            More Actions
-          </button>
-        </div>
+      <div className="flex flex-col gap-8 px-4 py-6">
+        <PageHeading title={"Invoices"}>
+          <div className="flex items-center gap-2">
+            <CustomButton onClick={() => {
+              setOpen("select_client")
+            }} title={"New Invoice"} variant={"primary"} />
+            <CustomButton title={"More Actions"} frontIcon={<MoreHorizontal />} />
+          </div>
+        </PageHeading>
       </div>
 
       {/* Overview Cards */}
@@ -106,6 +127,11 @@ const InvoiceDashboard = () => {
           </tbody>
         </table>
       </div>
+
+      <SelectClient open={open == "select_client"} onClose={() => setOpen(null)} onSelect={id => {
+        router.push(`/invoices/new?client_id=${id}`)
+      }} clients={clientslist} />
+
     </>
   );
 };

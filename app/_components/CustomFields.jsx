@@ -80,6 +80,7 @@ const AddCustomFields = ({ open, onClose, }) => {
             dispatch(createJobCustomFields(jsonData))
         }
         else {
+            // #TODO - handle for invoice also
             console.log("Invalid Field - Client, Property and Quote is allowed")
         }
 

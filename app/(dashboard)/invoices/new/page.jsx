@@ -1,8 +1,8 @@
 "use client"
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon } from '@mui/material';
 import { useState } from 'react';
-import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, Delete, Divide, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, Plus, PlusIcon, Trash2, X } from 'lucide-react';
+import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, CreditCard, Delete, Divide, Eye, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, Plus, PlusIcon, Trash2, X } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -19,29 +19,28 @@ import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 
 const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
-const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
-const defaultProductTextItem = { type: "text", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 
 export default function Page() {
   const searchParams = useSearchParams();
   const client_id = searchParams.get("client_id");
 
+  const [menu, setMenu] = useState("")
+  const [selectedSalesPerson, setSalesPerson] = useState(null)
+  const [teamList, setTeamList] = useState([])
+
   const [open, setOpen] = useState(false);
 
-  const [rating, setRating] = useState(0);
-  const [isQuoteNo, setQuoteNo] = useState(false);
+  const [clientView, setClientView] = useState(false);
+  const [issueDateStatus, setIssueDateStatus] = useState(false);
+  const [paymentDueStatus, setPaymentDueStatus] = useState(false);
   const [isDiscount, setDiscount] = useState(false);
   const [isRequiredDeposit, setRequiredDeposit] = useState(false);
   const [selectClientModal, setSelectClientModal] = useState(false);
   const [selectPropertyModal, setPropertyModal] = useState(false);
 
-  const [menu, setMenu] = useState("")
-  const [selectedSalesPerson, setSalesPerson] = useState(null)
-
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  // Custom fields, change with quote custom fields
-  const { clientslist, client, team, quotecount, quotecustomfields } = useSelector(state => state.clients);
+  const { clientslist, client, team, jobcount, jobcustomfields } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -56,7 +55,7 @@ export default function Page() {
     defaultValues: {
       products: [defaultProductLineItem],
       discount: 0,
-      requireddeposite: 0
+      requireddeposite: 0,
     },
   });
 
@@ -64,6 +63,7 @@ export default function Page() {
     control,
     name: "products",
   });
+
 
   const watchProducts = watch("products");
   const subtotal = watch("subtotal");
@@ -76,6 +76,7 @@ export default function Page() {
   const requiredtype = watch("requiredtype");
   const requireddeposite = watch("requireddeposite");
   const requiredAmount = watch("requiredAmount");
+  const paymentdue = watch("paymentdue");
 
 
   useEffect(() => {
@@ -93,10 +94,7 @@ export default function Page() {
     setValue(`requiredAmount`, parseFloat(_requireddeposit)?.toFixed(2))
   }, [requireddeposite, requiredtype])
 
-  // Calculation logic for each product line
-  // useEffect(() => {
-
-  // }, [watchProducts, discount, setValue]);
+  const closeMenu = () => setMenu("")
 
   const onBlur = () => {
     let newSubtotal = 0;
@@ -146,11 +144,12 @@ export default function Page() {
   }
 
 
+
   useEffect(() => {
+    dispatch(fetchJobcount());
     dispatch(fetchallClients());
-    dispatch(fetchQuotecount());
-    dispatch(fetchQuoteCustomFields());
     dispatch(fetchTeam());
+    dispatch(fetchJobCustomFields());
   }, [])
 
 
@@ -161,10 +160,11 @@ export default function Page() {
   }, [client_id])
 
   useEffect(() => {
-    if (!client_id) return;
+    if (!client_id) {
+      router.push(`/invoices`)
+      return;
+    };
 
-
-    console.log({ client }, '===client')
 
     if (client?.property?.length > 1) {
       setSelectedProperty(null)
@@ -179,100 +179,88 @@ export default function Page() {
     }
   }, [client])
 
-  const closeMenu = () => setMenu("")
 
 
   const onSubmit = async (data) => {
 
-    const changeAdditionalquotedetails = quotecustomfields
-      .map((item, index) => {
+    // #TODO -- change job fields into invoice fields
+    const changeAdditionaljobdetails = jobcustomfields?.map((item, index) => {
 
-        const change = data?.quoteCustomFields?.[`${item.id}key`] || null;
-        if (!change) return null;
+      const change = data?.JobCustomFields?.[`${item.id}key`] || null;
+      if (!change) return null;
 
-        const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
-        if (hasChanged) {
-          return { custom_field_id: item.id, ...change };
-        }
-        return null;
-      })
+      const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
+      if (hasChanged) {
+        return { custom_field_id: item.id, ...change };
+      }
+      return null;
+    })
       .filter(Boolean);
 
     let _data = { ...data };
     delete _data?.quoteno
 
     let jsonData = {
-      "product": data?.products?.map(product => ({
+      ...(clientView && {
+        clientview_quantities: data?.clientview_quantities,
+        clientview_unitprices: data?.clientview_unitprices,
+        clientview_line_item_total: data?.clientview_line_item_total,
+        clientview_account_balance: data?.clientview_account_balance,
+        clientview_late_stamp: data?.clientview_late_stamp,
+      }),
+      "service": data?.products?.map(product => ({
         ...product,
       })),
-      "title": null,
-      "quoteno": isQuoteNo ? data?.quoteno : quotecount,
-      "rateopportunity": rating,
+      "subject": data?.title,
+      "issueddate": issueDateStatus ? data?.issueddate : new Date()?.toLocaleString(),
+      "paymentdue": data?.paymentdue,
+      "paymentduedate": data?.paymentduedate,
+      "salesperson": selectedSalesPerson?.id,
+      "custom_field": changeAdditionaljobdetails,
       "subtotal": subtotal,
       "discount": data?.discountAmount,
       "discounttype": data?.discounttype,
       "tax": gst,
       "costs": totalcost,
-      // "estimatemargin": 0.0,
-      // "requireddeposite": 0.0,
-      "depositetype": "amount",
-      "clientmessage": "",
 
-      // #TODO - please recheck new added bottom 3 fields
-      "disclaimer": data?.disclaimer,
+      "repeats": data?.repeats,
+      "duration": data?.duration,
+      "durationtype": data?.durationtype,
+      "firstvisit": data?.firstvisit,
+      "lastvisit": data?.lastvisit,
+      "totalvisit": data?.totalvisit,
+      "totalcost": data?.totalcost,
+      "totalprice": data?.totalcost,
       "internalnote": data?.internalnote,
       "isrelatedjobs": data?.isrelatedjobs,
-      "salesperson": selectedSalesPerson?.id,
-      // ==============
-
-      // "status": "Draft",
-      // "contractor": 2,//aa tusi nhi bhejna ok remove krdo
       "property": selectedProperty?.id,
       "client": client_id,
-
-      // "clientpdfstyle": null,
-      "custom_field": changeAdditionalquotedetails
     }
 
     console.log({ jsonData });
-    dispatch(createQuote(jsonData))
   };
-
-
 
   return (
     <div className='max-w-[1200px] mx-auto space-y-4'>
       <div className='text-sm text-tprimary'>
-        Back to : <Link href={"/quotes"} className='text-green-700'>Quotes</Link>
+        Back to : <Link href={"/invoices"} className='text-green-700'>Invoices</Link>
       </div>
-      <div className="p-8 border border-gray-200 rounded-xl border-t-8 border-t-pink-950">
+      <div className="p-8 border border-gray-200 rounded-xl border-t-8 border-t-green-700 space-y-4">
         {/* Header */}
-        <div className="flex justify-start items-center mb-6">
-          <div className="text-4xl font-semibold text-tprimary">Quote for</div>
-          <Button onClick={() => setSelectClientModal(true)} className='ml-2 capitalize flex items-center gap-2 border-b border-dashed'>
-            {
-              !client_id ? <>
-                <div className="text-4xl font-semibold text-tprimary">Client Name</div>
-                <div className="bg-green-700 px-4 py-1 rounded">
-                  <PlusIcon className='text-white' />
-                </div>
-              </> : <div className="text-4xl font-semibold text-tprimary">{getClientName(client)}</div>
-            }
-
-          </Button>
+        <div className="flex justify-between w-full items-center mb-6 gap-2">
+          <div className="text-4xl font-semibold text-tprimary">Invoice for {getClientName(client)}</div>
+          <div className='font-bold'>Quote #8</div>
         </div>
 
         {/* Job Title */}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300 pb-4">
             <div className="w-1/2 flex flex-col space-y-4">
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="" className='text-tprimary font-bold'>{selectPropertyModal} Job Title</label>
+              <div className="flex flex-col">
                 <input
-                  {...register("title")}
-                  label="Title"
-                  placeholder='Title'
-                  className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                  {...register("subject")}
+                  placeholder='Subject'
+                  className="focus:outline-gray-500 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
                 />
               </div>
               {
@@ -297,33 +285,50 @@ export default function Page() {
                 </div>
               }
             </div>
-            {/* Quote Details */}
-            <div className="p-4 rounded-lg w-1/2">
-              <h1 className='font-bold mb-2'>Quote details</h1>
+            {/* Job details */}
+            <div className="px-4 rounded-lg w-1/2">
+              <h1 className='font-bold mb-2'>Invoice details</h1>
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium min-w-[200px]">Quote number {!isQuoteNo && <>#{quotecount}</>}</div>
+                <div className="font-medium min-w-[200px] text-sm">Issued date</div>
                 {
-                  isQuoteNo ? <div className="flex gap-2 items-center">
-                    <input type="text" {...register("quoteno")} onBlur={onBlur} defaultValue={quotecount}
-                      className="w-16 h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
-                    <CustomButton onClick={() => { setValue("quoteno", quotecount); setQuoteNo(false) }} title={"Cancel"} />
+                  issueDateStatus ? <div className="flex gap-2 items-center">
+                    <input type="date" {...register("issueddate")} defaultValue={jobcount}
+                      className="h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
+                    <CustomButton onClick={() => { setIssueDateStatus(false) }} title={"Cancel"} />
                   </div> :
-                    <Button onClick={() => setQuoteNo(true)} className='px-0 text-green-700 underline font-semibold'>change</Button>
+                    <Button onClick={() => setIssueDateStatus(true)} className='px-0 text-green-700 underline font-semibold capitalize'>Date sent</Button>
                 }
-
               </div>
 
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium min-w-[200px]">Rate opportunity</div>
-                <Rating
-                  name="rating"
-                  value={rating}
-                  onChange={(event, newValue) => setRating(newValue)}
-                />
+                <div className="font-medium min-w-[200px] text-sm">Payment due</div>
+                {
+                  paymentDueStatus ? <div className="flex gap-2 items-center">
+                    <select {...register("paymentdue")} onBlur={onBlur} name="paymentdue" id="paymentdue" className='w-auto border-gray-400 focus:outline-gray-500 border p-2 rounded-md h-11 text-sm'>
+                      <option value="upon_receipt">Upon receipt</option>
+                      <option value="net_15">Net 15</option>
+                      <option value="net_30">Net 30</option>
+                      <option value="net_45">Net 45</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                    <CustomButton onClick={() => { setPaymentDueStatus(false) }} title={"Cancel"} />
+                  </div> :
+                    <Button onClick={() => setPaymentDueStatus(true)} className='px-0 text-green-700 underline font-semibold capitalize'>Net 30</Button>
+                }
               </div>
 
+              {
+                paymentdue == "custom" &&
+
+                <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
+                  <div className="font-medium min-w-[200px] text-sm">Due date</div>
+                  <input type="date" {...register("paymentduedate")} onBlur={onBlur} defaultValue={jobcount}
+                    className="h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
+                </div>
+              }
+
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium min-w-[200px]">Salesperson</div>
+                <div className="font-medium min-w-[200px] text-sm">Salesperson</div>
                 {
                   selectedSalesPerson ? <div className="flex items-center bg-primary p-2 rounded-full">
                     <Avatar className="mr-2 bg-slate-600 text-sm">{selectedSalesPerson?.name[0]}</Avatar>
@@ -346,20 +351,19 @@ export default function Page() {
                     </CustomMenu>
                 }
               </div>
-
-
               <div className="space-y-2">
                 {
-                  quotecustomfields?.map((field, index) => <CustomSingleField register={register} prefix="QuoteCustomFields" field={field} index={index} customfields={quotecustomfields} />)
+                  jobcustomfields?.map((field, index) => <CustomSingleField register={register} prefix="JobCustomFields" field={field} index={index} customfields={jobcustomfields} />)
                 }
               </div>
               <div className="my-4">
-                <CustomButton title="Add Custom Field" onClick={() => setOpen("quote")} />
+                {/* #TODO -- just to inform -- i set this to invoice */}
+                <CustomButton title="Add Custom Field" onClick={() => setOpen("invoice")} />
               </div>
             </div>
           </div>
 
-          {/* Line Item Details */}
+          {/* Line Items */}
           <div className="lg:col-span-3 py-4 text-tprimary space-y-4">
             <table className='w-full'>
               <thead>
@@ -374,6 +378,9 @@ export default function Page() {
               <tbody>
                 {
                   productsList?.map((product, index) => {
+
+                    let servicedate = watch(`products[${index}].servicedate`)
+
                     if (product?.type == "text") {
                       return <tr>
                         <td className='pr-2 pb-4 w-[700px] h-[100px]'>
@@ -477,13 +484,26 @@ export default function Page() {
                         </div>
                       </td>
                       <td className='pr-2 pb-4 h-[100px]'>
-                        <div className="flex h-full items-start justify-start">
+                        <div className="flex flex-col h-full items-start justify-start">
                           <input
                             {...register(`products.${index}.total`)}
                             readOnly
                             placeholder='Total'
                             className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
                           />
+                          <div className='flex gap-2 items-center py-2'>
+                            {
+                              servicedate == null ? <p className='text-sm text-green-700 text-right w-full underline' onClick={() => {
+                                setValue(`products.${index}.servicedate`, new Date())
+                              }}>Set Service Date</p> :
+                                <div className="flex items-center gap-2">
+                                  <input type="date" {...register(`products.${index}.servicedate`)} name="servicedate" id="servicedate" className='text-sm border p-1 rounded-full' />
+                                  <IconButton>
+                                    <X className='w-4 h-4 hover:text-black text-gray-400' />
+                                  </IconButton>
+                                </div>
+                            }
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -493,27 +513,95 @@ export default function Page() {
             </table>
 
 
-
             {/* Add Line Items Buttons */}
             <div className="flex space-x-4 mb-4">
               <CustomButton
                 onClick={() => appendProduct(defaultProductLineItem)}
                 variant="primary" title="Add Line Item" frontIcon={<PlusIcon className='text-white' />} >
               </CustomButton>
-              <CustomButton
-                onClick={() => appendProduct(defaultProductOptional)}
-                title="Add Optional Line Item"
-                frontIcon={<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-testid="checkbox" className='w-6 h-6 inline-block fill-green-800'><path d="M8.72 11.211a1 1 0 1 0-1.415 1.414l2.68 3.086a1 1 0 0 0 1.414 0l5.274-4.992a1 1 0 1 0-1.414-1.414l-4.567 4.285-1.973-2.379Z"></path><path d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5Zm14 2v14H5V5h14Z"></path></svg>}
-              >
-              </CustomButton>
-              <CustomButton
-                onClick={() => appendProduct(defaultProductTextItem)}
-                title="Add Text">
-              </CustomButton>
             </div>
 
             <div className="flex mt-4">
-              <div className="p-4 rounded-lg w-1/2"></div>
+              <div className="p-4 rounded-lg w-1/2">
+                <div className="flex flex-col gap-2 items-center">
+                  <div className="flex gap-2 items-center w-full">
+                    <Eye />
+                    <span>Client view</span>
+                    {
+                      !clientView ?
+                        <Button onClick={() => setClientView(true)} className='text-green-600'>Change</Button> :
+                        <Button onClick={() => setClientView(false)} className='text-red-600'>Cancel Changes</Button>
+                    }
+                  </div>
+
+                  {
+                    clientView && <div>
+                      <p className='text-sm text-gray-600'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</Link></p>
+                      <div className="flex items-center flex-wrap">
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_quantities")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_quantities"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_quantities">
+                            Quantities
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_unitprices")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_unitprices"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_unitprices">
+                            Unit prices
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_line_item_total")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_line_item_total"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_line_item_total">
+                            Line item totals
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_account_balance")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_account_balance"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_account_balance">
+                            Account balance
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_late_stamp")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_late_stamp"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_late_stamp">
+                            Late stamp (if overdue)
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
               <div className="p-4 rounded-lg w-1/2">
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px]">Subtotal</div>
@@ -584,13 +672,6 @@ export default function Page() {
               <textarea name="" id="" rows={3}  {...register("clientmessage")} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
             </div>
 
-            <div className="mt-4">
-              <h1 className='font-bold mb-2'>Contract / Disclaimer</h1>
-              <textarea {...register("disclaimer")} name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
-                This quote is valid for the next 15 days, after which values may be subject to change.
-              </textarea>
-            </div>
-
             <div className="border border-gray-300 p-4 rounded-lg">
               <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
               <div className="mt-4">
@@ -602,21 +683,6 @@ export default function Page() {
                 <input hidden type="file" name="" id="" />
               </div>
 
-              <Divider className='my-2' />
-
-              <div className="mt-4 space-y-2">
-                <p className='font-normal text-sm text-tprimary'>Link not to related</p>
-                <div className="flex gap-2 text-sm items-center capitalize">
-                  <div className="flex gap-2 items-center">
-                    <input {...register("isrelatedjobs")} type="checkbox" className='w-5 h-5' name="" id="jobs" />
-                    <label htmlFor="jobs">jobs</label>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="" id="invoices" />
-                    <label htmlFor="invoices">invoices</label>
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div className="mt-4 space-y-2 flex justify-between">
@@ -624,7 +690,7 @@ export default function Page() {
               {
                 !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
                   <div className="flex gap-2 items-center">
-                    <CustomButton type={"submit"} title="Save Quote"></CustomButton>
+                    <CustomButton type={"submit"} title="Save Invoice"></CustomButton>
                     <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"submit"} variant="primary" title="Save and"></CustomButton>}>
                       {/* Menu Items */}
                       <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
@@ -633,7 +699,7 @@ export default function Page() {
 
                       <MenuItem className="text-tprimary text-sm">
                         <ListItemIcon>
-                          <MessageSquareText className="text-orange-700" size={16} />
+                          <MessageSquareText className="text-gray-700" size={16} />
                         </ListItemIcon>
                         Send as text mesage
                       </MenuItem>
@@ -647,16 +713,9 @@ export default function Page() {
 
                       <MenuItem className="text-tprimary text-sm">
                         <ListItemIcon>
-                          <Hammer className="text-green-700" size={16} />
+                          <CreditCard className="text-blue-700" size={16} />
                         </ListItemIcon>
-                        Convert to Job
-                      </MenuItem>
-
-                      <MenuItem className="text-tprimary text-sm">
-                        <ListItemIcon>
-                          <MessageCircle className="text-orange-700" size={16} />
-                        </ListItemIcon>
-                        Mark as awaiting Response
+                        Collect Payment
                       </MenuItem>
                     </CustomMenu>
                   </div>
@@ -668,12 +727,7 @@ export default function Page() {
         </form>
       </div >
 
-
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
-      <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={id => {
-        router.push(`/quotes/new?client_id=${id}`)
-        setSelectClientModal(false)
-      }} clients={clientslist} />
 
       <SelectProperty onCreateNew={() => {
         setPropertyModal("NEW")
