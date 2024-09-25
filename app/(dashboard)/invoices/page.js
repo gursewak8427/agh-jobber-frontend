@@ -3,7 +3,7 @@ import SelectClient from '@/app/_components/client/SelectClient';
 import CustomButton from '@/components/CustomButton';
 import PageHeading from '@/components/PageHeading';
 import { useAppDispatch } from '@/store/hooks';
-import { fetchallClients } from '@/store/slices/client';
+import { fetchallClients, fetchInvoices } from '@/store/slices/client';
 import { MoreHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -13,12 +13,13 @@ const InvoiceDashboard = () => {
   const router = useRouter();
 
   const dispatch = useAppDispatch();
-  const { clientslist } = useSelector(state => state.clients);
+  const { clientslist, invoices } = useSelector(state => state.clients);
   const [open, setOpen] = useState(null)
 
 
   useEffect(() => {
     dispatch(fetchallClients());
+    dispatch(fetchInvoices());
   }, [])
 
 

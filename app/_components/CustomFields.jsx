@@ -1,6 +1,6 @@
 import CustomButton from '@/components/CustomButton'
 import CustomModal from '@/components/CustomModal'
-import { createClientsCustomFields, createJobCustomFields, createPropertyCustomFields, createQuoteCustomFields } from '@/store/slices/client'
+import { createClientsCustomFields, createInvoiceCustomFields, createJobCustomFields, createPropertyCustomFields, createQuoteCustomFields } from '@/store/slices/client'
 import { ChevronDown } from 'lucide-react'
 import React, { useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -79,8 +79,10 @@ const AddCustomFields = ({ open, onClose, }) => {
         else if (open == "job") {
             dispatch(createJobCustomFields(jsonData))
         }
+        else if (open == "invoice") {
+            dispatch(createInvoiceCustomFields(jsonData))
+        }
         else {
-            // #TODO - handle for invoice also
             console.log("Invalid Field - Client, Property and Quote is allowed")
         }
 

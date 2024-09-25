@@ -120,6 +120,15 @@ export const fetchJobcount = createAsyncThunk("fetchJobcount", async (data, { re
     }
 });
 
+export const fetchInvoicecount = createAsyncThunk("fetchInvoicecount", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/invoicecount/`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
 export const createQuoteCustomFields = createAsyncThunk("createQuoteCustomFields", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/customquotefield/`, data);
@@ -211,6 +220,53 @@ export const fetchJobs = createAsyncThunk("fetchJobs", async (data, { rejectWith
     }
 });
 
+
+export const fetchInvoiceCustomFields = createAsyncThunk("fetchInvoiceCustomFields", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/custominvoicefield/`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+
+export const createInvoiceCustomFields = createAsyncThunk("createInvoiceCustomFields", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/custominvoicefield/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const fetchInvoice = createAsyncThunk("fetchInvoice", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/invoice/?id=${data}`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const createInvoice = createAsyncThunk("createInvoice", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/invoice/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const fetchInvoices = createAsyncThunk("fetchInvoices", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/invoice/`);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
 // Initial State
 const initialState = {
     team: [],
@@ -220,14 +276,18 @@ const initialState = {
     property: {},
     quotecount: 0,
     jobcount: 0,
+    invoicecount: 0,
     clientcustomfields: [],
     propertycustomfields: [],
     quotecustomfields: [],
     jobcustomfields: [],
+    invoicecustomfields: [],
     quote: {},
     quotes: [],
     job: {},
     jobs: [],
+    invoice: {},
+    invoices: [],
     pagination: {
         count: 0,
         next: '',
@@ -377,7 +437,7 @@ const clientSlice = createSlice({
 
         builder
             .addCase(fetchJobcount.fulfilled, (state, action) => {
-                state.jobcount = (action.payload?.quoteno);
+                state.jobcount = (action.payload?.jobno);
             })
             .addCase(fetchJobcount.rejected, (state, action) => {
                 state.loadingList = false;
@@ -420,6 +480,54 @@ const clientSlice = createSlice({
                 state.jobs = action.payload;
             })
             .addCase(fetchJobs.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchInvoice.fulfilled, (state, action) => {
+                state.invoice = action.payload;
+            })
+            .addCase(fetchInvoice.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(createInvoice.fulfilled, (state, action) => {
+                state.invoice = action.payload;
+            })
+            .addCase(createInvoice.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchInvoices.fulfilled, (state, action) => {
+                state.invoices = action.payload;
+            })
+            .addCase(fetchInvoices.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchInvoiceCustomFields.fulfilled, (state, action) => {
+                state.invoicecustomfields = action.payload;
+            })
+            .addCase(fetchInvoiceCustomFields.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(createInvoiceCustomFields.fulfilled, (state, action) => {
+                state.invoicecustomfields.push(action.payload);
+            })
+            .addCase(createInvoiceCustomFields.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(fetchInvoicecount.fulfilled, (state, action) => {
+                state.invoicecount = action.payload?.invoiceno;
+            })
+            .addCase(fetchInvoicecount.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });

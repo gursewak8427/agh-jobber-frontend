@@ -217,7 +217,6 @@ export default function Page() {
       "custom_field": changeAdditionaljobdetails,
 
 
-      // #TODO - new fields, please manage
       ...(data?.jobtype == "oneoff" ? {
         "invoiceupdate": data?.invoiceupdate,
       } : {

@@ -187,7 +187,7 @@ export default function Page() {
     const changeAdditionalquotedetails = quotecustomfields
       .map((item, index) => {
 
-        const change = data?.quoteCustomFields?.[`${item.id}key`] || null;
+        const change = data?.QuoteCustomFields?.[`${item.id}key`] || null;
         if (!change) return null;
 
         const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
@@ -205,7 +205,7 @@ export default function Page() {
       "product": data?.products?.map(product => ({
         ...product,
       })),
-      "title": null,
+      "title": data?.title,
       "quoteno": isQuoteNo ? data?.quoteno : quotecount,
       "rateopportunity": rating,
       "subtotal": subtotal,
@@ -216,19 +216,18 @@ export default function Page() {
       // "estimatemargin": 0.0,
       // "requireddeposite": 0.0,
       "depositetype": "amount",
-      "clientmessage": "",
+      "clientmessage": data?.clientmessage,
 
-      // #TODO - please recheck new added bottom 3 fields
       "disclaimer": data?.disclaimer,
       "internalnote": data?.internalnote,
       "isrelatedjobs": data?.isrelatedjobs,
-      "salesperson": selectedSalesPerson?.id,
+      "salesperson_id": selectedSalesPerson?.id,
       // ==============
 
       // "status": "Draft",
       // "contractor": 2,//aa tusi nhi bhejna ok remove krdo
-      "property": selectedProperty?.id,
-      "client": client_id,
+      "property_id": selectedProperty?.id,
+      "client_id": client_id,
 
       // "clientpdfstyle": null,
       "custom_field": changeAdditionalquotedetails
@@ -594,7 +593,7 @@ export default function Page() {
             <div className="border border-gray-300 p-4 rounded-lg">
               <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
               <div className="mt-4">
-                <textarea {...register("internalnote")} placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+                <textarea {...register("internalnote")} placeholder='Note details' name="internalnote" id="internalnote" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
               </div>
 
               <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">

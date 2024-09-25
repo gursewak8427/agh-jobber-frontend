@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createInvoice, createQuote, fetchallClients, fetchClient, fetchInvoicecount, fetchInvoiceCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -40,7 +40,7 @@ export default function Page() {
 
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  const { clientslist, client, team, jobcount, jobcustomfields } = useSelector(state => state.clients);
+  const { clientslist, client, team, invoicecount, invoicecustomfields } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -146,10 +146,10 @@ export default function Page() {
 
 
   useEffect(() => {
-    dispatch(fetchJobcount());
+    dispatch(fetchInvoicecount());
     dispatch(fetchallClients());
     dispatch(fetchTeam());
-    dispatch(fetchJobCustomFields());
+    dispatch(fetchInvoiceCustomFields());
   }, [])
 
 
@@ -183,10 +183,9 @@ export default function Page() {
 
   const onSubmit = async (data) => {
 
-    // #TODO -- change job fields into invoice fields
-    const changeAdditionaljobdetails = jobcustomfields?.map((item, index) => {
+    const changeAdditionaljobdetails = invoicecustomfields?.map((item, index) => {
 
-      const change = data?.JobCustomFields?.[`${item.id}key`] || null;
+      const change = data?.InvoiceCustomFields?.[`${item.id}key`] || null;
       if (!change) return null;
 
       const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
@@ -201,7 +200,6 @@ export default function Page() {
     delete _data?.quoteno
 
     let jsonData = {
-      // #TODO.. verify fields about client view
       ...(clientView && {
         clientview_quantities: data?.clientview_quantities,
         clientview_unitprices: data?.clientview_unitprices,
@@ -212,11 +210,11 @@ export default function Page() {
       "service": data?.products?.map(product => ({
         ...product,
       })),
-      "subject": data?.title,
+      "subject": data?.subject,
       "issueddate": issueDateStatus ? data?.issueddate : new Date()?.toLocaleString(),
       "paymentdue": data?.paymentdue,
-      "paymentduedate": data?.paymentduedate,
-      "salesperson": selectedSalesPerson?.id,
+      "paymentduedate": data?.paymentduedate,//duedate set based on paymentdue like net15 means issue date + 15 days if custom date then it will automatic work
+      "salesperson_id": selectedSalesPerson?.id,
       "custom_field": changeAdditionaljobdetails,
       "subtotal": subtotal,
       "discount": data?.discountAmount,
@@ -224,20 +222,22 @@ export default function Page() {
       "tax": gst,
       "costs": totalcost,
 
-      "repeats": data?.repeats,
-      "duration": data?.duration,
-      "durationtype": data?.durationtype,
-      "firstvisit": data?.firstvisit,
-      "lastvisit": data?.lastvisit,
-      "totalvisit": data?.totalvisit,
-      "totalcost": data?.totalcost,
-      "totalprice": data?.totalcost,
-      "internalnote": data?.internalnote,
-      "isrelatedjobs": data?.isrelatedjobs,
-      "property": selectedProperty?.id,
-      "client": client_id,
-    }
+      // Why these here
+      // "repeats": data?.repeats,
+      // "duration": data?.duration,
+      // "durationtype": data?.durationtype,
+      // "firstvisit": data?.firstvisit,
+      // "lastvisit": data?.lastvisit,
+      // "totalvisit": data?.totalvisit,
+      // "totalcost": data?.totalcost,
+      // "totalprice": data?.totalcost,
 
+      "internalnote": data?.internalnote,
+
+      "property_id": selectedProperty?.id,
+      "client_id": client_id,
+    }
+    dispatch(createInvoice(jsonData))
     console.log({ jsonData });
   };
 
@@ -250,7 +250,7 @@ export default function Page() {
         {/* Header */}
         <div className="flex justify-between w-full items-center mb-6 gap-2">
           <div className="text-4xl font-semibold text-tprimary">Invoice for {getClientName(client)}</div>
-          <div className='font-bold'>Quote #8</div>
+          <div className='font-bold'>Invoice #{invoicecount}</div>
         </div>
 
         {/* Job Title */}
@@ -261,6 +261,7 @@ export default function Page() {
                 <input
                   {...register("subject")}
                   placeholder='Subject'
+                  name='subject'
                   className="focus:outline-gray-500 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
                 />
               </div>
@@ -293,7 +294,7 @@ export default function Page() {
                 <div className="font-medium min-w-[200px] text-sm">Issued date</div>
                 {
                   issueDateStatus ? <div className="flex gap-2 items-center">
-                    <input type="date" {...register("issueddate")} defaultValue={jobcount}
+                    <input type="date" {...register("issueddate")} defaultValue={invoicecount}
                       className="h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
                     <CustomButton onClick={() => { setIssueDateStatus(false) }} title={"Cancel"} />
                   </div> :
@@ -323,7 +324,7 @@ export default function Page() {
 
                 <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px] text-sm">Due date</div>
-                  <input type="date" {...register("paymentduedate")} onBlur={onBlur} defaultValue={jobcount}
+                  <input type="date" {...register("paymentduedate")} onBlur={onBlur}
                     className="h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
                 </div>
               }
@@ -354,11 +355,10 @@ export default function Page() {
               </div>
               <div className="space-y-2">
                 {
-                  jobcustomfields?.map((field, index) => <CustomSingleField register={register} prefix="JobCustomFields" field={field} index={index} customfields={jobcustomfields} />)
+                  invoicecustomfields?.map((field, index) => <CustomSingleField register={register} prefix="InvoiceCustomFields" field={field} index={index} customfields={invoicecustomfields} />)
                 }
               </div>
               <div className="my-4">
-                {/* #TODO -- just to inform -- i set this to invoice */}
                 <CustomButton title="Add Custom Field" onClick={() => setOpen("invoice")} />
               </div>
             </div>
