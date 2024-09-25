@@ -201,6 +201,7 @@ export default function Page() {
     delete _data?.quoteno
 
     let jsonData = {
+      // #TODO.. verify fields about client view
       ...(clientView && {
         clientview_quantities: data?.clientview_quantities,
         clientview_unitprices: data?.clientview_unitprices,
