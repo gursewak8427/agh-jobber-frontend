@@ -10,7 +10,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createQuote, fetchallClients, fetchClient, fetchInvoice, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -21,76 +21,9 @@ import Heading from '@/components/Heading';
 import PageHeading from '@/components/PageHeading';
 import TextMessageModal from '@/app/_components/quote/TextMessageModal';
 import SendEmailModal from '@/app/_components/quote/SendEmailModal';
+import ShowCustomFields from '@/app/_components/ShowCustomFields';
 
 
-
-const TabBox = () => {
-  const [value, setValue] = React.useState(0);
-
-
-  function a11yProps(index) {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-  }
-
-  function CustomTabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <div
-        className="w-full"
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-      >
-        {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-      </div>
-    );
-  }
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  return (<div className="w-full text-sm">
-    <Tabs className='border-b' value={value} onChange={handleChange} aria-label="basic tabs example">
-      <Tab label="Billing" {...a11yProps(0)} />
-      <Tab label="Invoicing reminders" {...a11yProps(1)} />
-    </Tabs>
-    <CustomTabPanel value={value} index={0}>
-      <div className="w-full flex items-start justify-start gap-6">
-        <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center">
-          <DollarSign />
-        </div>
-        <div className="">
-          <p className="font-semibold">No invoices</p>
-          <p>There are no current invoices for this client yet</p>
-          <div className="my-1">
-            <CustomButton title={"New Invoice"} />
-          </div>
-        </div>
-      </div>
-    </CustomTabPanel>
-    <CustomTabPanel value={value} index={1}>
-      <div className="w-full flex items-start justify-start gap-6">
-        <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center">
-          <Bell />
-        </div>
-        <div className="">
-          <p className="font-semibold">No Reminders</p>
-          <p>Fewer invoices slip through the cracks when you set up reminders</p>
-          <div className="my-1">
-            <CustomButton title={"New Invoice Reminder"} />
-          </div>
-        </div>
-      </div>
-    </CustomTabPanel>
-  </div>)
-}
 
 export default function Page() {
   const [sendtextmsg, setsendtextmsg] = useState(false)
@@ -98,7 +31,7 @@ export default function Page() {
   const [menu, setmenu] = useState(false)
   const { id } = useParams()
   const dispatch = useAppDispatch()
-  const { quote } = useAppSelector(store => store.clients)
+  const { invoice } = useAppSelector(store => store.clients)
 
   const getStatusBox = status => {
     switch (status) {
@@ -197,16 +130,18 @@ export default function Page() {
     </Fragment>)
   }
   useEffect(() => {
-    // dispatch(fetchQuote(id))
+    dispatch(fetchInvoice(id))
   }, [])
 
 
+
+  console.log({ invoice }, '===invoice')
 
   return (
     <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary'>
       <PageHeading>
         <div className='text-sm text-tprimary '>
-          Back to : <Link href={"/jobs"} className='text-green-700'>Jobs</Link>
+          Back to : <Link href={"/invoices"} className='text-green-700'>invoices</Link>
         </div>
         <div className="flex items-center gap-2">
           <CustomButton onClick={() => setsendtextmsg(true)} frontIcon={<CreditCard className='text-white' />} title={"Collect Payments"} variant={"primary"} />
@@ -221,17 +156,17 @@ export default function Page() {
         <div className="flex justify-between items-center">
           <div className='flex items-center gap-4'>
             <Hammer className='w-8 h-8 text-green-700' />
-            {getStatusBox("Draft")}
+            {getStatusBox(invoice?.status)}
           </div>
-          <div className='font-bold'>Job #1</div>
+          <div className='font-bold'>Invoices #{invoice?.invoiceno}</div>
         </div>
         <div className="flex justify-start items-center mb-6 w-full gap-3">
-          <div className="text-4xl font-semibold ">Client name</div>
+          <div className="text-4xl font-semibold ">{getClientName(invoice?.client)}</div>
           {/* <span>{getStatusBox("Lead")}</span> */}
         </div>
 
-        <p className="font-bold">
-          For Services Rendered
+        <p className="font-bold capitalize">
+          {invoice?.subject}
         </p>
 
         <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300">
@@ -240,7 +175,7 @@ export default function Page() {
               <div className="w-1/3">
                 <h1 className='font-bold mb-2'>Billing address</h1>
                 <p className='max-w-[150px] font-extralight text-gray-500 text-sm'>
-                  2016 Avenida Visconde de Guarapuava Centro, Cochabamba, Paraná 80060-060
+                  {getAddress(invoice?.property)}
                 </p>
                 {/* <Button className='text-green-700 p-0' onClick={() => {
                   setPropertyModal("SELECT")
@@ -257,8 +192,8 @@ export default function Page() {
               </div>
               <div className="w-1/3 font-extralight text-gray-500 text-sm">
                 <h1 className='font-bold mb-2 text-black'>Contact details</h1>
-                <p className='max-w-[140px] text-sm'>123-456-7890</p>
-                <p className='max-w-[140px] text-sm text-green-600'>garry94556@gmail.com</p>
+                <p className='max-w-[140px]'>{getPrimary(invoice?.client?.mobile)?.number}</p>
+                <p className='max-w-[140px]'>{getPrimary(invoice?.client?.email)?.email}</p>
               </div>
             </div>
           </div>
@@ -272,7 +207,7 @@ export default function Page() {
                     Issued
                   </td>
                   <td className='py-2'>
-                    Sep 26, 2024
+                    {invoice?.issueddate}
                   </td>
                 </tr>
                 <tr className='border-b'>
@@ -280,7 +215,7 @@ export default function Page() {
                     Due
                   </td>
                   <td className='py-2'>
-                    Sep 26, 2024
+                    {invoice?.paymentduedate}
                   </td>
                 </tr>
                 <tr className=''>
@@ -288,11 +223,16 @@ export default function Page() {
                     Salesperson
                   </td>
                   <td className='py-2'>
-                    ---
+                    {invoice?.salesperson?.name}
                   </td>
                 </tr>
               </tbody>
             </table>
+            <div className="space-y-2 w-full">
+              {
+                invoice?.custom_field?.map((field, index) => <ShowCustomFields field={field} index={index} customfields={invoice?.custom_field} />)
+              }
+            </div>
           </div>
         </div>
 
@@ -309,54 +249,59 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              <tr className='border-b'>
-                <td className='pr-2 py-4 w-[700px]'>
-                  <div className="flex flex-col h-full items-start justify-start">
-                    <div className="text-sm">Free Assessment</div>
-                    <div className="text-sm text-gray-400">Our experts will come to assess your needs and discuss solutions</div>
-                  </div>
-                </td>
-                <td className='pr-2 py-4 text-center'>1</td>
-                <td className='pr-2 py-4 text-center'>$0</td>
-                <td className='pr-2 py-4 text-center'>$0</td>
-                <td className='pr-2 py-4 text-center'>
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <span className=''>$25<small className='ml-1 text-gray-700'><i>(10%)</i></small></span>
-                  </div>
-                </td>
-                <td className='pr-2 py-4 text-right'>$0</td>
-              </tr>
+              {
+                invoice?.service?.map((service, index) => {
+                  return <tr className='border-b' key={index}>
+                    <td className='pr-2 py-4 w-[700px]'>
+                      <div className="flex flex-col h-full items-start justify-start">
+                        <div className="text-sm">{service?.name}</div>
+                        <div className="text-sm text-gray-400">{service?.description}</div>
+                      </div>
+                    </td>
+                    <td className='pr-2 py-4 text-center'>{service?.quantity}</td>
+                    <td className='pr-2 py-4 text-center'>${service?.material}</td>
+                    <td className='pr-2 py-4 text-center'>${service?.labour}</td>
+                    <td className='pr-2 py-4 text-center'>
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700'><i>(${service?.markuppercentage}%)</i></small></span>
+                      </div>
+                    </td>
+                    <td className='pr-2 py-4 text-right'>${service?.total}</td>
+                  </tr>
+                })
+              }
+
             </tbody>
           </table>
 
 
           <div className="flex mt-4">
             <div className="p-4 pl-0 rounded-lg w-1/2">
-              <p className='text-sm text-gray-400'>Thank you for your business. Please contact us with any questions regarding this invoice.</p>
+              <p className='text-sm text-gray-400'>{invoice?.clientmessage || "---"}</p>
             </div>
             <div className="p-4 rounded-lg w-1/2">
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">Subtotal</div>
-                <p className='text-sm text-gray-700'>$100</p>
+                <p className='text-sm text-gray-700'>${invoice?.subtotal}</p>
               </div>
 
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">Discount</div>
-                <span className='text-sm '>-$10<small className='ml-1 text-gray-700'><i>(10%)</i></small></span>
+                <span className='text-sm '>-(${parseFloat(invoice?.discount || 0)?.toFixed(1)})<small className='ml-1 text-gray-700'><i>({invoice?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
               </div>
 
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">GST (5.0)%</div>
-                <p className='text-sm text-gray-700'>$2.51</p>
+                <p className='text-sm text-gray-700'>${invoice?.tax}</p>
               </div>
 
               <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
                 <div className="font-semibold min-w-[200px]">Total</div>
-                <p className='text-gray-700 font-semibold'>$92.51</p>
+                <p className='text-gray-700 font-semibold'>${invoice?.costs}</p>
               </div>
 
               <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
-                <div className="font-medium text-sm min-w-[200px]">Account balance</div>
+                <div className="font-medium text-sm min-w-[200px]">Account balance <div className="text-red-500">Pending</div></div>
                 <span className='text-sm '>$25<small className='ml-1 text-gray-700'><i>(10%)</i></small></span>
               </div>
             </div>
@@ -370,7 +315,9 @@ export default function Page() {
       <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg">
         <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
         <div className="mt-4">
-          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+            {invoice?.internalnote}
+          </textarea>
         </div>
 
         <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
@@ -384,17 +331,18 @@ export default function Page() {
           <p className='font-normal text-sm text-tprimary'>Link not to related</p>
           <div className="flex gap-2 text-sm items-center capitalize">
             <div className="flex gap-2 items-center">
-              <input type="checkbox" className='w-5 h-5' name="" id="jobs" />
+              <input readOnly type="checkbox" className='w-5 h-5' name="" id="jobs" />
               <label htmlFor="jobs">jobs</label>
             </div>
             <div className="flex gap-2 items-center">
-              <input type="checkbox" className='w-5 h-5' name="" id="invoices" />
+              <input readOnly type="checkbox" className='w-5 h-5' name="" id="invoices" />
               <label htmlFor="invoices">invoices</label>
             </div>
           </div>
+          <div className="text-red-500">Pending</div>
         </div>
 
-        <div className="flex gap-2 items-center justify-end">
+        <div className="gap-2 items-center justify-end hidden">
           <CustomButton title="Cancel"></CustomButton>
           <CustomButton variant={"primary"} title="Save"></CustomButton>
         </div>
