@@ -211,6 +211,25 @@ export default function Page() {
       "totalcost": data?.totalcost,
       "totalprice": data?.totalcost,
       "status": "Upcoming",
+      "visit":[{
+        "startdate":data?.startdate,
+        ...(data?.jobtype == "oneoff" && {
+          "enddate": data?.enddate,
+        }),
+        "starttime":data?.starttime,
+        "endtime":data?.endtime,
+      }],
+      
+      // startdate
+      // enddate
+      // starttime
+      // endtime
+      // schedulelater
+      // anytime
+      // addunscheduledvisit
+      // sendemailtoteam
+      // teamreminder
+
       // "contractor": 2,
       "property_id": selectedProperty?.id,
       "client_id": client_id,
