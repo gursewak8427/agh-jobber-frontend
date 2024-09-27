@@ -344,6 +344,8 @@ export default function Page() {
             <div className="lg:col-span-3 py-4 text-tprimary space-y-4 flex flex-row items-start justify-start gap-2">
               <div className="w-2/5 space-y-3">
                 <JobType register={register} watch={watch} setValue={setValue} />
+                
+                {/* Team  */}
                 <div className='border border-gray-400 rounded-xl p-4 space-y-4'>
                   <div className="flex justify-between items-center">
                     <h2 className="text-xl font-semibold mb-2">Team</h2>

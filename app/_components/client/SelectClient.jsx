@@ -32,7 +32,7 @@ const SelectClient = ({ open, onClose, onSelect, clients }) => {
                     <Divider />
                     <List className='w-full max-h-[40vh] overflow-y-auto'>
                         {
-                            clients.map((client, index) => {
+                            clients?.map((client, index) => {
                                 return <ListItem onClick={() => onSelect(client?.id)} className='border-b border-gray-500 relative h-24 hover:bg-primary cursor-pointer'>
                                     <ListItemAvatar>
                                         <Avatar className='text-tprimary'>
