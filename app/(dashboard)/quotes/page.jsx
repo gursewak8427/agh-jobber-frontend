@@ -228,7 +228,7 @@ export default function Page() {
           <DataGrid
             autoHeight
             onRowClick={({ row }) => {
-              router.push(`/quotes/q/${row?.id}`)
+              router.push(`/quotes/view/${row?.id}`)
             }}
             rows={getRows(quotes)}
             columns={columns}
