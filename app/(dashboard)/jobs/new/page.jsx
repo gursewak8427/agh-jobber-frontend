@@ -211,15 +211,15 @@ export default function Page() {
       "totalcost": data?.totalcost,
       "totalprice": data?.totalcost,
       "status": "Upcoming",
-      "visit":[{
-        "startdate":data?.startdate,
+      "visit": [{
+        "startdate": data?.startdate,
         ...(data?.jobtype == "oneoff" && {
           "enddate": data?.enddate,
         }),
-        "starttime":data?.starttime,
-        "endtime":data?.endtime,
+        "starttime": data?.starttime,
+        "endtime": data?.endtime,
       }],
-      
+
       // startdate
       // enddate
       // starttime
@@ -236,14 +236,14 @@ export default function Page() {
       "salesperson_id": selectedSalesPerson?.id,
       // "quote": 3,
       "custom_field": changeAdditionaljobdetails,
-
-
-      ...(data?.jobtype == "oneoff" ? {
-        "invoiceupdate": data?.invoiceupdate,
-      } : {
-        "invocieReceiveType": data?.invocieReceiveType,
-        "invoiceTiming": data?.invoiceTiming,
-      }),
+      "invoice": {
+        ...(data?.jobtype == "oneoff" ? {
+          "invoiceupdate": data?.invoiceupdate,
+        } : {
+          "invocieReceiveType": data?.invocieReceiveType,
+          "invoiceTiming": data?.invoiceTiming,
+        }),
+      },
       "team": teamList?.map(t => t?.id),
     }
     dispatch(createJob(jsonData));
