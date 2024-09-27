@@ -10,7 +10,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createQuote, fetchallClients, fetchClient, fetchJob, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -40,7 +40,7 @@ export default function Page() {
   const [menu, setmenu] = useState(false)
   const { id } = useParams()
   const dispatch = useAppDispatch()
-  const { quote } = useAppSelector(store => store.clients)
+  const { job } = useAppSelector(store => store.clients)
 
   const getStatusBox = status => {
     switch (status) {
@@ -61,9 +61,6 @@ export default function Page() {
         break;
     }
   }
-
-
-
 
   const TabBox = () => {
     const [value, setValue] = React.useState(0);
@@ -233,10 +230,12 @@ export default function Page() {
 
     </Fragment>)
   }
+
   useEffect(() => {
-    // dispatch(fetchQuote(id))
+    dispatch(fetchJob(id))
   }, [])
 
+  console.log({ job });
 
 
   return (
@@ -260,15 +259,15 @@ export default function Page() {
             <Hammer className='w-8 h-8 text-green-700' />
             {getStatusBox("Draft")}
           </div>
-          <div className='font-bold'>Job #1</div>
+          <div className='font-bold'>Job #{job?.jobno}</div>
         </div>
         <div className="flex justify-start items-center mb-6 w-full gap-3">
-          <div className="text-4xl font-semibold ">Client name</div>
+          <div className="text-4xl font-semibold ">{getClientName(job?.client)}</div>
           {/* <span>{getStatusBox("Lead")}</span> */}
         </div>
 
         <p className="font-bold">
-          Basement Renovation
+          {job?.title}
         </p>
 
         <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300">
@@ -277,7 +276,7 @@ export default function Page() {
               <div className="w-1/2">
                 <h1 className='font-bold mb-2'>Property address</h1>
                 <p className='max-w-[150px] font-extralight text-gray-500 text-sm'>
-                  2016 Avenida Visconde de Guarapuava Centro, Cochabamba, Paraná 80060-060
+                  {getAddress(job?.property)}
                 </p>
                 {/* <Button className='text-green-700 p-0' onClick={() => {
                   setPropertyModal("SELECT")
@@ -285,9 +284,8 @@ export default function Page() {
               </div>
               <div className="w-1/2 font-extralight text-gray-500 text-sm">
                 <h1 className='font-bold mb-2 text-black'>Contact details</h1>
-                <p className='max-w-[140px] text-sm'>123-456-7890</p>
-                <p className='max-w-[140px] text-sm text-green-600'>garry94556@gmail.com</p>
-              </div>
+                <p className='max-w-[140px]'>{getPrimary(job?.client?.mobile)?.number}</p>
+                <p className='max-w-[140px]'>{getPrimary(job?.client?.email)?.email}</p>              </div>
             </div>
           </div>
           {/* Quote Details */}
@@ -300,7 +298,7 @@ export default function Page() {
                     Job type
                   </td>
                   <td className='py-2'>
-                    One-off job
+                    {job?.type}
                   </td>
                 </tr>
                 <tr className='border-b'>
@@ -308,7 +306,7 @@ export default function Page() {
                     Started on
                   </td>
                   <td className='py-2'>
-                    Sep 24, 2024
+                    {job?.startdate}
                   </td>
                 </tr>
                 <tr className='border-b'>
@@ -316,7 +314,7 @@ export default function Page() {
                     Ends on
                   </td>
                   <td className='py-2'>
-                    Sep 24, 2024
+                    {job?.enddate}
                   </td>
                 </tr>
                 <tr className='border-b'>
@@ -324,7 +322,7 @@ export default function Page() {
                     Billing frequency
                   </td>
                   <td className='py-2'>
-                    Upon job completion
+                    {job?.repeats}
                   </td>
                 </tr>
                 <tr className=''>
@@ -332,7 +330,7 @@ export default function Page() {
                     Salesperson
                   </td>
                   <td className='py-2'>
-                    ---
+                    {job?.salesperson?.name}
                   </td>
                 </tr>
               </tbody>
@@ -358,7 +356,7 @@ export default function Page() {
               <div className="flex items-center space-x-4">
                 <div className="text-center">
                   <p className="text-xs text-gray-500">Total price</p>
-                  <p className="text-sm font-semibold text-gray-700">$1.00</p>
+                  <p className="text-sm font-semibold text-gray-700">${job?.totalprice}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-blue-500">Line Item Cost</p>
@@ -366,7 +364,11 @@ export default function Page() {
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-blue-500">Labour</p>
-                  <p className="text-sm font-semibold text-gray-700">$0.00</p>
+                  <p className="text-sm font-semibold text-gray-700">${job?.service?.reduce((total, job) => total + parseFloat(job?.labour), 0)}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-blue-500">Material</p>
+                  <p className="text-sm font-semibold text-gray-700">${job?.service?.reduce((total, job) => total + parseFloat(job?.material), 0)}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-blue-500">Expenses</p>
@@ -374,7 +376,7 @@ export default function Page() {
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-green-500">Profit</p>
-                  <p className="text-sm font-semibold text-gray-700">$1.00</p>
+                  <p className="text-sm font-semibold text-gray-700">$0.00</p>
                 </div>
               </div>
 
@@ -406,7 +408,29 @@ export default function Page() {
                 </tr>
               </thead>
               <tbody>
-                <tr className='border-b'>
+                {
+                  job?.service?.map((service, index) => {
+                    return <tr className='border-b' key={index}>
+                      <td className='pr-2 py-4 w-[700px]'>
+                        <div className="flex flex-col h-full items-start justify-start">
+                          <div className="text-sm">{service?.name}</div>
+                          <div className="text-sm text-gray-400">{service?.description}</div>
+                        </div>
+                      </td>
+                      <td className='pr-2 py-4 text-center'>{service?.quantity || 0}</td>
+                      <td className='pr-2 py-4 text-center'>${service?.material || 0}</td>
+                      <td className='pr-2 py-4 text-center'>${service?.labour || 0}</td>
+                      <td className='pr-2 py-4 text-center'>
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700'><i>(${service?.markuppercentage}%)</i></small></span>
+                        </div>
+                      </td>
+                      <td className='pr-2 py-4 text-right'>${service?.total}</td>
+                    </tr>
+                  })
+                }
+
+                {/* <tr className='border-b'>
                   <td className='pr-2 py-4 w-[700px]'>
                     <div className="flex flex-col h-full items-start justify-start">
                       <div className="text-sm">Free Assessment</div>
@@ -422,14 +446,18 @@ export default function Page() {
                     </div>
                   </td>
                   <td className='pr-2 py-4 text-right'>$0</td>
-                </tr>
+                </tr> */}
                 <tr>
                   <td colSpan={2} className='p-4 pl-0'>
                   </td>
-                  <td className='pr-2 py-4 text-center'>$0.00</td>
-                  <td className='pr-2 py-4 text-center'>$0.00</td>
+                  <td className='pr-2 py-4 text-center'>
+                    ${job?.service?.reduce((total, job) => total + parseFloat(job?.material), 0)}
+                  </td>
+                  <td className='pr-2 py-4 text-center'>
+                    ${job?.service?.reduce((total, job) => total + parseFloat(job?.labour), 0)}
+                  </td>
                   <td className='pr-2 py-4 text-center'></td>
-                  <td className='pr-2 py-4 text-right'>$0.00</td>
+                  <td className='pr-2 py-4 text-right'>${job?.totalprice}</td>
                 </tr>
               </tbody>
             </table>
@@ -520,7 +548,9 @@ export default function Page() {
       <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg">
         <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
         <div className="mt-4">
-          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+            {job?.internalnote || ""}
+          </textarea>
         </div>
 
         <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">

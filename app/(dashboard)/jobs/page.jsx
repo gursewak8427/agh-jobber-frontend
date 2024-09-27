@@ -28,7 +28,7 @@ export default function Page() {
       minWidth: 150,
     },
     {
-      field: "jobnumber",
+      field: "jobno",
       headerName: "Job number",
       flex: 1,
       minWidth: 200,
@@ -60,8 +60,6 @@ export default function Page() {
     },
   ];
 
-  const rows = [];
-
   // Function to handle status rendering
   const getStatusBox = status => {
     switch (status) {
@@ -79,9 +77,11 @@ export default function Page() {
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(fetchJobs());
-  },[])
+  }, [])
+
+  console.log({ jobs })
 
   return (
     <div className="flex flex-col gap-8 px-4 py-6">
@@ -207,8 +207,21 @@ export default function Page() {
         >
           <DataGrid
             autoHeight
-            rows={rows}
             columns={columns}
+            onRowClick={({ row }) => {
+              router.push(`/jobs/view/${row?.id}`)
+            }}
+            rows={jobs?.map(job => {
+              return {
+                id: job?.id,
+                client: job?.name,
+                jobno: job?.jobno,
+                property: job?.address,
+                schedule: (new Date(job?.created)).toLocaleDateString(),
+                status: job?.status,
+                total: `$${job?.totalprice}}`,
+              }
+            })}
             sx={{
               minWidth: 900, // Ensures the table doesn't shrink too much
               "@media (max-width: 600px)": {
