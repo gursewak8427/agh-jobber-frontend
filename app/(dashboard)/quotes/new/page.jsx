@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon } from '@mui/material';
 import { useState } from 'react';
-import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, Delete, Divide, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, Plus, PlusIcon, Trash2, X } from 'lucide-react';
+import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, Delete, Divide, Eye, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, Plus, PlusIcon, Trash2, X } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
@@ -38,6 +38,7 @@ export default function Page() {
   const [menu, setMenu] = useState("")
   const [selectedSalesPerson, setSalesPerson] = useState(null)
 
+  const [clientView, setClientView] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
 
   // Custom fields, change with quote custom fields
@@ -202,6 +203,12 @@ export default function Page() {
     delete _data?.quoteno
 
     let jsonData = {
+      ...(clientView && {
+        clientview_quantities: data?.clientview_quantities,
+        clientview_unitprices: data?.clientview_unitprices,
+        clientview_line_item_total: data?.clientview_line_item_total,
+        clientview_account_balance: data?.clientview_account_balance,
+      }),
       "product": data?.products?.map(product => ({
         ...product,
       })),
@@ -363,7 +370,7 @@ export default function Page() {
             <table className='w-full'>
               <thead>
                 <tr>
-                  <th style={{ width: "20px" }}><p className="mb-4 text-md font-semibold text-left">Product / Service</p></th>
+                  <th><p className="mb-4 text-md font-semibold text-left">Product / Service</p></th>
                   <th><p className="mb-4 text-md font-semibold text-left">Qty.</p></th>
                   <th><p className="mb-4 text-md font-semibold text-left">Material & Labour</p></th>
                   <th><p className="mb-4 text-md font-semibold text-left">Markup</p></th>
@@ -400,6 +407,9 @@ export default function Page() {
                           <div className="flex flex-col h-full items-start justify-start">
                             <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
                               <CameraIcon className='text-green-800' />
+                            </div>
+                            <div className="flex justify-end items-center p-2 pr-4">
+                              <Button className='text-red-500 underline' onClick={() => removeProduct(index)}>Delete</Button>
                             </div>
                           </div>
                         </td>
@@ -476,13 +486,16 @@ export default function Page() {
                         </div>
                       </td>
                       <td className='pr-2 pb-4 h-[100px]'>
-                        <div className="flex h-full items-start justify-start">
+                        <div className="flex flex-col h-full items-start justify-start">
                           <input
                             {...register(`products.${index}.total`)}
                             readOnly
                             placeholder='Total'
                             className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
                           />
+                          <div className="flex justify-end w-full">
+                            <Button className='text-red-500 underline' onClick={() => removeProduct(index)}>Delete</Button>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -512,7 +525,74 @@ export default function Page() {
             </div>
 
             <div className="flex mt-4">
-              <div className="p-4 rounded-lg w-1/2"></div>
+              <div className="p-4 rounded-lg w-1/2">
+                <div className="flex flex-col gap-2 items-center">
+                  <div className="flex gap-2 items-center w-full">
+                    <Eye />
+                    <span>Client view</span>
+                    {
+                      !clientView ?
+                        <Button onClick={() => setClientView(true)} className='text-green-600'>Change</Button> :
+                        <Button onClick={() => setClientView(false)} className='text-red-600'>Cancel Changes</Button>
+                    }
+                  </div>
+
+                  {
+                    clientView && <div>
+                      <p className='text-sm text-gray-600'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</Link></p>
+                      <div className="flex items-center flex-wrap">
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_quantities")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_quantities"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_quantities">
+                            Quantities
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_unitprices")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_unitprices"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_unitprices">
+                            Unit prices
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_line_item_total")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_line_item_total"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_line_item_total">
+                            Line item totals
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_account_balance")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_account_balance"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_account_balance">
+                            Account balance
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
               <div className="p-4 rounded-lg w-1/2">
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px]">Subtotal</div>

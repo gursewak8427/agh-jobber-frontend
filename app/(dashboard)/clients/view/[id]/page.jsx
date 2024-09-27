@@ -252,7 +252,7 @@ export default function Page() {
   }, [])
 
 
-  const MoreActionsMenuItems = () => {
+  const MoreActionsMenuItems = ({ onClose }) => {
     return (<Fragment>
       {/* Menu Items */}
       <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
@@ -266,21 +266,30 @@ export default function Page() {
         Request
       </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem onClick={() => {
+        onClose();
+        router.push(`/quotes/new?client_id=${id}`)
+      }} className="text-tprimary text-sm">
         <ListItemIcon>
           <PencilRuler className="text-purple-700" size={16} />
         </ListItemIcon>
         Quote
       </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem onClick={() => {
+        onClose();
+        router.push(`/jobs/new?client_id=${id}`)
+      }} className="text-tprimary text-sm">
         <ListItemIcon>
           <Hammer className="text-green-700" size={16} />
         </ListItemIcon>
         Job
       </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem onClick={() => {
+        onClose();
+        router.push(`/invoices/new?client_id=${id}`)
+      }} className="text-tprimary text-sm">
         <ListItemIcon>
           <ListIcon className="text-blue-700" size={16} />
         </ListItemIcon>
@@ -364,8 +373,8 @@ export default function Page() {
         <div className="flex gap-4">
           <CustomButton onClick={() => router.push("/clients/new")} title={"Email"} variant={"primary"} frontIcon={<Mail className="w-4 h-4" />} />
           <CustomButton onClick={() => router.push("/clients/new")} title={"Edit"} frontIcon={<Pencil className="w-4 h-4" />} />
-          <CustomMenu open={true} icon={<CustomButton title={"More Actions"} frontIcon={<MoreHorizontal />} />}>
-            <MoreActionsMenuItems />
+          <CustomMenu open={open == "more_actions"} icon={<CustomButton onClick={() => setOpen("more_actions")} title={"More Actions"} frontIcon={<MoreHorizontal />} />}>
+            <MoreActionsMenuItems onClose={() => setOpen(null)} />
           </CustomMenu>
         </div>
       </HeadingBox>
@@ -720,14 +729,6 @@ export default function Page() {
               <input hidden type="file" name="" id="" />
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="mt-4 space-y-2 flex justify-between">
-        <CustomButton title="Cancel"></CustomButton>
-        <div className="flex gap-2">
-          <CustomButton title="Save and Create Another"></CustomButton>
-          <CustomButton type="submit" variant="primary" title="Save Client"></CustomButton>
         </div>
       </div>
     </div>

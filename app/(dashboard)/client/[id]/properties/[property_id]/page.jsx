@@ -319,7 +319,7 @@ export default function Page() {
                     Back to:
                     <Breadcrumbs>
                         <Link href={"/clients"} className="text-green-700 underline">Clients</Link>
-                        <Link href={`/client/${id}`} className="text-green-700 underline">{client.fname ? client.fname + ' ' + client.lname : client.companyname}</Link>
+                        <Link href={`/clients/view/${id}`} className="text-green-700 underline">{client.fname ? client.fname + ' ' + client.lname : client.companyname}</Link>
                     </Breadcrumbs>
                 </div>
                 <div className="flex gap-4">

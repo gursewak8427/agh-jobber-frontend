@@ -174,7 +174,7 @@ export default function Page() {
             autoHeight
             columns={columns}
             onRowClick={({ row }) => {
-              router.push(`/client/${row?.id}`)
+              router.push(`/clients/view/${row?.id}`)
             }}
             rows={clients?.map(client => {
               return {

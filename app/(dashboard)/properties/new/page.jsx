@@ -123,7 +123,7 @@ export default function Page() {
                 Back to:
                 <Breadcrumbs>
                     <Link href={"/clients"} className="text-green-700 underline">Clients</Link>
-                    <Link href={`/client/${client_id}`} className="text-green-700 underline">{client?.fname ? client?.fname + ' ' + client?.lname : client?.companyname}</Link>
+                    <Link href={`/clients/view/${client_id}`} className="text-green-700 underline">{client?.fname ? client?.fname + ' ' + client?.lname : client?.companyname}</Link>
                 </Breadcrumbs>
             </div>
 

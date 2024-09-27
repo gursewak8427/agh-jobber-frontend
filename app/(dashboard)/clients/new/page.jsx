@@ -192,7 +192,10 @@ export default function Page() {
 
       console.log("Prepared Data:", jsonData);
       dispatch(createClient(jsonData)).then(({ payload }) => {
-        router.push(`/client/${payload?.id}`)
+        console.log({ payload })
+        if (payload?.id) {
+          router.push(`/clients/view/${payload?.id}`)
+        }
       })
       // API call logic here, e.g., await axios.post("/api/clients", jsonData);
     } catch (error) {
