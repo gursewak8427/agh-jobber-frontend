@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomModal from "@/components/CustomModal"
 import ModalHeading from '../ModalHeading'
 import { inputClass, SectionBox } from '..'
@@ -10,25 +10,81 @@ import { useRouter } from 'next/navigation'
 import { getAddress, getClientName } from '@/utils'
 import { useForm } from 'react-hook-form'
 import { useAppDispatch } from '@/store/hooks'
-import { createProperty, fetchProperty } from '@/store/slices/client'
+import { createJobEmployeeSheet, createProperty, fetchProperty, fetchTeam, putJobEmployeeSheet } from '@/store/slices/client'
+import { useSelector } from 'react-redux'
 
 
-const NewTimeEntry = ({ open, onClose, onCreate, client }) => {
+const NewTimeEntry = ({ open, onClose, job }) => {
     const {
         register,
         handleSubmit,
         watch,
         control,
         formState: { errors },
-        setValue
+        setValue,
+        reset
     } = useForm();
 
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const [totalcost, settotalcost] = useState(0)
+
+    const { team } = useSelector(state => state.clients);
+    const hour = watch("hour")
+    const minutes = watch("minutes")
+    const employeecost = watch("employeecost") // per hour cost
+
+    useEffect(() => {
+
+        if (!hour || !minutes || !employeecost) return;
+
+        settotalcost(parseFloat(employeecost) * parseFloat(hour))
+    }, [hour, minutes, employeecost])
+
+    useEffect(() => {
+        if (!open) return;
+
+        dispatch(fetchTeam())
+
+
+        if (Boolean(open) && open != true) {
+            reset({ ...open, receipt: null })
+        } else {
+            reset({
+                "starttime": "",
+                "endtime": "",
+                "hour": "",
+                "minutes": "",
+                "notes": "",
+                "date": "",
+                "employee": "",
+                "employeecost": ""
+            })
+        }
+    }, [open])
 
     const onSubmit = async (data) => {
         try {
-            console.log({ data })
+
+            let jsonData = {
+                "job": job?.id,
+                "starttime": data?.starttime,
+                "endtime": data?.endtime,
+                "hour": data?.hour,
+                "minutes": data?.minutes,
+                "notes": data?.notes,
+                "date": data?.date,
+                "employee": data?.employee,
+                "employeecost": data?.employeecost
+            }
+
+            if (Boolean(open) && open != true) {
+                jsonData["id"] = open?.id;
+                dispatch(putJobEmployeeSheet(jsonData))
+            } else {
+                dispatch(createJobEmployeeSheet(jsonData))
+            }
+            onClose()
         } catch (error) {
             console.error("Error submitting form", error);
         }
@@ -55,14 +111,14 @@ const NewTimeEntry = ({ open, onClose, onCreate, client }) => {
                                 />
                             </div>
                             <div className="flex">
-                                <input {...register("hours")}
-                                    type="time"
-                                    placeholder='Street 1'
+                                <input {...register("hour")}
+                                    type="text"
+                                    placeholder='Hour'
                                     className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none"
                                 />
                                 <input {...register("minutes")}
-                                    type="time"
-                                    placeholder='Street 2'
+                                    type="text"
+                                    placeholder='Minutes'
                                     className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none"
                                 />
                             </div>
@@ -79,12 +135,13 @@ const NewTimeEntry = ({ open, onClose, onCreate, client }) => {
                                 rows={4}
                             />
 
-                            <select {...register("employee")}
+                            <select {...register("employee", { required: true })}
                                 className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
                             >
                                 <option className='text-tprimary' value="">Select Employee</option>
-                                <option className='text-tprimary' value="1">Gurwinder</option>
-                                <option className='text-tprimary' value="2">Gurjeet</option>
+                                {
+                                    team?.map(t => <option key={t?.id} className='text-tprimary' value={t?.id}>{t?.name}</option>)
+                                }
                             </select>
 
                             <div>
@@ -93,7 +150,7 @@ const NewTimeEntry = ({ open, onClose, onCreate, client }) => {
                                     placeholder='Employee cost per hour'
                                     className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
                                 />
-                                <p className='text-xs text-gray-400'>Total cost: $0.00</p>
+                                <p className='text-xs text-gray-400'>Total cost: ${totalcost}</p>
                             </div>
                         </div>
                     </div>
@@ -101,7 +158,7 @@ const NewTimeEntry = ({ open, onClose, onCreate, client }) => {
                         <CustomButton title="Cancel" onClick={() => {
                             onClose()
                         }}></CustomButton>
-                        <CustomButton type={'submit'} variant="primary" title="Create Time Entry"></CustomButton>
+                        <CustomButton type={'submit'} variant="primary" title={Boolean(open) && open != true ? "Update" : "Create Time Entry"}></CustomButton>
                     </div>
                 </form>
             </div>

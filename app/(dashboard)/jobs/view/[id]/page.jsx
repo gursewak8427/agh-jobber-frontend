@@ -2,7 +2,7 @@
 import React, { Fragment, useEffect } from 'react';
 import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon, Tabs, Tab, Box } from '@mui/material';
 import { useState } from 'react';
-import { Archive, Bell, BoxSelect, BoxSelectIcon, CameraIcon, Check, ChevronDown, Copy, Delete, Divide, DollarSign, Eye, FileIcon, FileSignature, FileSignatureIcon, FileText, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, MoreHorizontal, PencilIcon, PencilLine, Plus, PlusIcon, Printer, SignatureIcon, Star, Trash2 } from 'lucide-react';
+import { Archive, Bell, BoxSelect, BoxSelectIcon, CameraIcon, Check, ChevronDown, Copy, Delete, Divide, DollarSign, Download, Eye, FileIcon, FileSignature, FileSignatureIcon, FileText, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, MoreHorizontal, PencilIcon, PencilLine, Plus, PlusIcon, Printer, SignatureIcon, Star, Trash2 } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
@@ -10,7 +10,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchJob, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createJobService, createQuote, fetchallClients, fetchClient, fetchJob, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -27,6 +27,7 @@ import NewVisit from '@/app/_components/job/NewVisit';
 import NewInvoiceReminder from '@/app/_components/job/NewInvoiceReminder';
 
 
+const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 
 export default function Page() {
   const [sendtextmsg, setsendtextmsg] = useState(false)
@@ -41,6 +42,24 @@ export default function Page() {
   const { id } = useParams()
   const dispatch = useAppDispatch()
   const { job } = useAppSelector(store => store.clients)
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    control,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    defaultValues: {
+      products: [],
+    },
+  });
+
+  const { fields: productsList, append: appendProduct, remove: removeProduct } = useFieldArray({
+    control,
+    name: "products",
+  });
 
   const getStatusBox = status => {
     switch (status) {
@@ -129,6 +148,30 @@ export default function Page() {
       </CustomTabPanel>
     </div>)
   }
+
+  const watchProducts = watch("products");
+
+
+  const onBlur = () => {
+    let newSubtotal = 0;
+
+    watchProducts.forEach((product, index) => {
+      if (product.type !== "text") {
+        const material = parseFloat(product.material) || 0;
+        const labour = parseFloat(product.labour) || 0;
+        const markupPercentage = parseFloat(product.markuppercentage) || 0;
+
+        const markupAmount = (material + labour) * (markupPercentage / 100);
+        const totalAmount = (material + labour + markupAmount) * (product?.quantity || 1);
+
+        setValue(`products.${index}.markupamount`, markupAmount.toFixed(2));
+        setValue(`products.${index}.total`, totalAmount.toFixed(2));
+
+        newSubtotal += totalAmount;
+      }
+    });
+  }
+
 
   const MoreActionsMenuItems = () => {
     return (<Fragment>
@@ -236,6 +279,32 @@ export default function Page() {
   }, [])
 
   console.log({ job });
+
+  const [addNewLineItem, setAddNewLineItem] = useState(false)
+
+  const saveService = () => {
+    console.log({ watchProducts })
+
+    let product = watchProducts?.[0]
+    if (!product) return;
+
+    let jsonData = {
+      "name": product?.name,
+      "description": product?.description,
+      "type": "default",
+      "quantity": product?.quantity,
+      "material": product?.material,
+      "markuppercentage": product?.markuppercentage,
+      "markupamount": product?.markupamount,
+      "labour": product?.labour,
+      "total": product?.total,
+      "job": job?.id
+    }
+
+    dispatch(createJobService(jsonData))
+
+    setAddNewLineItem(false)
+  }
 
 
   return (
@@ -393,7 +462,7 @@ export default function Page() {
           <div className="lg:col-span-3 py-4 text-tprimary space-y-4 bg-white p-4 rounded-lg">
             <div className="pb-3 flex gap-4 items-center justify-between w-full">
               <h1 className='text-2xl font-bold text-tprimary'>Line Items</h1>
-              <CustomButton title={"New Line Item"} />
+              <CustomButton title={"New Line Item"} onClick={() => setAddNewLineItem(true)} />
             </div>
 
             <table className='w-full'>
@@ -428,6 +497,100 @@ export default function Page() {
                       <td className='pr-2 py-4 text-right'>${service?.total}</td>
                     </tr>
                   })
+                }
+                {
+                  addNewLineItem && <>
+
+
+                    <tr>
+                      <td className='pr-2 pt-2 pb-4 w-[700px] h-[100px]'>
+                        <div className="flex flex-col h-full items-start justify-start">
+                          <input
+                            {...register(`products[0].name`)}
+                            placeholder='Name'
+                            className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                          />
+                          <textarea
+                            {...register(`products[0].description`)}
+                            placeholder='Description'
+                            className="w-full border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                          ></textarea>
+                        </div>
+                      </td>
+                      <td className='pr-2 pt-2 pb-4 h-[100px]'>
+                        <div className="flex w-[100px] flex-col h-full items-start justify-start">
+                          <input
+                            {...register(`products[0].quantity`)}
+                            onBlur={onBlur}
+                            placeholder='Quantity'
+                            className="focus:outline-none w-full border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2"
+                          />
+                          <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
+                            <CameraIcon className='text-green-800' />
+                          </div>
+                        </div>
+                      </td>
+                      <td className='pr-2 pt-2 pb-4 h-[100px]'>
+                        <div className="flex w-[100px] flex-col h-full items-start justify-start">
+                          <input
+                            {...register(`products[0].material`)}
+                            onBlur={onBlur}
+                            placeholder='Material'
+                            className="focus:outline-none w-full border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                          />
+                        </div>
+                      </td>
+                      <td className='pr-2 pt-2 pb-4 h-[100px]'>
+                        <div className="flex w-[100px] flex-col h-full items-start justify-start">
+                          <input
+                            {...register(`products[0].labour`)}
+                            onBlur={onBlur}
+                            placeholder='Labour'
+                            className="focus:outline-none w-full border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                          />
+                        </div>
+                      </td>
+                      <td className='pr-2 pt-2 pb-4 h-[100px]'>
+                        <div className="flex flex-col  w-[100px]  h-full items-start justify-start">
+                          <input
+                            {...register(`products[0].markuppercentage`)}
+                            onBlur={onBlur}
+                            placeholder='Markup (%)'
+                            className="focus:outline-none w-full border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                          />
+                          <input
+                            readOnly
+                            {...register(`products[0].markupamount`)}
+                            placeholder='Amount'
+                            className="focus:outline-none  w-full border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                          />
+                        </div>
+                      </td>
+                      <td className='pr-2 pt-2 pb-4 h-[100px]'>
+                        <div className="flex flex-col h-full items-start justify-start">
+                          <input
+                            {...register(`products[0].total`)}
+                            readOnly
+                            placeholder='Total'
+                            className="focus:outline-none  w-full  border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div className="flex gap-2 items-center">
+                          <Button onClick={() => saveService()} type='submit' className="text-green-700 border-green-700" variant='outlined'>Save</Button>
+                          <Button onClick={() => setAddNewLineItem(false)} type='button' className="text-red-400 border-red-400" variant='outlined'>Cancel</Button>
+                        </div>
+                      </td>
+                    </tr>
+                  </>
                 }
 
                 {/* <tr className='border-b'>
@@ -469,9 +632,40 @@ export default function Page() {
               <CustomButton title={"New Time Entry"} onClick={() => setnewtimeentry(true)} />
             </div>
 
-            <p className='text-gray-500'>
-              Time tracked to this job by you or your team will show here
-            </p>
+            {
+              job?.labour?.length == 0 || !job?.labour ?
+                <p className='text-gray-500'>
+                  Time tracked to this job by you or your team will show here
+                </p> :
+
+                <table className='w-full'>
+                  <thead>
+                    <tr className='border-b'>
+                      <th><p className="mb-4 text-md font-semibold text-left px-4">Date</p></th>
+                      <th><p className="px-2 mb-4 text-md font-semibold text-left">Start Time</p></th>
+                      <th><p className="mb-4 text-md font-semibold text-center">End Time</p></th>
+                      <th><p className="mb-4 text-md font-semibold text-center">Hours</p></th>
+                      <th><p className="mb-4 text-md font-semibold text-right">Employee Cost</p></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      job?.labour?.map((labour, index) => {
+                        return <tr className='border-b hover:bg-gray-200 cursor-pointer' onClick={() => {
+                          setnewtimeentry(labour)
+                        }} key={index}>
+                          <td className='pr-2 py-4 text-left'>{labour?.date}</td>
+                          <td className='pr-2 py-4 text-left'>{labour?.starttime}</td>
+                          <td className='pr-2 py-4 text-center'>{labour?.endtime}</td>
+                          <td className='pr-2 py-4 text-center'>{labour?.hour}:{labour?.minutes}</td>
+                          <td className='pr-2 py-4 text-right'>${labour?.employeecost}</td>
+                        </tr>
+                      })
+                    }
+                  </tbody>
+                </table>
+            }
+
           </div>
 
           <div className="lg:col-span-3 py-4 text-tprimary space-y-4 bg-white p-4 rounded-lg">
@@ -480,9 +674,56 @@ export default function Page() {
               <CustomButton title={"New Expense"} onClick={() => setnewexpense(true)} />
             </div>
 
-            <p className='text-gray-500'>
-              Get an accurate picture of various job costs by recording expenses
-            </p>
+            {
+              job?.expense?.length == 0 || !job?.expense ?
+                <p className='text-gray-500'>
+                  Get an accurate picture of various job costs by recording expenses
+                </p> :
+
+                <table className='w-full'>
+                  <thead>
+                    <tr className='border-b'>
+                      <th style={{ width: "20px" }}><p className="px-2 mb-4 text-md font-semibold text-left">Item</p></th>
+                      <th><p className="mb-4 text-md font-semibold text-center">Date</p></th>
+                      <th><p className="mb-4 text-md font-semibold text-right px-4">Total</p></th>
+                      <th><p className="mb-4 text-md font-semibold">Actions</p></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      job?.expense?.map((expense, index) => {
+                        return <tr className='border-b hover:bg-gray-200 cursor-pointer' onClick={() => {
+                          setnewexpense(expense)
+                        }} key={index}>
+                          <td className='pr-2 py-4 w-[700px] px-2'>
+                            <div className="text-sm">{expense?.itemname}</div>
+                          </td>
+                          <td className='pr-2 py-4 text-center'>{expense?.date}</td>
+                          <td className='pr-2 py-4 text-right'>${expense?.total}</td>
+                          <td className='py-4 text-right'>
+                            <div className="flex w-full items-center justify-center">
+                              {
+                                expense?.receipt && <Link onClick={e => e?.stopPropagation()} href={process?.env?.NEXT_PUBLIC_IMAGE_URL + expense?.receipt} target='blank'><CustomButton frontIcon={<Download className='w-4 h-4' />} title={"Recipt"} /></Link>
+                              }
+                            </div>
+                          </td>
+                        </tr>
+                      })
+                    }
+                    <tr>
+                      <td colSpan={2} className='p-4 pl-0'>
+                      </td>
+                      <td className='pr-2 py-4 text-right font-semibold'>
+                        ${job?.expense?.reduce((total, expense) => total + parseFloat(expense?.total), 0)}
+                      </td>
+                      <td className='pr-2 py-4 text-center'>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            }
+
+
           </div>
         </div>
 
@@ -612,10 +853,10 @@ export default function Page() {
       <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} />
       <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} />
 
-      <NewTimeEntry open={newtimeentry} onClose={() => setnewtimeentry(false)} onCreate={() => { }} />
-      <NewExpense open={newexpense} onClose={() => setnewexpense(false)} onCreate={() => { }} />
-      <NewVisit job={job} open={newvisit} onClose={() => setnewvisit(false)} onCreate={() => { }} />
-      <NewInvoiceReminder open={invoicereminder} onClose={() => setinvoicereminder(false)} onCreate={() => { }} />
+      <NewTimeEntry job={job} open={newtimeentry} onClose={() => setnewtimeentry(false)} />
+      <NewExpense job={job} open={newexpense} onClose={() => setnewexpense(false)} />
+      <NewVisit job={job} open={newvisit} onClose={() => setnewvisit(false)} />
+      <NewInvoiceReminder open={invoicereminder} onClose={() => setinvoicereminder(false)} />
     </div >
   );
 }

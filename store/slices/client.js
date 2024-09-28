@@ -305,6 +305,26 @@ export const createJobExepense = createAsyncThunk("createJobExepense", async (da
     }
 });
 
+
+export const putJobExepense = createAsyncThunk("putJobExepense", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/jobexpense/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+export const putJobEmployeeSheet = createAsyncThunk("putJobEmployeeSheet", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/jobexployeesheet/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+
 export const createJobEmployeeSheet = createAsyncThunk("createJobEmployeeSheet", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobexployeesheet/`, data);
@@ -617,6 +637,20 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(putJobExepense.fulfilled, (state, action) => {
+                state.job['expense'] = state.job['expense'].map(item => {
+                    if (item?.id == action.payload?.id) {
+                        return action?.payload
+                    }
+
+                    return item;
+                });
+            })
+            .addCase(putJobExepense.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
             .addCase(createJobEmployeeSheet.fulfilled, (state, action) => {
                 state.job['labour'].push(action.payload);
             })
@@ -624,7 +658,32 @@ const clientSlice = createSlice({
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
+        builder
+            .addCase(putJobEmployeeSheet.fulfilled, (state, action) => {
+                state.job['labour'] = state.job['labour'].map(item => {
+                    if (item?.id == action.payload?.id) {
+                        return action?.payload
+                    }
+
+                    return item;
+                });
+            })
+            .addCase(putJobEmployeeSheet.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
     },
 });
 
 export default clientSlice.reducer;
+
+
+// "id": 2,
+//             "starttime": "21:49:00",
+//             "endtime": "09:51:00",
+//             "notes": "test",
+//             "date": "2024-09-28",
+//             "employeecost": 12.0,
+//             "location": null,
+//             "job": 20,
+//             "employee": 3
