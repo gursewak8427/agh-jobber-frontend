@@ -134,19 +134,47 @@ export default function Page() {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <div className="w-full flex items-start justify-start gap-6">
-          <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center">
-            <Bell />
-          </div>
-          <div className="">
-            <p className="font-semibold">No Reminders</p>
-            <p>Fewer invoices slip through the cracks when you set up reminders</p>
-            <div className="my-1">
-              <CustomButton onClick={() => setinvoicereminder(true)} title={"New Invoice Reminder"} />
-            </div>
-          </div>
+          {
+            job?.invoicereminder && job?.invoicereminder?.length != 0 ?
+              <table className='w-full'>
+                <tbody>
+                  {
+                    job?.invoicereminder?.map((item, index) => {
+                      return <tr onClick={() => setinvoicereminder(item)} key={`item-${index}`} className={`${index + 1 != job?.item?.length && 'border-b'} hover:bg-gray-100 cursor-pointer`}>
+                        <td className='px-2 py-2 flex-1 w-[80%] text-tprimary text-sm font-semibold'>{(new Date(item?.startdate)?.toLocaleDateString())}</td>
+                        <td className='px-2 py-2'>
+                          {(item?.team && item?.team?.length > 0 ? <>
+                            <div className="flex gap-2 items-center space-y-2">
+                              {
+                                item?.team?.map(t => {
+                                  return <div className='bg-gray-200 rounded px-3'>{t?.name}</div>
+                                })
+                              }
+                            </div>
+                          </> : <>Not assigned yet</>)}
+                        </td>
+                      </tr>
+                    })
+                  }
+                </tbody>
+              </table> : <>
+                <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center">
+                  <Bell />
+                </div>
+                <div className="">
+                  <p className="font-semibold">No Reminders</p>
+                  <p>Fewer invoices slip through the cracks when you set up reminders</p>
+                  <div className="my-1">
+                    <CustomButton onClick={() => setinvoicereminder(true)} title={"New Invoice Reminder"} />
+                  </div>
+                </div>
+              </>
+          }
+
+
         </div>
-      </CustomTabPanel>
-    </div>)
+      </CustomTabPanel >
+    </div >)
   }
 
   const watchProducts = watch("products");
@@ -856,7 +884,7 @@ export default function Page() {
       <NewTimeEntry job={job} open={newtimeentry} onClose={() => setnewtimeentry(false)} />
       <NewExpense job={job} open={newexpense} onClose={() => setnewexpense(false)} />
       <NewVisit job={job} open={newvisit} onClose={() => setnewvisit(false)} />
-      <NewInvoiceReminder open={invoicereminder} onClose={() => setinvoicereminder(false)} />
+      <NewInvoiceReminder job={job} open={invoicereminder} onClose={() => setinvoicereminder(false)} />
     </div >
   );
 }

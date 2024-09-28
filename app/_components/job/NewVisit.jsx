@@ -121,7 +121,7 @@ const NewVisit = ({ open, onClose, onCreate, job }) => {
                                         </td>
                                         <td className='py-1 pr-2 text-green-600 cursor-pointer'>
                                             <div>
-                                                2
+                                                {job?.jobno}
                                             </div>
                                         </td>
                                     </tr>
@@ -133,7 +133,7 @@ const NewVisit = ({ open, onClose, onCreate, job }) => {
                                         </td>
                                         <td className='py-1 pr-2 text-green-600 cursor-pointer'>
                                             <div>
-                                                Inderpal Singh
+                                                {getClientName(job?.client)}
                                             </div>
                                         </td>
                                     </tr>
@@ -145,7 +145,7 @@ const NewVisit = ({ open, onClose, onCreate, job }) => {
                                         </td>
                                         <td className='py-1 pr-2 h-[50px] text-green-600 cursor-pointer'>
                                             <div className='h-full flex items-start justify-start'>
-                                                2016 Avenida Visconde de Guarapuava Centro, Cochabamba, Paraná 80060-060
+                                                {getAddress(job?.property)}
                                             </div>
                                         </td>
                                     </tr>
@@ -231,7 +231,9 @@ const NewVisit = ({ open, onClose, onCreate, job }) => {
                                                 teamList?.map(t => {
                                                     return <div className='px-3 py-1 bg-primary rounded-full'>
                                                         <span className='text-xs'>{t?.name}</span>
-                                                        <IconButton>
+                                                        <IconButton onClick={() => {
+                                                            setTeamList(teamList?.filter(teamId => teamId?.id != t?.id))
+                                                        }}>
                                                             <X className='w-5 h-5' />
                                                         </IconButton>
                                                     </div>

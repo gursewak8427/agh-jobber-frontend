@@ -4,18 +4,18 @@ import CustomModal from "@/components/CustomModal"
 import ModalHeading from '../ModalHeading'
 import { inputClass, SectionBox } from '..'
 import CustomButton from '@/components/CustomButton'
-import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, MenuItem } from '@mui/material'
-import { ImageIcon, PlusIcon, UserIcon } from 'lucide-react'
+import { Avatar, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText, MenuItem } from '@mui/material'
+import { ImageIcon, PlusIcon, UserIcon, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getAddress, getClientName } from '@/utils'
 import { useForm } from 'react-hook-form'
 import { useAppDispatch } from '@/store/hooks'
-import { createProperty, fetchProperty, fetchTeam } from '@/store/slices/client'
+import { createInvoiceReminder, createJobVisit, createProperty, fetchProperty, fetchTeam, putInvoiceReminder } from '@/store/slices/client'
 import CustomMenu from '@/components/CustomMenu'
 import { useSelector } from 'react-redux'
 
 
-const NewInvoiceReminder = ({ open, onClose, onCreate }) => {
+const NewInvoiceReminder = ({ open, onClose, job }) => {
     const [menu, setmenu] = useState(null)
     const [teamList, setTeamList] = useState([])
 
@@ -25,7 +25,8 @@ const NewInvoiceReminder = ({ open, onClose, onCreate }) => {
         watch,
         control,
         formState: { errors },
-        setValue
+        setValue,
+        reset,
     } = useForm();
 
     const router = useRouter();
@@ -34,12 +35,54 @@ const NewInvoiceReminder = ({ open, onClose, onCreate }) => {
     const { team } = useSelector(state => state.clients);
 
     useEffect(() => {
+        if (!open) return;
+
         dispatch(fetchTeam());
-    }, [])
+
+        if (Boolean(open) && open != true) {
+            reset({ ...open, })
+            setTeamList(open?.team)
+        } else {
+            reset({
+                "title": "",
+                "startdate": "",
+                "enddate": "",
+                "schedulelater": false,
+                "anytime": false,
+            })
+            setTeamList([])
+        }
+    }, [open])
 
     const onSubmit = async (data) => {
         try {
-            console.log({ ...data, team: teamList })
+            let jsonData = {
+                "job": job?.id,
+                "title": data?.title,
+                "startdate": data?.startdate,
+                "enddate": data?.enddate,
+                "schedulelater": data?.schedulelater,
+                "anytime": data?.anytime,
+                team: teamList?.map(t => t?.id),
+            }
+
+            if (Boolean(data?.schedulelater)) {
+                delete jsonData?.startdate;
+                delete jsonData?.enddate;
+            }
+
+            if (Boolean(data?.anytime)) {
+                delete jsonData?.starttime;
+                delete jsonData?.endtime;
+            }
+            console.log({ jsonData })
+
+            if (Boolean(open) && open != true) {
+                dispatch(putInvoiceReminder({ id: open?.id, ...jsonData }))
+            } else {
+                dispatch(createInvoiceReminder(jsonData))
+            }
+            onClose()
         } catch (error) {
             console.error("Error submitting form", error);
         }
@@ -71,7 +114,7 @@ const NewInvoiceReminder = ({ open, onClose, onCreate }) => {
                                         </td>
                                         <td className='py-1 pr-2 text-green-600 cursor-pointer'>
                                             <div>
-                                                2
+                                                {job?.jobno}
                                             </div>
                                         </td>
                                     </tr>
@@ -83,7 +126,7 @@ const NewInvoiceReminder = ({ open, onClose, onCreate }) => {
                                         </td>
                                         <td className='py-1 pr-2 text-green-600 cursor-pointer'>
                                             <div>
-                                                Inderpal Singh
+                                                {getClientName(job?.client)}
                                             </div>
                                         </td>
                                     </tr>
@@ -95,7 +138,7 @@ const NewInvoiceReminder = ({ open, onClose, onCreate }) => {
                                         </td>
                                         <td className='py-1 pr-2 h-[50px] text-green-600 cursor-pointer'>
                                             <div className='h-full flex items-start justify-start'>
-                                                2016 Avenida Visconde de Guarapuava Centro, Cochabamba, Paraná 80060-060
+                                                {getAddress(job?.property)}
                                             </div>
                                         </td>
                                     </tr>
@@ -181,7 +224,9 @@ const NewInvoiceReminder = ({ open, onClose, onCreate }) => {
                                                 teamList?.map(t => {
                                                     return <div className='px-3 py-1 bg-primary rounded-full'>
                                                         <span className='text-xs'>{t?.name}</span>
-                                                        <IconButton>
+                                                        <IconButton onClick={() => {
+                                                            setTeamList(teamList?.filter(teamId => teamId?.id != t?.id))
+                                                        }}>
                                                             <X className='w-5 h-5' />
                                                         </IconButton>
                                                     </div>

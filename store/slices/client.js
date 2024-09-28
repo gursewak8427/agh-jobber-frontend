@@ -296,6 +296,28 @@ export const putJobVisit = createAsyncThunk("putJobVisit", async (data, { reject
     }
 });
 
+
+
+export const createInvoiceReminder = createAsyncThunk("createInvoiceReminder", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobinvoicereminder/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+
+
+export const putInvoiceReminder = createAsyncThunk("putInvoiceReminder", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/jobinvoicereminder/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
 export const createJobExepense = createAsyncThunk("createJobExepense", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobexpense/`, data);
@@ -625,6 +647,29 @@ const clientSlice = createSlice({
                 });
             })
             .addCase(putJobVisit.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+
+        builder
+            .addCase(createInvoiceReminder.fulfilled, (state, action) => {
+                state.job['invoicereminder'].push(action.payload);
+            })
+            .addCase(createInvoiceReminder.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(putInvoiceReminder.fulfilled, (state, action) => {
+                state.job['invoicereminder'] = state.job['invoicereminder'].map(visit => {
+                    if (visit?.id == action.payload?.id) {
+                        return action?.payload
+                    }
+
+                    return visit;
+                });
+            })
+            .addCase(putInvoiceReminder.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
