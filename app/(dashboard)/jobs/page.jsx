@@ -219,7 +219,7 @@ export default function Page() {
                 property: job?.address,
                 schedule: (new Date(job?.created)).toLocaleDateString(),
                 status: job?.status,
-                total: `$${job?.totalprice}}`,
+                total: `$${job?.totalprice}`,
               }
             })}
             sx={{

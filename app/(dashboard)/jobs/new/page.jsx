@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createJob, createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createJob, createJobEmployeeSheet, createJobExepense, createJobService, createJobVisit, createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { formatDate, generateVisits, generateVisitsFor17th, getAddress, getClientName, getPrimary } from '@/utils';
@@ -309,6 +309,11 @@ export default function Page() {
     dispatch(createJob(jsonData));
   };
 
+  //#TODO redux api to hit for creating four services of job must include job_id:job.id in each request
+  // dispatch(createJobService())
+  // dispatch(createJobVisit())
+  // dispatch(createJobExepense())
+  // dispatch(createJobEmployeeSheet())
   return (
     <div className='max-w-[1200px] mx-auto space-y-4'>
       <div className='text-sm text-tprimary'>
