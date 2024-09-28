@@ -85,7 +85,7 @@ export default function Page() {
   const router = useRouter();
 
   const dispatch = useAppDispatch();
-  const { clientslist, invoices } = useSelector(state => state.clients);
+  const { clientslist, invoices, loadingList } = useSelector(state => state.clients);
   const [open, setOpen] = React.useState(null)
 
 
@@ -197,6 +197,13 @@ export default function Page() {
           }}
         >
           <DataGrid
+            loading={loadingList}
+            slotProps={{
+              loadingOverlay: {
+                variant: 'skeleton',
+                noRowsVariant: 'skeleton',
+              },
+            }}
             autoHeight
             columns={columns}
             onRowClick={({ row }) => {
@@ -210,7 +217,7 @@ export default function Page() {
                 paymentduedate: invoice?.paymentduedate,
                 status: invoice?.status,
                 subject: invoice?.subject,
-                costs: `$${invoice?.costs}}`,
+                costs: `$${invoice?.costs}`,
               }
             })}
             sx={{

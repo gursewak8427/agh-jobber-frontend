@@ -505,12 +505,16 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(fetchQuote.pending, (state, action) => {
+                state.loadingFull = true
+            })
             .addCase(fetchQuote.fulfilled, (state, action) => {
                 state.quote = action.payload;
+                state.loadingFull = false
             })
             .addCase(fetchQuote.rejected, (state, action) => {
-                state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
+                state.loadingFull = false
             });
         builder
             .addCase(createQuote.fulfilled, (state, action) => {
@@ -521,8 +525,12 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(fetchQuotes.pending, (state, action) => {
+                state.loadingList = true;
+            })
             .addCase(fetchQuotes.fulfilled, (state, action) => {
                 state.quotes = action.payload;
+                state.loadingList = false;
             })
             .addCase(fetchQuotes.rejected, (state, action) => {
                 state.loadingList = false;
@@ -594,8 +602,12 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(fetchInvoices.pending, (state, action) => {
+                state.loadingList = true;
+            })
             .addCase(fetchInvoices.fulfilled, (state, action) => {
                 state.invoices = action.payload;
+                state.loadingList = false;
             })
             .addCase(fetchInvoices.rejected, (state, action) => {
                 state.loadingList = false;

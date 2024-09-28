@@ -98,7 +98,7 @@ export default function Page() {
   const dispatch = useDispatch();
 
   const [rows, setRows] = useState([])
-  const { quotes } = useSelector(state => state.clients)
+  const { quotes, loadingList } = useSelector(state => state.clients)
 
   useEffect(() => {
     dispatch(fetchQuotes())
@@ -226,6 +226,13 @@ export default function Page() {
           }}
         >
           <DataGrid
+            loading={loadingList}
+            slotProps={{
+              loadingOverlay: {
+                variant: 'skeleton',
+                noRowsVariant: 'skeleton',
+              },
+            }}
             autoHeight
             onRowClick={({ row }) => {
               router.push(`/quotes/view/${row?.id}`)
