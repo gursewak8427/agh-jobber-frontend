@@ -276,7 +276,10 @@ export default function Page() {
       "totalcost": data?.totalcost,
       "totalprice": data?.totalcost,
       "status": "Upcoming",
-      "visit": data?.schedulelater ? [] : visits,
+      "visit": data?.schedulelater ? [] : visits?.map(v => ({
+        title: data?.title,
+        instruction: data?.instruction,
+      })),
       // [{
       //   "startdate": data?.startdate,
       //   ...(data?.jobtype == "oneoff" && {
@@ -316,7 +319,11 @@ export default function Page() {
 
     console.log({ jsonData });
 
-    dispatch(createJob(jsonData));
+    dispatch(createJob(jsonData)).then(({ payload }) => {
+      if (payload?.id) {
+        router.push(`/jobs/view/${payload?.id}`)
+      }
+    });
   };
 
   //#TODO redux api to hit for creating four services of job must include job_id:job.id in each request

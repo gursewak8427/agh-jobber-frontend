@@ -492,31 +492,59 @@ export default function Page() {
             <CustomButton title={"New Visit"} onClick={() => setnewvisit(true)} />
           </div>
 
-          <div className="font-semibold text-sm border-b text-orange-600">
-            Unscheduled
+          <div className="font-semibold text-sm border-b text-green-700">
+            Scheduled
           </div>
 
           <table className='w-full'>
+            <tbody>
+              {
+                job?.visit?.map((visit, index) => {
+                  return <tr onClick={() => setnewvisit(visit)} key={`visit-${index}`} className={`${index + 1 != job?.visit?.length && 'border-b'} hover:bg-gray-100 cursor-pointer`}>
+                    <td className='px-2 py-2 flex-1 w-[80%] text-tprimary text-sm font-semibold'>{(new Date(visit?.startdate)?.toLocaleDateString())}</td>
+                    <td className='px-2 py-2'>
+                      {(visit?.team && visit?.team?.length > 0 ? <>
+                        <div className="flex gap-2 items-center space-y-2">
+                          {
+                            visit?.team?.map(t => {
+                              return <div className='bg-gray-200 rounded px-3'>{t?.name}</div>
+                            })
+                          }
+                        </div>
+                      </> : <>Not assigned yet</>)}
+                    </td>
+                  </tr>
+                })
+              }
+            </tbody>
+          </table>
+
+
+          {/* <div className="font-semibold text-sm border-b text-orange-600">
+            Unscheduled
+          </div> */}
+
+          {/* <table className='w-full'>
             <tbody>
               <tr>
                 <td className='flex-1 w-[80%] text-orange-600 text-sm font-semibold'>Sep 26, 2024 7:56PM</td>
                 <td className=''>Not assigned yet</td>
               </tr>
             </tbody>
-          </table>
-
+          </table> */}
+          {/* 
           <div className="font-semibold text-sm border-b text-red-600">
             Overdue
-          </div>
+          </div> */}
 
-          <table className='w-full'>
+          {/* <table className='w-full'>
             <tbody>
               <tr>
                 <td className='flex-1 w-[80%] text-red-600 text-sm font-semibold'>Sep 26, 2024 7:56PM</td>
                 <td className=''>Assigned to Adarshpal singh</td>
               </tr>
             </tbody>
-          </table>
+          </table> */}
         </div>
 
         <div className="lg:col-span-3 text-tprimary space-y-4 bg-white rounded-lg border text-sm">
@@ -586,7 +614,7 @@ export default function Page() {
 
       <NewTimeEntry open={newtimeentry} onClose={() => setnewtimeentry(false)} onCreate={() => { }} />
       <NewExpense open={newexpense} onClose={() => setnewexpense(false)} onCreate={() => { }} />
-      <NewVisit open={newvisit} onClose={() => setnewvisit(false)} onCreate={() => { }} />
+      <NewVisit job={job} open={newvisit} onClose={() => setnewvisit(false)} onCreate={() => { }} />
       <NewInvoiceReminder open={invoicereminder} onClose={() => setinvoicereminder(false)} onCreate={() => { }} />
     </div >
   );

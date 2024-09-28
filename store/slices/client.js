@@ -269,7 +269,7 @@ export const fetchInvoices = createAsyncThunk("fetchInvoices", async (data, { re
 
 export const createJobService = createAsyncThunk("createJobService", async (data, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobservice/`,data);
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobservice/`, data);
         return response.data;
     } catch (error) {
 
@@ -278,7 +278,18 @@ export const createJobService = createAsyncThunk("createJobService", async (data
 
 export const createJobVisit = createAsyncThunk("createJobVisit", async (data, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobvisit/`,data);
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobvisit/`, data);
+        return response.data;
+    } catch (error) {
+
+    }
+});
+
+
+
+export const putJobVisit = createAsyncThunk("putJobVisit", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/jobvisit/`, data);
         return response.data;
     } catch (error) {
 
@@ -287,7 +298,7 @@ export const createJobVisit = createAsyncThunk("createJobVisit", async (data, { 
 
 export const createJobExepense = createAsyncThunk("createJobExepense", async (data, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobexpense/`,data);
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobexpense/`, data);
         return response.data;
     } catch (error) {
 
@@ -296,7 +307,7 @@ export const createJobExepense = createAsyncThunk("createJobExepense", async (da
 
 export const createJobEmployeeSheet = createAsyncThunk("createJobEmployeeSheet", async (data, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobexployeesheet/`,data);
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobexployeesheet/`, data);
         return response.data;
     } catch (error) {
 
@@ -580,6 +591,20 @@ const clientSlice = createSlice({
                 state.job['visit'].push(action.payload);
             })
             .addCase(createJobVisit.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(putJobVisit.fulfilled, (state, action) => {
+                state.job['visit'] = state.job['visit'].map(visit => {
+                    if (visit?.id == action.payload?.id) {
+                        return action?.payload
+                    }
+
+                    return visit;
+                });
+            })
+            .addCase(putJobVisit.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });

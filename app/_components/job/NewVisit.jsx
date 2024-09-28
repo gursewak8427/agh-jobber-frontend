@@ -4,18 +4,18 @@ import CustomModal from "@/components/CustomModal"
 import ModalHeading from '../ModalHeading'
 import { inputClass, SectionBox } from '..'
 import CustomButton from '@/components/CustomButton'
-import { Avatar, Divider, List, ListItem, ListItemAvatar, ListItemText, MenuItem } from '@mui/material'
-import { ImageIcon, PlusIcon, UserIcon } from 'lucide-react'
+import { Avatar, Divider, IconButton, List, ListItem, ListItemAvatar, ListItemText, MenuItem } from '@mui/material'
+import { ImageIcon, PlusIcon, UserIcon, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { getAddress, getClientName } from '@/utils'
 import { useForm } from 'react-hook-form'
 import { useAppDispatch } from '@/store/hooks'
-import { createProperty, fetchProperty, fetchTeam } from '@/store/slices/client'
+import { createJobVisit, createProperty, fetchProperty, fetchTeam, putJobVisit } from '@/store/slices/client'
 import CustomMenu from '@/components/CustomMenu'
 import { useSelector } from 'react-redux'
 
 
-const NewVisit = ({ open, onClose, onCreate }) => {
+const NewVisit = ({ open, onClose, onCreate, job }) => {
     const [menu, setmenu] = useState(null)
     const [teamList, setTeamList] = useState([])
 
@@ -25,7 +25,8 @@ const NewVisit = ({ open, onClose, onCreate }) => {
         watch,
         control,
         formState: { errors },
-        setValue
+        setValue,
+        reset,
     } = useForm();
 
     const router = useRouter();
@@ -34,12 +35,56 @@ const NewVisit = ({ open, onClose, onCreate }) => {
     const { team } = useSelector(state => state.clients);
 
     useEffect(() => {
+        if (!open) return;
+
         dispatch(fetchTeam());
-    }, [])
+
+        if (Boolean(open) && open != true) {
+            reset({ ...open, })
+            setTeamList(open?.team)
+        } else {
+            reset({
+                "title": "",
+                "description": "",
+                "startdate": "",
+                "enddate": "",
+                "schedulelater": false,
+                "anytime": false,
+            })
+            setTeamList([])
+        }
+    }, [open])
 
     const onSubmit = async (data) => {
         try {
-            console.log({ ...data, team: teamList })
+            let jsonData = {
+                "job": job?.id,
+                "title": data?.title,
+                "description": data?.description,
+                "startdate": data?.startdate,
+                "enddate": data?.enddate,
+                "schedulelater": data?.schedulelater,
+                "anytime": data?.anytime,
+                team: teamList?.map(t => t?.id),
+            }
+
+            if (Boolean(data?.schedulelater)) {
+                delete jsonData?.startdate;
+                delete jsonData?.enddate;
+            }
+
+            if (Boolean(data?.anytime)) {
+                delete jsonData?.starttime;
+                delete jsonData?.endtime;
+            }
+            console.log({ jsonData })
+
+            if (Boolean(open) && open != true) {
+                dispatch(putJobVisit({ id: open?.id, ...jsonData }))
+            } else {
+                dispatch(createJobVisit(jsonData))
+            }
+            onClose()
         } catch (error) {
             console.error("Error submitting form", error);
         }
@@ -59,7 +104,7 @@ const NewVisit = ({ open, onClose, onCreate }) => {
                                 className="focus:outline-gray-500 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                             />
                             <textarea
-                                {...register("instructions")}
+                                {...register("description")}
                                 placeholder='Instructions'
                                 className="focus:outline-gray-500 outline-offset-2 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
                             ></textarea>
