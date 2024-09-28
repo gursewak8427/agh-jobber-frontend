@@ -92,6 +92,7 @@ export default function Page() {
   const endtime = watch("endtime");
   const duration = watch("duration");
   const durationtype = watch("durationtype");
+  const schedulelater = watch("schedulelater");
 
 
   useEffect(() => {
@@ -248,25 +249,34 @@ export default function Page() {
       "jobno": isJobno ? data?.jobno : jobcount,
       "type": data?.jobtype,
       "startdate": data?.startdate,
-      "starttime": data?.starttime,
-      ...(data?.jobtype == "oneoff" && {
-        "enddate": data?.enddate,
+
+      ...(!Boolean(data?.schedulelater) && {
+        "starttime": data?.starttime,
+        ...(data?.jobtype == "oneoff" && {
+          "enddate": data?.enddate,
+        }),
+        "endtime": data?.endtime,
       }),
-      "endtime": data?.endtime,
+
+      ...(data?.jobtype == "recurring" && {
+        "duration": data?.duration,
+        "durationtype": data?.durationtype,
+      }),
+
       "arrivalwindow": null,
       "schedulelater": data?.schedulelater,
       "addunscheduledvisit": true,
       "sendemailtoteam": data?.sendemailtoteam,
       "repeats": data?.repeats,
-      "duration": data?.duration,
-      "durationtype": data?.durationtype,
+
+
       "firstvisit": data?.firstvisit,
       "lastvisit": data?.lastvisit,
       "totalvisit": data?.totalvisit,
       "totalcost": data?.totalcost,
       "totalprice": data?.totalcost,
       "status": "Upcoming",
-      "visit": visits,
+      "visit": data?.schedulelater ? [] : visits,
       // [{
       //   "startdate": data?.startdate,
       //   ...(data?.jobtype == "oneoff" && {
