@@ -388,13 +388,21 @@ const initialState = {
 
     loadingForm: false,
     errorForm: null,
+    loadingObj: {}
 };
 
 // Slice
 const clientSlice = createSlice({
     name: 'clients',
     initialState,
-    reducers: {},
+    reducers: {
+        setLoading: (state, action) => {
+            state.loadingObj[action?.payload] = true;
+        },
+        removeLoading: (state, action) => {
+            delete state.loadingObj[action?.payload]
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchTeam.fulfilled, (state, action) => {
@@ -737,6 +745,7 @@ const clientSlice = createSlice({
     },
 });
 
+export const { setLoading, removeLoading } = clientSlice.actions;
 export default clientSlice.reducer;
 
 

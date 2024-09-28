@@ -37,7 +37,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store/hooks";
 import AddCustomFields from "@/app/_components/CustomFields";
-import { createClient, fetchClientsCustomFields, fetchPropertyCustomFields } from "@/store/slices/client";
+import { createClient, fetchClientsCustomFields, fetchPropertyCustomFields, removeLoading, setLoading } from "@/store/slices/client";
 import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 
@@ -69,7 +69,7 @@ export default function Page() {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { clientcustomfields, propertycustomfields } = useSelector(state => state.clients);
+  const { clientcustomfields, propertycustomfields, loadingObj } = useSelector(state => state.clients);
 
 
   const { fields: mobileFields, append: appendMobile, remove: removeMobile } = useFieldArray({
@@ -102,6 +102,8 @@ export default function Page() {
         setRequiredError(["fname", "lname", "companyname"])
         return;
       }
+
+
 
       const changedValues = clientcustomfields
         .map((item, index) => {
@@ -191,8 +193,10 @@ export default function Page() {
       };
 
       console.log("Prepared Data:", jsonData);
+      dispatch(setLoading("clientsave"))
       dispatch(createClient(jsonData)).then(({ payload }) => {
         console.log({ payload })
+        dispatch(removeLoading("clientsave"))
         if (payload?.id) {
           router.push(`/clients/view/${payload?.id}`)
         }
@@ -618,7 +622,7 @@ export default function Page() {
           <CustomButton title="Cancel"></CustomButton>
           <div className="flex gap-2">
             <CustomButton title="Save and Create Another"></CustomButton>
-            <CustomButton type="submit" variant="primary" title="Save Client"></CustomButton>
+            <CustomButton loading={loadingObj?.clientsave} type="submit" variant="primary" title="Save Client"></CustomButton>
           </div>
         </div>
       </form>
