@@ -2,15 +2,24 @@
 import React, { useEffect, useState } from 'react';
 import CustomButton from './CustomButton';
 import { PlusIcon } from 'lucide-react';
+import { formatDate } from '@/utils';
 
 const JobType = ({ visits, register, watch, setValue }) => {
 
   let jobtype = watch("jobtype")
   let repeats = watch("repeats")
+  let schedulelater = watch("schedulelater")
 
   useEffect(() => {
+    if (schedulelater) {
+      setValue(`startdate`, formatDate(new Date()))
+      setValue(`enddate`, "")
+      setValue(`starttime`, "")
+      setValue(`endtime`, "")
+    }
+
     setValue(`jobtype`, 'oneoff')
-  }, [])
+  }, [schedulelater])
 
 
   return (
@@ -40,21 +49,21 @@ const JobType = ({ visits, register, watch, setValue }) => {
             <div className="flex">
               <div className="w-1/2">
                 <label className="block mb-1 font-semibold text-sm">Start date</label>
-                <input {...register('startdate')} type="date" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-r-none" />
+                <input disabled={schedulelater} {...register('startdate')} type="date" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-r-none" />
               </div>
               <div className="w-1/2">
                 <label className="block mb-1 font-semibold text-sm">End date</label>
-                <input {...register('enddate')} type="date" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-l-none" placeholder="Optional" />
+                <input disabled={schedulelater} {...register('enddate')} type="date" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-l-none" placeholder="Optional" />
               </div>
             </div>
             <div className="flex">
               <div className="w-1/2">
                 <label className="block mb-1 font-semibold text-sm">Start time</label>
-                <input {...register('starttime')} type="time" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-r-none" />
+                <input disabled={schedulelater} {...register('starttime')} type="time" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-r-none" />
               </div>
               <div className="w-1/2">
                 <label className="block mb-1 font-semibold text-sm">End time</label>
-                <input {...register('endtime')} type="time" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-l-none" placeholder="Optional" />
+                <input disabled={schedulelater} {...register('endtime')} type="time" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-l-none" placeholder="Optional" />
               </div>
             </div>
             <div className="flex items-center mb-4">
