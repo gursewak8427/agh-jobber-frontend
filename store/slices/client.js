@@ -382,6 +382,7 @@ const initialState = {
         next: '',
         previous: '',
     },
+    loadingFull: false,
     loadingList: false,
     errorList: null,
 
@@ -452,11 +453,15 @@ const clientSlice = createSlice({
                 state.propertycustomfields.push(action.payload);
             })
         builder
+            .addCase(fetchClient.pending, (state, action) => {
+                state.loadingFull = true
+            })
             .addCase(fetchClient.fulfilled, (state, action) => {
                 state.client = (action.payload);
+                state.loadingFull = false
             })
             .addCase(fetchClient.rejected, (state, action) => {
-                state.loadingList = false;
+                state.loadingFull = false
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder

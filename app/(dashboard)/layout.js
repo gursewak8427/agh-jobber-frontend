@@ -6,6 +6,7 @@ import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Suspense } from "react";
 import { ToastContainer } from "react-toastify";
+import { Loading } from "../_components/loading";
 
 const MainLayout = ({ children }) => {
 
@@ -17,8 +18,9 @@ const MainLayout = ({ children }) => {
           <Sidebar />
           <div className="flex-1">
             <Topbar />
-            <div className="p-6 min-h-screen">{children}</div>
+            <div className="p-6 min-h-screen relative">{children} <Loading /></div>
           </div>
+
         </div>
       </ThemeProvider>
     </Suspense>

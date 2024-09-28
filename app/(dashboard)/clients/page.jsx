@@ -70,7 +70,7 @@ const getStatusBox = status => {
 
 export default function Page() {
   const router = useRouter();
-  const { clients } = useSelector(state => state.clients)
+  const { clients, loadingList } = useSelector(state => state.clients)
   const dispatch = useDispatch();
   React.useEffect(() => {
     dispatch(fetchClients({ page: 1, page_size: 20 }));
@@ -171,6 +171,13 @@ export default function Page() {
           }}
         >
           <DataGrid
+            loading={loadingList}
+            slotProps={{
+              loadingOverlay: {
+                variant: 'skeleton',
+                noRowsVariant: 'skeleton',
+              },
+            }}
             autoHeight
             columns={columns}
             onRowClick={({ row }) => {

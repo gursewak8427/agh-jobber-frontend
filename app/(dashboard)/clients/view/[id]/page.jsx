@@ -71,6 +71,8 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchClient } from "@/store/slices/client";
 import CustomMenu from "@/components/CustomMenu";
 import { HeadingBox, SectionBox } from "@/app/_components";
+import { Loading } from "@/app/_components/loading";
+import SendEmailModal from "@/app/_components/quote/SendEmailModal";
 
 // Function to handle status rendering
 const getStatusBox = status => {
@@ -241,6 +243,7 @@ const TabBox = () => {
 
 export default function Page() {
   const [open, setOpen] = useState(false)
+  const [sendemail, setsendemail] = useState(false)
   const { client } = useAppSelector(store => store.clients)
   const { id } = useParams();
 
@@ -371,7 +374,9 @@ export default function Page() {
           Back to: <Link href={"/clients"} className="text-green-700">Clients</Link>
         </div>
         <div className="flex gap-4">
-          <CustomButton onClick={() => router.push("/clients/new")} title={"Email"} variant={"primary"} frontIcon={<Mail className="w-4 h-4" />} />
+
+          <CustomButton onClick={() => setsendemail(true)} title={"Email"} variant={"primary"} frontIcon={<Mail className="w-4 h-4" />} />
+
           <CustomButton onClick={() => router.push("/clients/new")} title={"Edit"} frontIcon={<Pencil className="w-4 h-4" />} />
           <CustomMenu open={open == "more_actions"} icon={<CustomButton onClick={() => setOpen("more_actions")} title={"More Actions"} frontIcon={<MoreHorizontal />} />}>
             <MoreActionsMenuItems onClose={() => setOpen(null)} />
@@ -731,6 +736,7 @@ export default function Page() {
           </div>
         </div>
       </div>
+      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} />
     </div>
   );
 }
