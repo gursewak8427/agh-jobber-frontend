@@ -13,12 +13,13 @@ import AddCustomFields from '@/app/_components/CustomFields';
 import { createJob, createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
-import { getAddress, getClientName, getPrimary } from '@/utils';
+import { generateVisits, generateVisitsFor17th, getAddress, getClientName, getPrimary } from '@/utils';
 import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 import JobType from '@/components/JobType';
 import Heading from '@/components/Heading';
+import { toast } from 'react-toastify';
 
 const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
@@ -33,6 +34,8 @@ export default function Page() {
   const [teamList, setTeamList] = useState([])
 
   const [open, setOpen] = useState(false);
+
+  const [visits, setVisits] = useState([]);
 
   const [rating, setRating] = useState(0);
   const [isJobno, setJobNo] = useState(false);
@@ -54,6 +57,7 @@ export default function Page() {
     control,
     formState: { errors },
     setValue,
+    getValues
   } = useForm({
     defaultValues: {
       products: [defaultProductLineItem],
@@ -81,7 +85,53 @@ export default function Page() {
   const requireddeposite = watch("requireddeposite");
   const requiredAmount = watch("requiredAmount");
   const jobtype = watch("jobtype");
+  const repeats = watch("repeats");
+  const startDate = watch("startdate");
+  const endDate = watch("enddate");
+  const starttime = watch("starttime");
+  const endtime = watch("endtime");
+  const duration = watch("duration");
+  const durationtype = watch("durationtype");
 
+
+  useEffect(() => {
+    if (jobtype == "oneoff") {
+
+      const startdate = getValues("startdate"); // Start date in YYYY-MM-DD format (Monday in this case)
+      const enddate = getValues("enddate"); // Start date in YYYY-MM-DD format (Monday in this case)
+      const starttime = getValues("starttime");
+      const endtime = getValues("endtime");
+
+      setVisits([{
+        startdate, enddate, starttime, endtime
+      }])
+    } else {
+      const startDate = getValues("startdate"); // Start date in YYYY-MM-DD format (Monday in this case)
+
+      if (!startDate) return;
+
+      const startTime = getValues("starttime");
+      const endTime = getValues("endtime");
+      const duration = getValues("duration");
+      const durationtype = getValues("durationtype");
+
+      const dayOfWeek = 2; // 0 = Sunday, 1 = Monday, 2 = Tuesday, ...
+
+      let _visits = []
+
+      if (repeats == "17th_of_monthly") {
+        _visits = generateVisitsFor17th(startDate, startTime, endTime, parseInt(duration), durationtype);
+      } else if (repeats == "as_we_need") {
+        _visits = []
+      } else {
+        _visits = generateVisits(startDate, startTime, endTime, repeats, dayOfWeek, parseInt(duration), durationtype);
+      }
+
+      setVisits(_visits)
+    }
+
+
+  }, [startDate, endDate, starttime, endtime, jobtype, repeats, duration, durationtype])
 
   useEffect(() => {
     let _requireddeposit = 0
@@ -211,14 +261,15 @@ export default function Page() {
       "totalcost": data?.totalcost,
       "totalprice": data?.totalcost,
       "status": "Upcoming",
-      "visit": [{
-        "startdate": data?.startdate,
-        ...(data?.jobtype == "oneoff" && {
-          "enddate": data?.enddate,
-        }),
-        "starttime": data?.starttime,
-        "endtime": data?.endtime,
-      }],
+      "visit": visits,
+      // [{
+      //   "startdate": data?.startdate,
+      //   ...(data?.jobtype == "oneoff" && {
+      //     "enddate": data?.enddate,
+      //   }),
+      //   "starttime": data?.starttime,
+      //   "endtime": data?.endtime,
+      // }],
 
       // startdate
       // enddate
@@ -246,8 +297,11 @@ export default function Page() {
       },
       "team": teamList?.map(t => t?.id),
     }
-    dispatch(createJob(jsonData));
+
+
     console.log({ jsonData });
+
+    // dispatch(createJob(jsonData));
   };
 
   return (
@@ -364,7 +418,7 @@ export default function Page() {
             <h2 className="text-2xl font-semibold mb-2">Type</h2>
             <div className="lg:col-span-3 py-4 text-tprimary space-y-4 flex flex-row items-start justify-start gap-2">
               <div className="w-2/5 space-y-3">
-                <JobType register={register} watch={watch} setValue={setValue} />
+                <JobType visits={visits} register={register} watch={watch} setValue={setValue} />
 
                 {/* Team  */}
                 <div className='border border-gray-400 rounded-xl p-4 space-y-4'>

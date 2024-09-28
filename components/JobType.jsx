@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import CustomButton from './CustomButton';
 import { PlusIcon } from 'lucide-react';
 
-const JobType = ({ register, watch, setValue }) => {
+const JobType = ({ visits, register, watch, setValue }) => {
 
   let jobtype = watch("jobtype")
+  let repeats = watch("repeats")
 
   useEffect(() => {
     setValue(`jobtype`, 'oneoff')
@@ -86,7 +87,8 @@ const JobType = ({ register, watch, setValue }) => {
             </div>
             <div className="mb-4 flex flex-col">
               <label className='text-sm font-semibold cursor-pointer' htmlFor='1123213'>Repeats</label>
-              <select {...register('repeats')} name="" id="" className='w-full focus:outline-gray-500 border p-2 rounded-md h-11'>
+              <select {...register('repeats')} name="repeats" id="repeats" className='w-full focus:outline-gray-500 border p-2 rounded-md h-11'>
+                <option value="daily">Daily</option>
                 <option value="as_we_need">As we needed - we won't promote you</option>
                 <option value="tuesday_weekly">Weekly on tuesday</option>
                 <option value="tuesday_every_two_week">Every two weeks on tuesday</option>
@@ -97,27 +99,32 @@ const JobType = ({ register, watch, setValue }) => {
 
             <div className="mb-4">
               <div className="flex flex-row">
-                <input {...register('duration')} type="text" value={6} name="" id="" className='w-[50px] focus:outline-gray-500 border p-2 rounded-md rounded-r-none h-11' />
-                <select  {...register('durationtype')} name="" id="" className='w-full focus:outline-gray-500 border p-2 rounded-md rounded-l-none h-11'>
+                <input {...register('duration')} type="text" name="duration" id="duration" className='w-[50px] focus:outline-gray-500 border p-2 rounded-md rounded-r-none h-11' />
+                <select  {...register('durationtype')} name="durationtype" id="durationtype" className='w-full focus:outline-gray-500 border p-2 rounded-md rounded-l-none h-11'>
                   <option value="days">day(s)</option>
-                  <option value="weekly">week(s)</option>
-                  <option value="monthly">month(s)</option>
+                  <option value="weeks">week(s)</option>
+                  <option value="months">month(s)</option>
                   <option value="years">year(s)</option>
                 </select>
               </div>
             </div>
 
             <div className="flex flex-col mb-4">
-              <h2 className="text-sm font-semibold mb-2">Visits</h2>
-              <table>
-                <tbody>
-                  <tr>
-                    <td className='border-r border-gray-400'> <span className='text-sm'>Total</span> <br /> Sep 17, 2024</td>
-                    <td className='border-r border-gray-400 pl-4'> <span className='text-sm'>Last</span> <br /> Mar 11, 2025</td>
-                    <td className='pl-4'> <span className='text-sm'>Total</span> <br /> 26</td>
-                  </tr>
-                </tbody>
-              </table>
+              {
+                repeats == "custom_schedule" || repeats == "as_we_need" ? <></> :
+                  <>
+                    <h2 className="text-sm font-semibold mb-2">Visits</h2>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td className='border-r border-gray-400'> <span className='text-sm'>First</span> <br /> {visits?.[0]?.startdate || "--"}</td>
+                          <td className='border-r border-gray-400 pl-4'> <span className='text-sm'>Last</span> <br /> {visits?.[visits?.length - 1]?.startdate || "--"}</td>
+                          <td className='pl-4'> <span className='text-sm'>Total</span> <br /> {visits?.length}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </>
+              }
             </div>
 
           </div>
