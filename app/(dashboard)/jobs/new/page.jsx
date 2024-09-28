@@ -13,7 +13,7 @@ import AddCustomFields from '@/app/_components/CustomFields';
 import { createJob, createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
-import { generateVisits, generateVisitsFor17th, getAddress, getClientName, getPrimary } from '@/utils';
+import { formatDate, generateVisits, generateVisitsFor17th, getAddress, getClientName, getPrimary } from '@/utils';
 import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
@@ -127,7 +127,12 @@ export default function Page() {
         _visits = generateVisits(startDate, startTime, endTime, repeats, dayOfWeek, parseInt(duration), durationtype);
       }
 
-      setVisits(_visits)
+
+      setVisits(_visits?.map(v => ({
+        ...v,
+        startdate: formatDate(v?.startdate),
+        ...(v?.enddate && { enddate: formatDate(v?.enddate) })
+      })))
     }
 
 
@@ -301,7 +306,7 @@ export default function Page() {
 
     console.log({ jsonData });
 
-    // dispatch(createJob(jsonData));
+    dispatch(createJob(jsonData));
   };
 
   return (
@@ -504,7 +509,7 @@ export default function Page() {
                         <option className='text-sm' value="as_we_need">As needed -- no reminder</option>
                         <option className='text-sm' value="when_job_close">Once when job is closed</option>
                         <option disabled>or</option>
-                        <option className='text-sm' value="custom_schedule">Custom Schedule</option>
+                        <option disabled className='text-sm' value="custom_schedule">Custom Schedule</option>
                       </select>
                     </div>
                   </div>

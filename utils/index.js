@@ -1,6 +1,10 @@
+import moment from "moment";
+
 export const getAddress = property => `${property?.address1}, ${property?.address2}, ${property?.city}, ${property?.province}, ${property?.country}`
 export const getPrimary = list => list?.filter((item) => item?.primary)?.[0]
 export const getClientName = client => client?.fname ? client?.fname + ' ' + client?.lname : client?.companyname
+
+export const formatDate = date => moment(date, 'DD MMMM YYYY').format('YYYY-MM-DD');
 
 
 
@@ -27,24 +31,26 @@ export const generateVisits = (...params) => {
         currentDate = getNextDayOfWeek(startDate, dayOfWeek); // Adjust to next Tuesday or any specific day
     }
 
-    const endDate = new Date(currentDate); // Start with the same date
+
+    let _currentDate = new Date(startDate)
+    const endDate = new Date(_currentDate); // Start with the same date
 
     // Calculate the end date based on the time limit (n days, months, weeks, or years)
     switch (unit) {
         case 'days':
-            endDate.setDate(currentDate.getDate() + duration);
+            endDate.setDate(_currentDate.getDate() + (duration));
             break;
 
         case 'weeks':
-            endDate.setDate(currentDate.getDate() + duration * 7);
+            endDate.setDate(_currentDate.getDate() + (duration) * 7);
             break;
 
         case 'months':
-            endDate.setMonth(currentDate.getMonth() + duration);
+            endDate.setMonth(_currentDate.getMonth() + (duration));
             break;
 
         case 'years':
-            endDate.setFullYear(currentDate.getFullYear() + duration);
+            endDate.setFullYear(_currentDate.getFullYear() + (duration));
             break;
 
         default:
@@ -53,7 +59,7 @@ export const generateVisits = (...params) => {
 
     console.log({ endDate })
 
-    while (currentDate <= endDate) {
+    while (currentDate < endDate) {
         visitArray.push({
             startdate: currentDate.toLocaleDateString('en-GB', {
                 day: 'numeric',
@@ -102,34 +108,35 @@ const getNext17th = (date) => {
 
 export const generateVisitsFor17th = (startDate, startTime, endTime, duration, unit) => {
     const visitArray = [];
+    let _currentDate = new Date(startDate)
     let currentDate = getNext17th(startDate); // Adjust to the 17th of the same or next month
 
-    const endDate = new Date(currentDate); // Start with the same date
+    const endDate = new Date(_currentDate); // Start with the same date
 
     // Calculate the end date based on the time limit (n days, months, weeks, or years)
     switch (unit) {
         case 'days':
-            endDate.setDate(currentDate.getDate() + duration);
+            endDate.setDate(_currentDate.getDate() + (duration));
             break;
 
         case 'weeks':
-            endDate.setDate(currentDate.getDate() + duration * 7);
+            endDate.setDate(_currentDate.getDate() + (duration) * 7);
             break;
 
         case 'months':
-            endDate.setMonth(currentDate.getMonth() + duration);
+            endDate.setMonth(_currentDate.getMonth() + (duration));
             break;
 
         case 'years':
-            endDate.setFullYear(currentDate.getFullYear() + duration);
+            endDate.setFullYear(_currentDate.getFullYear() + (duration));
             break;
 
         default:
-            throw new Error('Invalid time unit');
+            return;
     }
 
 
-    while (currentDate <= endDate) {
+    while (currentDate < endDate) {
         visitArray.push({
             startdate: currentDate.toLocaleDateString('en-GB', {
                 day: 'numeric',

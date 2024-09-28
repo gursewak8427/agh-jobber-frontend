@@ -93,7 +93,7 @@ const JobType = ({ visits, register, watch, setValue }) => {
                 <option value="tuesday_weekly">Weekly on tuesday</option>
                 <option value="tuesday_every_two_week">Every two weeks on tuesday</option>
                 <option value="17th_of_monthly">Monthly on the 17th of the month</option>
-                <option value="custom_schedule">Custom Schedule</option>
+                <option disabled value="custom_schedule">Custom Schedule</option>
               </select>
             </div>
 
