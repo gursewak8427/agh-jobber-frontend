@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        * {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+            }
+        }
+
+        body {
+            padding: 40px;
+        }
+
+        .details-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: start;
+            align-items: start;
+        }
+
+        .details-row>div {
+            width: 50%;
+        }
+
+        .address {
+            max-width: 250px;
+        }
+
+        .heading {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .dark {
+            background-color: rgb(57, 59, 63) !important;
+            color: white;
+        }
+
+        .row-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: whitesmoke;
+            border-bottom: 1px solid rgb(57, 59, 63);
+        }
+
+        .p-10 {
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            padding: 0;
+        }
+
+        thead {
+            background-color: rgb(57, 59, 63);
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        td {
+            border: 1px solid rgb(57, 59, 63);
+        }
+
+        h5 {
+            text-decoration: underline;
+            margin-bottom: 5px;
+        }
+
+        .name {
+            /* color: rgb(57, 59, 63); */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>AGH RENOVATION LIMITED</h1> <br>
+    <div class="details-row">
+        <div>
+            <h5>RECIPIENT :</h5>
+            <h2 class="name">Bob Guy</h2>
+            <p class="address">#123 Main St. Springfield, California 90210</p>
+            <br>
+            <h5>SERVICE ADDRESS:</h5>
+            <p class="address">#8142 2nd St. Anytown, California 123456</p>
+        </div>
+        <div>
+            <div class="heading dark p-10">
+                Invoice #1
+            </div>
+            <div class="row-between p-10">
+                <div>Issued</div>
+                <div>Not sent yet</div>
+            </div>
+            <div class="row-between p-10">
+                <div>Due</div>
+                <div>Net 30 days</div>
+            </div>
+            <div class="dark heading row-between p-10">
+                <div>Total</div>
+                <div>$157.50</div>
+            </div>
+            <div class="row-between p-10">
+                <div>Account Balance</div>
+                <div>$357.50</div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <h3>For Services Rendered</h3>
+    <table cellspacing="0" cellpadding="0">
+        <thead>
+            <th>Product/Service</th>
+            <th>Description</th>
+            <th>Qty.</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Clean Pool</td>
+                <td>Go and do lots of good stuff</td>
+                <td>1</td>
+                <td>$0.00</td>
+                <td>$50.00</td>
+            </tr>
+            <tr>
+                <td>Clean Pool</td>
+                <td>Go and do lots of good stuff</td>
+                <td>1</td>
+                <td>$0.00</td>
+                <td>$50.00</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>
