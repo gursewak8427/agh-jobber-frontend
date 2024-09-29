@@ -138,9 +138,11 @@ export default function Page() {
 
     </Fragment>)
   }
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(fetchQuote(id))
-  },[])
+  }, [])
+
+  console.log({ quote })
 
   return (
     <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary'>
@@ -160,25 +162,22 @@ export default function Page() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            {getStatusBox("Draft")}
+            {getStatusBox(quote?.status)}
           </div>
           <div className='font-bold'>Quote #8</div>
         </div>
         <div className="flex justify-start items-center mb-6 w-full gap-3">
-          <div className="text-4xl font-semibold ">Client name</div>
+          <div className="text-4xl font-semibold ">{getClientName(quote?.client)}</div>
           <span>{getStatusBox("Lead")}</span>
         </div>
 
         <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300 pb-4">
           <div className="w-1/2 flex flex-col space-y-4">
-            <div className="flex flex-col space-y-2">
-              <div className="font-bold">job title</div>
-            </div>
             <div className="flex">
               <div className="w-1/2">
                 <h1 className='font-bold mb-2'>Property address</h1>
                 <p className='max-w-[150px] text-sm'>
-                  2016 Avenida Visconde de Guarapuava Centro, Cochabamba, Paraná 80060-060
+                  {getAddress(quote?.property)}
                 </p>
                 <Button className='text-green-700 p-0' onClick={() => {
                   setPropertyModal("SELECT")
@@ -186,8 +185,8 @@ export default function Page() {
               </div>
               <div className="w-1/2">
                 <h1 className='font-bold mb-2'>Contact details</h1>
-                <p className='max-w-[140px] text-sm'>123-456-7890</p>
-                <p className='max-w-[140px] text-sm text-green-600'>garry94556@gmail.com</p>
+                <p className='max-w-[140px]'>{getPrimary(quote?.client?.mobile)?.number}</p>
+                <p className='max-w-[140px]'>{getPrimary(quote?.client?.email)?.email}</p>
               </div>
             </div>
           </div>
@@ -203,7 +202,7 @@ export default function Page() {
                     <Rating
                       readOnly
                       name="rating"
-                      value={3}
+                      value={quote?.rateopportunity}
                     />
                   </td>
                 </tr>
@@ -212,7 +211,7 @@ export default function Page() {
                     Created At
                   </td>
                   <td className='py-2'>
-                    Sep 22, 2024
+                    {new Date(quote?.createdAt)?.toLocaleDateString()}
                   </td>
                 </tr>
                 <tr>
@@ -220,10 +219,13 @@ export default function Page() {
                     Salesperson
                   </td>
                   <td className='py-2'>
-                    <div className="flex gap-2 items-center">
-                      <Avatar className='w-10 h-10 text-sm bg-primary-dark text-tprimary'>GS</Avatar>
-                      <span>Gurvinder Singh</span>
-                    </div>
+                    {
+                      quote?.salesperson &&
+                      <div className="flex gap-2 items-center">
+                        <Avatar className='w-10 h-10 text-sm bg-primary-dark text-tprimary'>{quote?.salesperson?.name?.[0]}</Avatar>
+                        <span>{quote?.salesperson?.name}</span>
+                      </div>
+                    }
                   </td>
                 </tr>
               </tbody>
@@ -235,7 +237,7 @@ export default function Page() {
         <div className="lg:col-span-3 py-4 text-tprimary space-y-4">
           <table className='w-full'>
             <thead>
-              <tr>
+              <tr className='border-b'>
                 <th style={{ width: "20px" }}><p className="mb-4 text-md font-semibold text-left">Product / Service</p></th>
                 <th><p className="mb-4 text-md font-semibold text-left">Qty.</p></th>
                 <th><p className="mb-4 text-md font-semibold text-left px-4">Material</p></th>
@@ -245,37 +247,27 @@ export default function Page() {
               </tr>
             </thead>
             <tbody>
-              {/* For Text Fields */}
-              {/* <tr>
-                <td className='pr-2 pb-4 w-[700px] h-[100px]'>
-                  <div className="flex flex-col h-full items-start justify-start">
-                    <div className="text-sm">Free Assessment</div>
-                    <div className="text-sm text-gray-400">Our experts will come to assess your needs and discuss solutions</div>
-                  </div>
-                </td>
-                <td className='pr-2 pb-4 h-[100px]'>
-                </td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr> */}
-              <tr>
-                <td className='pr-2 pb-4 w-[700px] h-[100px]'>
-                  <div className="flex flex-col h-full items-start justify-start">
-                    <div className="text-sm">Free Assessment</div>
-                    <div className="text-sm text-gray-400">Our experts will come to assess your needs and discuss solutions</div>
-                  </div>
-                </td>
-                <td className='pr-2 pb-4 h-[100px] text-center'>1</td>
-                <td className='pr-2 pb-4 h-[100px] text-center'>$0</td>
-                <td className='pr-2 pb-4 h-[100px] text-center'>$0</td>
-                <td className='pr-2 pb-4 h-[100px] text-center'>
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <span className=''>$25<small className='ml-1 text-gray-700'><i>(10%)</i></small></span>
-                  </div>
-                </td>
-                <td className='pr-2 pb-4 h-[100px] text-right'>$0</td>
-              </tr>
+              {
+                quote?.product?.map((service, index) => {
+                  return <tr className='border-b' key={index}>
+                    <td className='pr-2 py-4 w-[700px]'>
+                      <div className="flex flex-col h-full items-start justify-start">
+                        <div className="text-sm">{service?.name}</div>
+                        <div className="text-sm text-gray-400">{service?.description}</div>
+                      </div>
+                    </td>
+                    <td className='pr-2 py-4 text-center'>{service?.quantity || 0}</td>
+                    <td className='pr-2 py-4 text-center'>${service?.material || 0}</td>
+                    <td className='pr-2 py-4 text-center'>${service?.labour || 0}</td>
+                    <td className='pr-2 py-4 text-center'>
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700'><i>(${service?.markuppercentage}%)</i></small></span>
+                      </div>
+                    </td>
+                    <td className='pr-2 py-4 text-right'>${service?.total}</td>
+                  </tr>
+                })
+              }
             </tbody>
           </table>
 
@@ -284,40 +276,46 @@ export default function Page() {
             <div className="p-4 rounded-lg w-1/2">
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">Subtotal</div>
-                <p className='text-sm text-gray-700'>$100</p>
+                <p className='text-sm text-gray-700'>${quote?.subtotal}</p>
               </div>
 
-              <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium text-sm min-w-[200px]">Discount</div>
-                <span className='text-sm '>-$10<small className='ml-1 text-gray-700'><i>(10%)</i></small></span>
-              </div>
+              {
+                quote?.discount > 0 &&
+                <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
+                  <div className="font-medium text-sm min-w-[200px]">Discount</div>
+                  <span className='text-sm '>-(${parseFloat(quote?.discount || 0)?.toFixed(1)})<small className='ml-1 text-gray-700'><i>({quote?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
+                </div>
+              }
 
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">GST (5.0)%</div>
-                <p className='text-sm text-gray-700'>$2.51</p>
+                <p className='text-sm text-gray-700'>${quote?.tax}</p>
               </div>
 
               <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
                 <div className="font-semibold min-w-[200px]">Total</div>
-                <p className='text-gray-700 font-semibold'>$92.51</p>
+                <p className='text-gray-700 font-semibold'>${quote?.costs}</p>
               </div>
 
-              <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
-                <div className="font-medium text-sm min-w-[200px]">Required Deposit</div>
-                <span className='text-sm '>$25<small className='ml-1 text-gray-700'><i>(10%)</i></small></span>
-              </div>
+              {
+                quote?.requireddeposit > 0 &&
+                <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
+                  <div className="font-medium text-sm min-w-[200px]">Required Deposit</div>
+                  <span className='text-sm '>-(${parseFloat(quote?.requireddeposite || 0)?.toFixed(1)})<small className='ml-1 text-gray-700'><i>({quote?.depositetype == "percentage" ? "%" : "$"})</i></small></span>
+                </div>
+              }
             </div>
           </div>
 
           <div className="space-y-8">
             <div className="">
               <h1 className='font-bold mb-2'>Client message</h1>
-              <p className="text-sm">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laborum, excepturi.</p>
+              <p className="text-sm">{quote?.clientmessage || "--"}</p>
             </div>
 
             <div className="">
               <h1 className='font-bold mb-2'>Contract / Disclaimer</h1>
-              <p className="text-sm">This quote is valid for the next 15 days, after which values may be subject to change.</p>
+              <p className="text-sm">{quote?.disclaimer}</p>
             </div>
           </div>
         </div>
@@ -327,7 +325,7 @@ export default function Page() {
       <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg">
         <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
         <div className="mt-4">
-          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">{quote?.internalnote || "--"}</textarea>
         </div>
 
         <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
@@ -341,20 +339,20 @@ export default function Page() {
           <p className='font-normal text-sm text-tprimary'>Link not to related</p>
           <div className="flex gap-2 text-sm items-center capitalize">
             <div className="flex gap-2 items-center">
-              <input type="checkbox" className='w-5 h-5' name="" id="jobs" />
+              <input readOnly checked={quote?.isrelatedinvoices} type="checkbox" className='w-5 h-5' name="" id="jobs" />
               <label htmlFor="jobs">jobs</label>
             </div>
             <div className="flex gap-2 items-center">
-              <input type="checkbox" className='w-5 h-5' name="" id="invoices" />
+              <input readOnly checked={quote?.isrelatedjobs} type="checkbox" className='w-5 h-5' name="" id="invoices" />
               <label htmlFor="invoices">invoices</label>
             </div>
           </div>
         </div>
 
-        <div className="flex gap-2 items-center justify-end">
+        {/* <div className="flex gap-2 items-center justify-end">
           <CustomButton title="Cancel"></CustomButton>
           <CustomButton variant={"primary"} title="Save"></CustomButton>
-        </div>
+        </div> */}
       </div>
 
 

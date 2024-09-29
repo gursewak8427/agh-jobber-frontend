@@ -382,7 +382,8 @@ export default function Page() {
               <div className="w-1/2 font-extralight text-gray-500 text-sm">
                 <h1 className='font-bold mb-2 text-black'>Contact details</h1>
                 <p className='max-w-[140px]'>{getPrimary(job?.client?.mobile)?.number}</p>
-                <p className='max-w-[140px]'>{getPrimary(job?.client?.email)?.email}</p>              </div>
+                <p className='max-w-[140px]'>{getPrimary(job?.client?.email)?.email}</p>
+              </div>
             </div>
           </div>
           {/* Quote Details */}
