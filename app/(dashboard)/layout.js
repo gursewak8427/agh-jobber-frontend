@@ -20,7 +20,6 @@ const MainLayout = ({ children }) => {
             <Topbar />
             <div className="p-6 min-h-screen relative">{children} <Loading /></div>
           </div>
-
         </div>
       </ThemeProvider>
     </Suspense>
