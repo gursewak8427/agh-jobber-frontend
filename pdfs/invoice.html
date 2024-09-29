@@ -22,6 +22,8 @@
 
         body {
             padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .details-row {
@@ -61,23 +63,23 @@
             padding: 10px;
         }
 
-        table {
+        .data table {
             width: 100%;
             padding: 0;
         }
 
-        thead {
+        .data thead {
             background-color: rgb(57, 59, 63);
             color: white;
         }
 
-        th,
-        td {
+        .data th,
+        .data td {
             padding: 10px;
             text-align: left;
         }
 
-        td {
+        .data td {
             border: 1px solid rgb(57, 59, 63);
         }
 
@@ -88,6 +90,39 @@
 
         .name {
             /* color: rgb(57, 59, 63); */
+        }
+
+        .flex {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+        footer {
+            padding: 20px 0;
+            width: 100%;
+            display: flex;
+        }
+
+        footer p {
+            width: 60%;
+        }
+
+        footer td {
+            padding: 5px;
+            border-bottom: 1px solid gray;
+        }
+
+        footer>div {
+            width: 40%;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        footer table td:nth-child(2) {
+            padding-left: 20px;
+            text-align: right;
         }
     </style>
 </head>
@@ -126,32 +161,60 @@
         </div>
     </div>
     <br>
+    <br>
     <h3>For Services Rendered</h3>
-    <table cellspacing="0" cellpadding="0">
-        <thead>
-            <th>Product/Service</th>
-            <th>Description</th>
-            <th>Qty.</th>
-            <th>Unit Price</th>
-            <th>Total</th>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Clean Pool</td>
-                <td>Go and do lots of good stuff</td>
-                <td>1</td>
-                <td>$0.00</td>
-                <td>$50.00</td>
-            </tr>
-            <tr>
-                <td>Clean Pool</td>
-                <td>Go and do lots of good stuff</td>
-                <td>1</td>
-                <td>$0.00</td>
-                <td>$50.00</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="data">
+        <table cellspacing="0" cellpadding="0">
+            <thead>
+                <th>Product/Service</th>
+                <th>Description</th>
+                <th>Qty.</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Clean Pool</td>
+                    <td>Go and do lots of good stuff</td>
+                    <td>1</td>
+                    <td>$0.00</td>
+                    <td>$50.00</td>
+                </tr>
+                <tr>
+                    <td>Clean Pool</td>
+                    <td>Go and do lots of good stuff</td>
+                    <td>1</td>
+                    <td>$0.00</td>
+                    <td>$50.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <footer>
+        <p>Thank you for your business. Please contact us with any questions regarding this invoice</p>
+        <div>
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <td>Subtatal</td>
+                        <td>$150.0</td>
+                    </tr>
+                    <tr>
+                        <td>GST (5.0%)</td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><b>Total</b></td>
+                        <td>$157.0</td>
+                    </tr>
+                    <tr>
+                        <td>Account balance</td>
+                        <td style="color: red;">$357.0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </footer>
 </body>
 
 </html>
