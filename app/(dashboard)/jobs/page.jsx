@@ -16,7 +16,7 @@ import { fetchJobs } from '@/store/slices/client';
 
 export default function Page() {
   const router = useRouter();
-  const { jobs } = useSelector(state => state.clients);
+  const { jobs, loadingList } = useSelector(state => state.clients);
   const dispatch = useDispatch();
 
 
@@ -206,6 +206,13 @@ export default function Page() {
           }}
         >
           <DataGrid
+            loading={loadingList}
+            slotProps={{
+              loadingOverlay: {
+                variant: 'skeleton',
+                noRowsVariant: 'skeleton',
+              },
+            }}
             autoHeight
             columns={columns}
             onRowClick={({ row }) => {
