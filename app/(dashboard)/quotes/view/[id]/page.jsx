@@ -160,6 +160,10 @@ export default function Page() {
       </PageHeading>
       <div className="p-8 border border-gray-200 rounded-xl border-t-8 border-t-pink-950 space-y-5">
         {/* Header */}
+        <p className="font-bold">
+          {quote?.title}
+        </p>
+
         <div className="flex justify-between items-center">
           <div>
             {getStatusBox(quote?.status)}

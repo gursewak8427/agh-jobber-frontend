@@ -221,13 +221,14 @@ export default function Page() {
       "tax": gst,
       "costs": totalcost,
       // "estimatemargin": 0.0,
-      // "requireddeposite": 0.0,
+      "requireddeposite": data?.requireddeposite,
       "depositetype": "amount",
       "clientmessage": data?.clientmessage,
 
       "disclaimer": data?.disclaimer,
       "internalnote": data?.internalnote,
       "isrelatedjobs": data?.isrelatedjobs,
+      "isrelatedinvoices": data?.isrelatedinvoices,
       "salesperson_id": selectedSalesPerson?.id,
       // ==============
 
@@ -236,12 +237,16 @@ export default function Page() {
       "property_id": selectedProperty?.id,
       "client_id": client_id,
 
-      // "clientpdfstyle": null,
+      // "clientpdfstyle": null,  
       "custom_field": changeAdditionalquotedetails
     }
 
     console.log({ jsonData });
-    dispatch(createQuote(jsonData))
+    dispatch(createQuote(jsonData)).then(({ payload }) => {
+      if (payload?.id) {
+        router.push(`/quotes/view/${payload?.id}`)
+      }
+    });
   };
 
 
@@ -687,11 +692,11 @@ export default function Page() {
                 <p className='font-normal text-sm text-tprimary'>Link not to related</p>
                 <div className="flex gap-2 text-sm items-center capitalize">
                   <div className="flex gap-2 items-center">
-                    <input {...register("isrelatedjobs")} type="checkbox" className='w-5 h-5' name="" id="jobs" />
+                    <input {...register("isrelatedjobs")} type="checkbox" className='w-5 h-5' name="isrelatedjobs" id="isrelatedjobs" />
                     <label htmlFor="jobs">jobs</label>
                   </div>
                   <div className="flex gap-2 items-center">
-                    <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="" id="invoices" />
+                    <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="isrelatedinvoices" id="isrelatedinvoices" />
                     <label htmlFor="invoices">invoices</label>
                   </div>
                 </div>
