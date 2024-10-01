@@ -4,8 +4,14 @@ import ModalHeading from '../ModalHeading'
 import CustomButton from '@/components/CustomButton'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
+import { getClientName } from '@/utils'
+import { useDispatch } from 'react-redux'
+import { sendQuoteMessage } from '@/store/slices/client'
+import { useAppSelector } from '@/store/hooks'
 
-const TextMessageModal = ({ open, onClose, client }) => {
+const TextMessageModal = ({ open, onClose, client, quote, profile }) => {
+    const dispatch = useDispatch()
+    const { loadingObj } = useAppSelector(store => store.clients)
     const {
         register,
         handleSubmit,
@@ -19,30 +25,30 @@ const TextMessageModal = ({ open, onClose, client }) => {
     const onSubmit = async (data) => {
         let jsonData = {
             ...data,
-            message: `${data?.message} \n\nView your quote here https://jbbr.io/6Z0XZcoNrhH4kvEr9`
+            message: data?.message,
+            client: client.id,
+            quote:quote.id
         }
         console.log({ jsonData })
+        dispatch(sendQuoteMessage(jsonData)).then(() => onClose());
     }
-
-    useEffect(() => {
-        setValue(`mobile`, "9041900000")
-        setValue(`message`, `Hi test test, here's your quote from AGH RENOVATION LIMITED.`)
-    }, [open])
 
     const message = watch("message")
 
-    const handleClose = () => {
-        reset({
-            mobile: "",
-            message: ""
-        })
-        onClose();
-    }
+    useEffect(() => {
+        if (client?.mobile?.length > 0) {
+            const validMobile = client.mobile.find(mobile => mobile.valid && mobile.sms);
+            if (validMobile) {
+                setValue(`mobile`, `+${validMobile.number}`)
+                setValue(`message`, `Dear ${getClientName(client)}, We are delighted to share the quotation from ${profile.company_name} with you! Thank you for considering us.`)
+            }
+        }
+    }, [client]);
 
     return (
         <CustomModal wide={true} show={Boolean(open)} onClose={onClose}>
             <div className="space-y-6">
-                <ModalHeading onClose={onClose}>Send quote #8 to Gursewak as text message</ModalHeading>
+                <ModalHeading onClose={onClose}>Send quote #{quote.quoteno} to {getClientName(client)} as text message</ModalHeading>
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="content mt-6 space-y-5">
@@ -65,14 +71,14 @@ const TextMessageModal = ({ open, onClose, client }) => {
                             <div className='rounded-xl rounded-bl-none bg-primary-dark p-4 text-sm'>
                                 {message}
 
-                                <div className="mt-4">View your quote here https://jbbr.io/6Z0XZcoNrhH4kvEr9</div>
+                                <div className="mt-4">View your quote here https://client.prosbro.com/TfdR00c5tr9</div>
                             </div>
                             <p className="text-gray-500 italic">Your client can view the quote in their client hub.</p>
                         </div>
                     </div>
                     <div className="flex gap-2 items-center justify-end">
-                        <CustomButton onClick={handleClose} title="Cancel"></CustomButton>
-                        <CustomButton type={"submit"} variant={"primary"} title="Send"></CustomButton>
+                        <CustomButton onClick={onClose} title="Cancel"></CustomButton>
+                        <CustomButton type={"submit"} loading={loadingObj.quotemessage} variant={"primary"} title="Send"></CustomButton>
                     </div>
                 </div>
             </form>

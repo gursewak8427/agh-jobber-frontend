@@ -12,24 +12,24 @@ const cards = [
 
 const Workflow = () => {
     return (
-        <div className='flex flex-col gap-3'>
+        <div className='flex flex-col gap-3 dark:text-dark-text dark:bg-dark-secondary'>
             <Heading title="Workflow" />
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center dark:bg-dark-secondary dark:text-dark-text ">
                 {cards.map((card, index) => (
-                    <div key={index} className={`flex flex-col w-[24.9%] bg-gray-100 border-t-4 ${index == 0 ? 'rounded-l' : index == cards?.length - 1 ? 'rounded-r' : ''} ${card?.color} text-tprimary p-4`}>
-                        <div className="flex flex-col gap-1 p-2 hover:bg-primary-dark cursor-pointer rounded-lg">
+                    <div key={index} className={`dark:bg-dark-secondary dark:text-dark-text  flex flex-col  w-[24.9%] bg-gray-100 border-t-4 ${index == 0 ? 'rounded-l' : index == cards?.length - 1 ? 'rounded-r' : ''} ${card?.color} text-tprimary p-4`}>
+                        <div className="flex flex-col gap-1 p-2 hover:bg-primary-dark dark:text-dark-text dark:hover:bg-dark-hover cursor-pointer rounded-lg">
                             <div className="flex gap-3 items-center mb-3">
                                 {card.icon}
-                                <span className='text-sm text-gray-500'>{card.title}</span>
+                                <span className='text-sm text-gray-500 dark:text-dark-text'>{card.title}</span>
                             </div>
                             <h3 className='text-4xl font-black'>{card.count}</h3>
                             <span className='text-md font-semibold'>{card.title2}</span>
                         </div>
-                        <div className="px-2 py-[3px] gap-1 hover:bg-primary-dark cursor-pointer rounded-lg">
-                            <span className='text-sm text-gray-500'>{card.bottom1.title} ({card.bottom1.count})</span>
+                        <div className="px-2 py-[3px] gap-1 hover:bg-primary-dark dark:hover:bg-dark-hover cursor-pointer rounded-lg">
+                            <span className='text-sm text-gray-500 dark:text-dark-text'>{card.bottom1.title} ({card.bottom1.count})</span>
                         </div>
-                        <div className="px-2 py-[3px] gap-1 hover:bg-primary-dark cursor-pointer rounded-lg">
-                            <span className='text-sm text-gray-500'>{card.bottom2.title} ({card.bottom2.count})</span>
+                        <div className="px-2 py-[3px] gap-1 hover:bg-primary-dark  dark:hover:bg-dark-hover cursor-pointer rounded-lg">
+                            <span className='text-sm text-gray-500 dark:text-dark-text'>{card.bottom2.title} ({card.bottom2.count})</span>
                         </div>
                     </div>
                 ))}

@@ -1,20 +1,25 @@
+"use client"
 import { Clock, FileText, DollarSign, CheckCircle, XCircle, Wallet } from 'lucide-react';
 
 import Greeting from "@/components/Greeting";
 import Workflow from "@/components/Workflow";
 import { Button, Divider } from '@mui/material';
+import { useSelector } from 'react-redux';
+
 
 export default function Home() {
+  const { profile } = useSelector(state => state.clients)
+
   return (
-    <div className="flex flex-col gap-8 px-4 py-6">
-      <Greeting />
+    <div className="flex flex-col gap-8 px-4 py-6  dark:text-dark-text dark:bg-dark-secondary ">
+      <Greeting profile={profile}/>
       <Workflow />
 
       {/* Content */}
-      <div className="min-h-screen flex items-start justify-start gap-4 text-tprimary w-full">
-        <div className="flex flex-grow flex-col gap-8">
+      <div className="min-h-screen flex items-start justify-start gap-4 text-tprimary w-full dark:bg-dark-secondary dark:text-dark-text">
+        <div className="flex flex-grow flex-col gap-8 dark:bg-dark-secondary dark:text-dark-text">
           {/* To Do Section */}
-          <div className="w-full p-2 space-y-4">
+          <div className="w-full p-2 space-y-4 ">
             <p className="font-semibold text-lg">To do</p>
 
             <ul className="space-y-4 border rounded-xl shadow-md">

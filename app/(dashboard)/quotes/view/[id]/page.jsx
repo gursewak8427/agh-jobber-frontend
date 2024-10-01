@@ -26,10 +26,11 @@ import SendEmailModal from '@/app/_components/quote/SendEmailModal';
 export default function Page() {
   const [sendtextmsg, setsendtextmsg] = useState(false)
   const [sendemail, setsendemail] = useState(false)
+  const [email, setEmail] = useState(false)
   const [menu, setmenu] = useState(false)
   const { id } = useParams()
   const dispatch = useAppDispatch()
-  const { quote } = useAppSelector(store => store.clients)
+  const { quote, profile } = useAppSelector(store => store.clients)
 
   const getStatusBox = status => {
     switch (status) {
@@ -144,6 +145,14 @@ export default function Page() {
 
   console.log({ quote })
 
+  useEffect(() => {
+    if (quote.client && quote.client.email) {
+      const primaryEmail = quote.client.email.find(email => email.primary === true);
+      if (primaryEmail) {
+        setEmail(primaryEmail.email);
+      }
+    }
+  }, [quote]);
   return (
     <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary'>
       <PageHeading>
@@ -168,7 +177,7 @@ export default function Page() {
           <div>
             {getStatusBox(quote?.status)}
           </div>
-          <div className='font-bold'>Quote #8</div>
+          <div className='font-bold'>Quote #{quote.quoteno}</div>
         </div>
         <div className="flex justify-start items-center mb-6 w-full gap-3">
           <div className="text-4xl font-semibold ">{getClientName(quote?.client)}</div>
@@ -183,9 +192,9 @@ export default function Page() {
                 <p className='max-w-[150px] text-sm'>
                   {getAddress(quote?.property)}
                 </p>
-                <Button className='text-green-700 p-0' onClick={() => {
+                {/* <Button className='text-green-700 p-0' onClick={() => {
                   setPropertyModal("SELECT")
-                }}>change</Button>
+                }}>change</Button> */}
               </div>
               <div className="w-1/2">
                 <h1 className='font-bold mb-2'>Contact details</h1>
@@ -360,8 +369,8 @@ export default function Page() {
       </div>
 
 
-      <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} />
-      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} />
-    </div >
+      <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} client={quote?.client} quote={quote} profile={profile} />
+      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} client={quote?.client} email={email} />
+    </div>
   );
 }

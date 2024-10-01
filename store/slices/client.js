@@ -1,4 +1,5 @@
 import axiosInstance from '@/store/AxiosInstance';
+import { handleAsyncThunkError } from '@/utils/handleAsyncThunkError';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
 
@@ -356,8 +357,37 @@ export const createJobEmployeeSheet = createAsyncThunk("createJobEmployeeSheet",
     }
 });
 
+export const sentClientCustommail = createAsyncThunk("sentClientCustommail", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/clientcustommail/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const fetchBusniessProfile = createAsyncThunk("fetchBusniessProfile", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/profile/`,);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const sendQuoteMessage = createAsyncThunk("sendQuoteMessage", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quotesms/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+
 // Initial State
 const initialState = {
+    profile: {},
     team: [],
     clients: [],
     clientslist: [],
@@ -385,10 +415,12 @@ const initialState = {
     loadingFull: false,
     loadingList: false,
     errorList: null,
+    successList: null,
 
     loadingForm: false,
     errorForm: null,
-    loadingObj: {}
+    loadingObj: {},
+    darkMode: false
 };
 
 // Slice
@@ -402,6 +434,15 @@ const clientSlice = createSlice({
         removeLoading: (state, action) => {
             delete state.loadingObj[action?.payload]
         },
+        clearsuccessList: (state, action) => {
+            state.successList = null
+        },
+        clearerrorList: (state, action) => {
+            state.errorList = null
+        },
+        darkmodeState: (state, action) => {
+            state.darkMode = !state.darkMode
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -453,12 +494,32 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(createClientsCustomFields.pending, (state, action) => {
+                state.loadingObj['client'] = true
+            })
+        builder
             .addCase(createClientsCustomFields.fulfilled, (state, action) => {
+                delete state.loadingObj['client']
                 state.clientcustomfields.push(action.payload);
+            })
+        builder
+            .addCase(createClientsCustomFields.rejected, (state, action) => {
+                delete state.loadingObj['client']
+                state.errorList = action.payload?.message || 'Failed to create client custom fields';
+            })
+        builder
+            .addCase(createPropertyCustomFields.pending, (state, action) => {
+                state.loadingObj['property'] = true
             })
         builder
             .addCase(createPropertyCustomFields.fulfilled, (state, action) => {
                 state.propertycustomfields.push(action.payload);
+                delete state.loadingObj['property']
+            })
+        builder
+            .addCase(createPropertyCustomFields.rejected, (state, action) => {
+                delete state.loadingObj['property']
+                state.errorList = action.payload?.message || 'Failed to create client custom fields';
             })
         builder
             .addCase(fetchClient.pending, (state, action) => {
@@ -497,11 +558,15 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(createQuoteCustomFields.pending, (state, action) => {
+                state.loadingObj['quote'] = true
+            })
             .addCase(createQuoteCustomFields.fulfilled, (state, action) => {
                 state.quotecustomfields.push(action.payload);
+                delete state.loadingObj['quote']
             })
             .addCase(createQuoteCustomFields.rejected, (state, action) => {
-                state.loadingList = false;
+                delete state.loadingObj['quote']
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
@@ -562,12 +627,17 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(createJobCustomFields.pending, (state, action) => {
+                state.loadingObj['job'] = true
+            })
             .addCase(createJobCustomFields.fulfilled, (state, action) => {
                 state.jobcustomfields.push(action.payload);
+                delete state.loadingObj['job']
             })
             .addCase(createJobCustomFields.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['job']
             });
         builder
             .addCase(fetchJob.pending, (state, action) => {
@@ -642,11 +712,15 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(createInvoiceCustomFields.pending, (state, action) => {
+                state.loadingObj['invoice'] = true
+            })
             .addCase(createInvoiceCustomFields.fulfilled, (state, action) => {
                 state.invoicecustomfields.push(action.payload);
+                delete state.loadingObj['invoice']
             })
             .addCase(createInvoiceCustomFields.rejected, (state, action) => {
-                state.loadingList = false;
+                delete state.loadingObj['invoice']
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
@@ -754,19 +828,42 @@ const clientSlice = createSlice({
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
+        builder
+            .addCase(sentClientCustommail.pending, (state, action) => {
+                state.loadingObj['custommail'] = true
+            })
+            .addCase(sentClientCustommail.fulfilled, (state, action) => {
+                delete state.loadingObj['custommail']
+                state.successList = action.payload.message;
+            })
+            .addCase(sentClientCustommail.rejected, (state, action) => {
+                delete state.loadingObj['custommail']
+                state.errorList = action.payload.error || 'Failed to send mail to client';
+            });
+        builder
+            .addCase(sendQuoteMessage.pending, (state, action) => {
+                state.loadingObj['quotemessage'] = true
+            })
+            .addCase(sendQuoteMessage.fulfilled, (state, action) => {
+                delete state.loadingObj['quotemessage']
+                state.successList = action.payload.message;
+            })
+            .addCase(sendQuoteMessage.rejected, (state, action) => {
+                delete state.loadingObj['quotemessage']
+                state.errorList = action.payload.error || 'Failed to send message to client';
+            });
+        builder
+            .addCase(fetchBusniessProfile.pending, (state, action) => {
+                // state.loadingFull = true;
+            })
+            .addCase(fetchBusniessProfile.fulfilled, (state, action) => {
+                state.profile = action.payload;
+            })
+            .addCase(fetchBusniessProfile.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to fetch busniess profile';
+            });
     },
 });
 
-export const { setLoading, removeLoading } = clientSlice.actions;
+export const { setLoading, removeLoading, clearsuccessList, clearerrorList,darkmodeState } = clientSlice.actions;
 export default clientSlice.reducer;
-
-
-// "id": 2,
-//             "starttime": "21:49:00",
-//             "endtime": "09:51:00",
-//             "notes": "test",
-//             "date": "2024-09-28",
-//             "employeecost": 12.0,
-//             "location": null,
-//             "job": 20,
-//             "employee": 3

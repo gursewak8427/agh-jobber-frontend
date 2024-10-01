@@ -72,7 +72,7 @@ import { fetchClient } from "@/store/slices/client";
 import CustomMenu from "@/components/CustomMenu";
 import { HeadingBox, SectionBox } from "@/app/_components";
 import { Loading } from "@/app/_components/loading";
-import SendEmailModal from "@/app/_components/quote/SendEmailModal";
+import SendEmailModal from "@/app/_components/client/SendEmailModal";
 
 // Function to handle status rendering
 const getStatusBox = status => {
@@ -246,6 +246,7 @@ export default function Page() {
   const [sendemail, setsendemail] = useState(false)
   const { client } = useAppSelector(store => store.clients)
   const { id } = useParams();
+  const [email, setEmail] = useState(false)
 
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -254,6 +255,18 @@ export default function Page() {
     dispatch(fetchClient(id));
   }, [])
 
+  useEffect(() => {
+    if (client && client.email) {
+      const primaryEmail = client.email.find(email => email.primary === true);
+      if (primaryEmail) {
+        setEmail(primaryEmail.email);
+      } else {
+        setEmail(false);
+      }
+    } else {
+      setEmail(false);
+    }
+  }, [client]);
 
   const MoreActionsMenuItems = ({ onClose }) => {
     return (<Fragment>
@@ -350,20 +363,29 @@ export default function Page() {
       <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
         Client hub
       </Typography>
+      {email ? <>
 
-      <MenuItem className="text-tprimary text-sm">
-        <ListItemIcon>
-          <Mail className="text-tprimary" size={16} />
-        </ListItemIcon>
-        Send Login Email
-      </MenuItem>
+        <MenuItem className="text-tprimary text-sm">
+          <ListItemIcon>
+            <Mail className="text-tprimary" size={16} />
+          </ListItemIcon>
+          Send Login Email
+        </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm">
-        <ListItemIcon>
-          <LogIn className="text-tprimary" size={16} />
-        </ListItemIcon>
-        Log in as Client
-      </MenuItem>
+        <MenuItem className="text-tprimary text-sm">
+          <ListItemIcon>
+            <LogIn className="text-tprimary" size={16} />
+          </ListItemIcon>
+          Log in as Client
+        </MenuItem>
+      </> :
+        <MenuItem className="text-tprimary text-sm">
+          <ListItemIcon>
+            <LogIn className="text-tprimary" size={16} />
+          </ListItemIcon>
+          No Email Address
+        </MenuItem>
+      }
     </Fragment>)
   }
 
@@ -374,8 +396,11 @@ export default function Page() {
           Back to: <Link href={"/clients"} className="text-green-700">Clients</Link>
         </div>
         <div className="flex gap-4">
-
-          <CustomButton onClick={() => setsendemail(true)} title={"Email"} variant={"primary"} frontIcon={<Mail className="w-4 h-4" />} />
+          {
+            email ?
+              <CustomButton onClick={() => setsendemail(true)} title={"Email"} variant={"primary"} frontIcon={<Mail className="w-4 h-4" />} /> :
+              ''
+          }
 
           <CustomButton onClick={() => router.push("/clients/new")} title={"Edit"} frontIcon={<Pencil className="w-4 h-4" />} />
           <CustomMenu open={open == "more_actions"} icon={<CustomButton onClick={() => setOpen("more_actions")} title={"More Actions"} frontIcon={<MoreHorizontal />} />}>
@@ -736,7 +761,7 @@ export default function Page() {
           </div>
         </div>
       </div>
-      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} />
+      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} email={email} client={client} />
     </div>
   );
 }

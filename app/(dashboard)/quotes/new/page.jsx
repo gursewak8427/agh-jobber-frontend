@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createQuote, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, removeLoading, setLoading } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -42,7 +42,7 @@ export default function Page() {
   const [selectedProperty, setSelectedProperty] = useState(null);
 
   // Custom fields, change with quote custom fields
-  const { clientslist, client, team, quotecount, quotecustomfields } = useSelector(state => state.clients);
+  const { clientslist, client, team, quotecount, quotecustomfields, loadingObj } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -57,7 +57,9 @@ export default function Page() {
     defaultValues: {
       products: [defaultProductLineItem],
       discount: 0,
-      requireddeposite: 0
+      requireddeposite: 0,
+      clientview_quantities: true,
+      clientview_total: true
     },
   });
 
@@ -203,12 +205,16 @@ export default function Page() {
     delete _data?.quoteno
 
     let jsonData = {
-      ...(clientView && {
-        clientview_quantities: data?.clientview_quantities,
-        clientview_unitprices: data?.clientview_unitprices,
-        clientview_line_item_total: data?.clientview_line_item_total,
-        clientview_account_balance: data?.clientview_account_balance,
-      }),
+      "clientquotestyle": {
+        ...(clientView && {
+          quantities: data?.clientview_quantities,
+          materials: data?.clientview_materials,
+          markuppercentage: data?.clientview_markuppercentage,
+          markupamount: data?.clientview_markupamount,
+          labour: data?.clientview_labour,
+          total: data?.clientview_total,
+        })
+      },
       "product": data?.products?.map(product => ({
         ...product,
       })),
@@ -238,11 +244,16 @@ export default function Page() {
       "client_id": client_id,
 
       // "clientpdfstyle": null,  
-      "custom_field": changeAdditionalquotedetails
+      "custom_field": changeAdditionalquotedetails,
+      "isrelatedjobs": data?.isrelatedjobs,
+      "isrelatedinvoices": data?.isrelatedinvoices,
+      "internalnote": data?.internalnote,
     }
 
-    console.log({ jsonData });
+    // console.log({ jsonData });
+    dispatch(setLoading("draftquote"))
     dispatch(createQuote(jsonData)).then(({ payload }) => {
+      dispatch(removeLoading("draftquote"))
       if (payload?.id) {
         router.push(`/quotes/view/${payload?.id}`)
       }
@@ -560,37 +571,61 @@ export default function Page() {
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_unitprices")}
+                            {...register("clientview_materials")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_unitprices"
+                            id="clientview_materials"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_unitprices">
-                            Unit prices
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_materials">
+                            Material
                           </label>
                         </div>
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_line_item_total")}
+                            {...register("clientview_markuppercentage")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_line_item_total"
+                            id="clientview_markuppercentage"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_line_item_total">
-                            Line item totals
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_markuppercentage">
+                            Markup Percentage
                           </label>
                         </div>
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_account_balance")}
+                            {...register("clientview_markupamount")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_account_balance"
+                            id="clientview_markupamount"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_account_balance">
-                            Account balance
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_markupamount">
+                            Markup
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_labour")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_labour"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_labour">
+                            Labour
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_total")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_total"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_total">
+                            Total
                           </label>
                         </div>
                       </div>
@@ -708,8 +743,8 @@ export default function Page() {
               {
                 !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
                   <div className="flex gap-2 items-center">
-                    <CustomButton type={"submit"} title="Save Quote"></CustomButton>
-                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"submit"} variant="primary" title="Save and"></CustomButton>}>
+                    <CustomButton type={"submit"} loading={loadingObj?.draftquote} title="Save Quote"></CustomButton>
+                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
                       {/* Menu Items */}
                       <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
                         Save and...

@@ -1,15 +1,16 @@
 import CustomButton from '@/components/CustomButton'
 import CustomModal from '@/components/CustomModal'
-import { createClientsCustomFields, createInvoiceCustomFields, createJobCustomFields, createPropertyCustomFields, createQuoteCustomFields } from '@/store/slices/client'
+import { createClientsCustomFields, createInvoiceCustomFields, createJobCustomFields, createPropertyCustomFields, createQuoteCustomFields, removeLoading, setLoading } from '@/store/slices/client'
 import { ChevronDown } from 'lucide-react'
 import React, { useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import ModalHeading from './ModalHeading'
 
 const AddCustomFields = ({ open, onClose, }) => {
     const dispatch = useDispatch();
+    const { loadingObj } = useSelector(state => state.clients);
     const { control, register, handleSubmit, watch, reset } = useForm({
         defaultValues: {
             transferableField: false,
@@ -68,31 +69,29 @@ const AddCustomFields = ({ open, onClose, }) => {
 
 
         if (open == "client") {
-            dispatch(createClientsCustomFields(jsonData))
+            dispatch(createClientsCustomFields(jsonData)).then(() => { onClose(); reset(); })
         }
         else if (open == "property") {
-            dispatch(createPropertyCustomFields(jsonData))
+            dispatch(createPropertyCustomFields(jsonData)).then(() => { onClose(); reset(); })
         }
         else if (open == "quote") {
-            dispatch(createQuoteCustomFields(jsonData))
+            dispatch(createQuoteCustomFields(jsonData)).then(() => { onClose(); reset(); })
         }
         else if (open == "job") {
-            dispatch(createJobCustomFields(jsonData))
+            dispatch(createJobCustomFields(jsonData)).then(() => { onClose(); reset(); })
         }
         else if (open == "invoice") {
-            dispatch(createInvoiceCustomFields(jsonData))
+            dispatch(createInvoiceCustomFields(jsonData)).then(() => { onClose(); reset(); })
         }
         else {
             console.log("Invalid Field - Client, Property and Quote is allowed")
         }
 
-        onClose();
-
     };
 
     return (
         <div>
-            <CustomModal show={Boolean(open)} onClose={onClose}>
+            <CustomModal show={Boolean(open)} onClose={() => { onClose(); reset() }}>
                 <div className="space-y-6">
                     <ModalHeading onClose={onClose}>New Custom Field</ModalHeading>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -299,7 +298,7 @@ const AddCustomFields = ({ open, onClose, }) => {
                         {/* Submit Button */}
                         <div className="flex justify-end gap-2">
                             <CustomButton title={"Cancel"} onClick={() => { onClose(); reset() }} />
-                            <CustomButton type="submit" variant={"primary"} title={"Create Custom Field"} />
+                            <CustomButton loading={loadingObj[open]} type="submit" variant={"primary"} title={"Create Custom Field"} />
                         </div>
                     </form>
                 </div>

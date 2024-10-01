@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{{company_name}}</title>
 
     <style>
         * {
@@ -22,7 +22,6 @@
 
         body {
             padding: 40px;
-            max-width: 800px;
             margin: 0 auto;
         }
 
@@ -124,34 +123,44 @@
             padding-left: 20px;
             text-align: right;
         }
+
+        .logo-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            /* Ensures the image covers the box while keeping its aspect ratio */
+        }
+
+        .company-name {
+            margin-left: 10px;
+            /* Adds space between the image and the company name */
+        }
     </style>
 </head>
 
 <body>
-    <div class="flex">
-        <img width="100"
-            src="https://aghrenovation.ca/_next/image?url=http%3A%2F%2Fres.cloudinary.com%2Fdzsksffl5%2Fimage%2Fupload%2Fv1723523745%2F1723523743344-AGH%2520Renovation%2520Logo%2520PNG.png.png&w=128&q=75"
-            alt="">
-        <h1>AGH RENOVATION LIMITED</h1>
+    <div class="flex items-center">
+        <img class="logo-img" src="{{logo}}" alt="{{company_name}}">
+        <h1 class="company-name">{{company_name}}</h1>
     </div>
     <br>
     <div class="details-row">
         <div>
             <h5>RECIPIENT :</h5>
-            <h2 class="name">Bob Guy</h2>
-            <p class="address">#123 Main St. Springfield, California 90210</p>
+            <h2 class="name">{{clientname}}</h2>
+            <p class="address">{{property}}</p>
         </div>
         <div>
             <div class="heading dark p-10">
-                Quote #8
+                Quote #{{quoteno}}
             </div>
             <div class="row-between p-10">
                 <div>Sent on</div>
-                <div>Sep 23, 2024</div>
+                <div>{{sent_date}}</div>
             </div>
             <div class="dark heading row-between p-10">
                 <div>Total</div>
-                <div>$157.50</div>
+                <div>${{costs}}</div>
             </div>
         </div>
     </div>
@@ -160,51 +169,75 @@
     <div class="data">
         <table cellspacing="0" cellpadding="0">
             <thead>
-                <th>Product/Service</th>
-                <th>Description</th>
-                <th>Qty.</th>
-                <th>Unit Price</th>
-                <th>Total</th>
+                <tr>
+                    <th>Product/Service</th>
+                    <th>Description</th>
+                    {% if clientviewpdf.quantities %}
+                    <th>Qty.</th>
+                    {% endif %}
+                    {% if clientviewpdf.materials %}
+                    <th>Material</th>
+                    {% endif %}
+                    {% if clientviewpdf.labour %}
+                    <th>Labour</th>
+                    {% endif %}
+                    {% if clientviewpdf.markupamount %}
+                    <th>Markup</th>
+                    {% endif %}
+                    {% if clientviewpdf.markuppercentage %}
+                    <th>Markup Percentage</th>
+                    {% endif %}
+                    {% if clientviewpdf.total %}
+                    <th>Total</th>
+                    {% endif %}
+                </tr>
             </thead>
             <tbody>
+                {% for product in products %}
                 <tr>
-                    <td>Clean Pool</td>
-                    <td>Go and do lots of good stuff</td>
-                    <td>1</td>
-                    <td>$0.00</td>
-                    <td>$50.00</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.description }}</td>
+                    {% if clientviewpdf.quantities %}
+                    <td>{{ product.quantity }}</td>
+                    {% endif %}
+                    {% if clientviewpdf.materials %}
+                    <td>${{ product.material }}</td>
+                    {% endif %}
+                    {% if clientviewpdf.labour %}
+                    <td>${{ product.labour }}</td>
+                    {% endif %}
+                    {% if clientviewpdf.markupamount %}
+                    <td>${{ product.markupamount }}</td>
+                    {% endif %}
+                    {% if clientviewpdf.markuppercentage %}
+                    <td>{{ product.markuppercentage }}%</td>
+                    {% endif %}
+                    {% if clientviewpdf.total %}
+                    <td>${{ product.total }}</td>
+                    {% endif %}
                 </tr>
-                <tr>
-                    <td>Clean Pool</td>
-                    <td>Go and do lots of good stuff</td>
-                    <td>1</td>
-                    <td>$0.00</td>
-                    <td>$50.00</td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <footer>
+
+    <footer style="margin-top: 50px;">
         <p>This quote is valid for the next 15 days, after which values may be subject to change</p>
         <div>
             <table cellspacing="0" cellpadding="0">
                 <tbody>
                     <tr>
                         <td>Subtatal</td>
-                        <td>$150.0</td>
+                        <td>${{subtotal}}</td>
                     </tr>
                     <tr>
                         <td>GST (5.0%)</td>
-                        <td>$0.00</td>
+                        <td>${{tax}}</td>
                     </tr>
                     <tr>
                         <td><b>Total</b></td>
-                        <td>$157.0</td>
-                    </tr>
-                    <tr>
-                        <td>Account balance</td>
-                        <td style="color: red;">$357.0</td>
+                        <td>${{costs}}</td>
                     </tr>
                 </tbody>
             </table>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #333;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header img {
+            width: 100px;
+            height: auto;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .content h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .appointment-details {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .appointment-details p {
+            margin: 5px 0;
+        }
+
+        .appointment-details strong {
+            color: #333;
+        }
+
+        /* Update the button style */
+        .view-appointment-btn {
+            display: block;
+            text-align: center;
+            background-color: #0a6d0a;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            /* Larger padding for a bigger button */
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 18px;
+            /* Larger font size */
+            font-weight: bold;
+        }
+
+        .view-appointment-btn:hover {
+            background-color: #0e3a0e;
+        }
+
+        /* Style for the link section */
+        .email-container p a {
+            display: block;
+            margin-top: 10px;
+            /* Add some margin to separate the link */
+            word-break: break-all;
+            /* Ensure long links wrap properly */
+            font-size: 14px;
+            /* Font size adjustment to make it smaller */
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .email-container p a:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        /* Make the button and link responsive */
+        @media screen and (max-width: 600px) {
+            .view-appointment-btn {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+
+            .email-container p a {
+                font-size: 13px;
+            }
+        }
+
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #999;
+        }
+
+        .footer a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <!-- Header Section -->
+        <div class="header">
+            {% if logo %}
+            <img src="{{ logo }}" alt="{{ company_name }}">
+            {% else %}
+            <h1>{{ company_name }}</h1>
+            {% endif %}
+        </div>
+        <!-- Content Section -->
+        <div class="content">
+            <h1>Quote</h1>
+            <p>
+                Hi {{ clientname }},
+            </p>
+            <p>
+                Thank you for asking us to quote on your project.{{address}}
+            </p>
+            <p>
+                The quote total is <strong>${{costs}} </strong>as of <strong>{{date}}</strong>.
+            </p>
+            <p>
+                If you have any questions or concerns, please don't hesitate to get in touch with us at <a style="display: inline;" href="mailto:{{ fromemail }}"><strong>{{ fromemail }}</strong></a>.
+            </p>
+            <p>
+                Thanks
+            </p>
+            <p>
+                {{ company_name }}
+            </p>
+            <!-- View Appointment Button -->
+            <a href="{{ quotelink }}" class="view-appointment-btn">View Quote</a>
+        </div>
+        <p><i>Button not working? Copy and paste this link to your browser address bar:</i>
+            <a href="{{quotelink}}"
+                target="_blank">{{quotelink}}</a>
+            <!-- Footer Section -->
+        </p>
+        <div class="footer">
+            <p>Sincerely,</p>
+            <p>{{ company_name }}</p>
+            <p>Powered by Prosbro</p>
+            <p>&copy; 2024 Prosbro, Inc.</p>
+        </div>
+    </div>
+</body>
+</html>
