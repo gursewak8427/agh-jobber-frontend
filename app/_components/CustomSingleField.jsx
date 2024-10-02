@@ -7,7 +7,7 @@ export default function CustomSingleField({ field, index, customfields, register
                 return <div className={`w-full flex items-center justify-between ${customfields?.length == index + 1 ? '' : 'border-b pb-2'}`}>
                     <div className="font-normal">{field?.field_name}</div>
                     <div>
-                        <input {...register(`${prefix}.${field.id}key.value`)} type="text" name={`${prefix}.${field.id}key.value`} id={`${prefix}.${field.id}key.value`} defaultValue={field?.value || ""} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-xl" />
+                        <input {...register(`${prefix}.${field.id}key.value`)} type="text" name={`${prefix}.${field.id}key.value`} id={`${prefix}.${field.id}key.value`} defaultValue={field?.value || ""} className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-xl dark:text-dark-text dark:bg-dark-secondary" />
                     </div>
                 </div>
 

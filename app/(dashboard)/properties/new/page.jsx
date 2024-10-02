@@ -119,24 +119,24 @@ export default function Page() {
     }, [])
     return (
         <div className="max-w-[1200px] mx-auto space-y-4">
-            <div className="text-sm text-tprimary flex items-center gap-2">
+            <div className="text-sm text-tprimary flex items-center gap-2 dark:text-dark-text">
                 Back to:
                 <Breadcrumbs>
-                    <Link href={"/clients"} className="text-green-700 underline">Clients</Link>
-                    <Link href={`/clients/view/${client_id}`} className="text-green-700 underline">{client?.fname ? client?.fname + ' ' + client?.lname : client?.companyname}</Link>
+                    <Link href={"/clients"} className="text-green-700 underline dark:text-dark-second-text">Clients</Link>
+                    <Link href={`/clients/view/${client_id}`} className="text-green-700 underline dark:text-dark-second-text">{client?.fname ? client?.fname + ' ' + client?.lname : client?.companyname}</Link>
                 </Breadcrumbs>
             </div>
 
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="w-1/2 mx-auto" >
+                <div className="w-1/2 mx-auto " >
                     <SectionBox>
                         <div className="w-full">
-                            <div className="flex justify-start items-center mb-6 gap-2">
-                                <Avatar className="w-16 h-16"><Home className="text-tprimary" /></Avatar>
-                                <div className="text-2xl font-semibold text-tprimary">New Property for</div>
+                            <div className="flex justify-start items-center mb-6 gap-2 ">
+                                <Avatar className="w-16 h-16 dark:bg-dark-primary"><Home className="text-tprimary dark:text-dark-text" /></Avatar>
+                                <div className="text-2xl font-semibold text-tprimary dark:bg-dark-secondary dark:text-dark-text">New Property for</div>
                                 <Button onClick={() => setSelectClientModal(true)} className='capitalize flex items-center border-b border-dashed'>
-                                    <div className="text-2xl font-semibold text-tprimary">{client_id ? getClientName(client) : "Client Name"}</div>
+                                    <div className="text-2xl font-semibold text-tprimary dark:text-dark-second-text">{client_id ? getClientName(client) : "Client Name"}</div>
                                 </Button>
                             </div>
                             <div className="flex flex-col text-sm space-y-4">
@@ -145,53 +145,53 @@ export default function Page() {
                                         <input {...register("address1")}
                                             type="text"
                                             placeholder='Street 1'
-                                            className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                                            className="w-full dark:bg-dark-secondary dark:text-dark-text h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                                         />
                                     </div>
                                     <div>
                                         <input {...register("address2")}
                                             type="text"
                                             placeholder='Street 2'
-                                            className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-b-none"
+                                            className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-b-none"
                                         />
                                     </div>
                                     <div className="flex flex-row">
                                         <input {...register("city")}
                                             type="text"
                                             placeholder='City'
-                                            className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
+                                            className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
                                         />
                                         <input {...register("province")}
                                             type="text"
                                             placeholder='Province'
-                                            className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
+                                            className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
                                         />
                                     </div>
 
                                     <div className="flex flex-row">
                                         <input {...register("postalcode")}
                                             placeholder='Postal Code'
-                                            className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-r-none"
+                                            className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-r-none"
                                         />
                                         <select {...register("country")}
-                                            className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-l-none"
+                                            className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-l-none"
                                         >
-                                            <option className='text-tprimary' value="">Select Country</option>
-                                            <option className='text-tprimary' value="India">India</option>
-                                            <option className='text-tprimary' value="Canada">Canada</option>
+                                            <option className='text-tprimary dark:text-dark-text' value="">Select Country</option>
+                                            <option className='text-tprimary dark:text-dark-text' value="India">India</option>
+                                            <option className='text-tprimary dark:text-dark-text' value="Canada">Canada</option>
                                         </select>
                                     </div>
                                 </div>
 
 
-                                <p>Taxes <span className='text-green-700 underline ml-2 font-semibold'>GST (5.0%) (Default)</span></p>
+                                <p className="dark:text-dark-text">Taxes <span className='text-green-700 dark:text-dark-second-text underline ml-2 font-semibold'>GST (5.0%) (Default)</span></p>
 
                                 <Accordion className='shadow-none'>
                                     <AccordionSummary
                                         expandIcon={<ChevronDown />}
                                         aria-controls="panel2-content"
                                         id="panel2-header"
-                                        className='font-bold text-[15px] text-tprimary hover:bg-primary-dark'
+                                        className='font-bold text-[15px] text-tprimary hover:bg-primary-dark dark:text-dark-text dark:hover:bg-dark-hover'
                                     >
                                         Additional property details
                                     </AccordionSummary>

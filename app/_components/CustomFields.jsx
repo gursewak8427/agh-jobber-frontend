@@ -96,14 +96,14 @@ const AddCustomFields = ({ open, onClose, }) => {
                     <ModalHeading onClose={onClose}>New Custom Field</ModalHeading>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="flex flex-col">
-                            <label htmlFor="fieldType" className="mb-2 text-gray-700">
+                            <label htmlFor="fieldType" className="mb-2 text-gray-700 dark:text-dark-text">
                                 Field type
                             </label>
                             <select
                                 id="fieldType"
                                 disabled
                                 {...register('appliesTo')}
-                                className="border border-gray-300 rounded p-2 focus:outline-none focus:border-green-700 bg-gray-300"
+                                className="border border-gray-300 rounded p-2 focus:outline-none focus:border-green-700 bg-gray-300 dark:bg-dark-hover dark:text-dark-text"
                             >
                                 {
                                     open == "client" ?
@@ -122,7 +122,7 @@ const AddCustomFields = ({ open, onClose, }) => {
                                 {...register('transferableField')}
                                 className="mr-2 w-4 h-4"
                             />
-                            <label htmlFor="transferableField" className="text-gray-700">
+                            <label htmlFor="transferableField" className="text-gray-700 dark:text-dark-text">
                                 Transferable field
                             </label>
                         </div>
@@ -133,20 +133,20 @@ const AddCustomFields = ({ open, onClose, }) => {
                                 type="text"
                                 id="fieldName"
                                 {...register('fieldName', { required: true })}
-                                className="border border-gray-300 rounded p-2 focus:outline-none focus:border-green-700"
+                                className="border border-gray-300 rounded p-2 focus:outline-none focus:border-green-700 dark:text-dark-text dark:bg-dark-secondary"
                                 placeholder="Enter field name"
                             />
                         </div>
 
                         {/* Field Type Dropdown */}
                         <div className="flex flex-col">
-                            <label htmlFor="fieldType" className="mb-1 text-gray-700 text-sm">
+                            <label htmlFor="fieldType" className="mb-1 text-gray-700 text-sm dark:text-dark-text">
                                 Field type
                             </label>
                             <select
                                 id="fieldType"
                                 {...register('fieldType')}
-                                className="border border-gray-300 rounded p-2 focus:outline-none focus:border-green-700"
+                                className="border border-gray-300 rounded p-2 focus:outline-none focus:border-green-700 dark:text-dark-text dark:bg-dark-secondary"
                             >
                                 <option value="text">Text</option>
                                 <option value="numeric">Numeric</option>
@@ -161,14 +161,14 @@ const AddCustomFields = ({ open, onClose, }) => {
                             fieldType == "text" ? <div className="flex flex-col space-y-4">
                                 <p className='text-sm text-gray-400'>Example: Serial Number 54A17-HEX</p>
                                 <div className='flex flex-col'>
-                                    <label htmlFor="defaultValue" className="mb-2 text-gray-700">
+                                    <label htmlFor="defaultValue" className="mb-2 text-gray-700 dark:text-dark-text">
                                         Default value
                                     </label>
                                     <input
                                         type="text"
                                         id="defaultValue"
                                         {...register('defaultValue')}
-                                        className="border border-gray-300 rounded p-2 focus:outline-none focus:border-green-700"
+                                        className="border border-gray-300 rounded p-2 focus:outline-none focus:border-green-700 dark:text-dark-text dark:bg-dark-secondary"
                                         placeholder="Enter default value"
                                     />
                                 </div>
@@ -176,7 +176,7 @@ const AddCustomFields = ({ open, onClose, }) => {
                                 fieldType == "numeric" ? <div className="flex flex-col space-y-4">
                                     <p className='text-sm text-gray-400'>Example: Pool depth <span className='p-2 bg-gray-200 rounded'>11</span> ft</p>
                                     <div className='flex flex-col'>
-                                        <label htmlFor="defaultValue" className="mb-2 text-gray-700">
+                                        <label htmlFor="defaultValue" className="mb-2 text-gray-700 dark:text-dark-text ">
                                             Default value
                                         </label>
                                         <div className="flex">
@@ -184,21 +184,21 @@ const AddCustomFields = ({ open, onClose, }) => {
                                                 type="text"
                                                 id="defaultValue"
                                                 {...register('defaultValue')}
-                                                className="border flex-1 border-gray-300  p-2 focus:outline-none focus:border-green-700 rounded-lg rounded-r-none"
+                                                className="border flex-1 border-gray-300 dark:text-dark-text dark:bg-dark-secondary  p-2 focus:outline-none focus:border-green-700 rounded-lg rounded-r-none"
                                                 placeholder="Default value"
                                             />
                                             <input
                                                 type="text"
                                                 id="defaultUnit"
                                                 {...register('defaultUnit')}
-                                                className="w-[30%] border border-gray-300 p-2 focus:outline-none focus:border-green-700 rounded-lg rounded-l-none"
+                                                className="w-[30%] border border-gray-300 dark:text-dark-text dark:bg-dark-secondary p-2 focus:outline-none focus:border-green-700 rounded-lg rounded-l-none"
                                                 placeholder="Unit"
                                             />
                                         </div>
                                     </div>
                                 </div> : fieldType == "boolean" ? <div className="flex flex-col space-y-4">
                                     <div className='flex flex-col'>
-                                        <label htmlFor="defaultValue" className="mb-2 text-gray-700">
+                                        <label htmlFor="defaultValue" className="mb-2 text-gray-700 dark:text-dark-text ">
                                             Default value
                                         </label>
                                         <div className="flex">
@@ -206,7 +206,7 @@ const AddCustomFields = ({ open, onClose, }) => {
                                                 id="fieldType"
                                                 {...register('defaultValue', { required: true })}
                                                 defaultValue={"true"}
-                                                className="border w-full border-gray-300 rounded p-2 focus:outline-none focus:border-green-700"
+                                                className="border w-full border-gray-300 dark:text-dark-text dark:bg-dark-secondary rounded p-2 focus:outline-none focus:border-green-700"
                                             >
                                                 <option value="">Select</option>
                                                 <option value="true">True</option>
@@ -216,7 +216,7 @@ const AddCustomFields = ({ open, onClose, }) => {
                                     </div>
                                 </div> : fieldType == "area" ? <div className="flex flex-col space-y-4">
                                     <div className='flex flex-col'>
-                                        <label htmlFor="defaultValue" className="mb-2 text-gray-700">
+                                        <label htmlFor="defaultValue" className="mb-2 text-gray-700 dark:text-dark-text ">
                                             Default values
                                         </label>
                                         <div className="w-full grid grid-cols-3">
@@ -224,21 +224,21 @@ const AddCustomFields = ({ open, onClose, }) => {
                                                 type="text"
                                                 id="defaultValue"
                                                 {...register('defaultLength')}
-                                                className="border border-gray-300 p-2 focus:outline-none focus:border-green-700 rounded-lg rounded-r-none"
+                                                className="border border-gray-300 p-2 focus:outline-none dark:text-dark-text dark:bg-dark-secondary focus:border-green-700 rounded-lg rounded-r-none"
                                                 placeholder="Length"
                                             />
                                             <input
                                                 type="text"
                                                 id="defaultValue"
                                                 {...register('defaultWidth')}
-                                                className="border border-gray-300 p-2 focus:outline-none focus:border-green-700"
+                                                className="border border-gray-300 p-2 focus:outline-none dark:text-dark-text dark:bg-dark-secondary focus:border-green-700"
                                                 placeholder="Width"
                                             />
                                             <input
                                                 type="text"
                                                 id="defaultUnit"
                                                 {...register('defaultUnit')}
-                                                className="border border-gray-300 p-2 focus:outline-none focus:border-green-700 rounded-lg rounded-l-none"
+                                                className="border border-gray-300 p-2 focus:outline-none dark:text-dark-text dark:bg-dark-secondary focus:border-green-700 rounded-lg rounded-l-none"
                                                 placeholder="Unit"
                                             />
 
@@ -246,12 +246,12 @@ const AddCustomFields = ({ open, onClose, }) => {
                                     </div>
                                 </div> : fieldType == "dropdown" ? <div className="flex flex-col space-y-4">
                                     <div className="flex items-center gap-2">
-                                        <p className='text-sm text-gray-400'>Example: Work Type</p><span className='px-1 bg-gray-200  text-gray-400 rounded flex items-center gap-2 text-sm'>Commercial <ChevronDown className='w-4 h-4 text-gray-400' /></span>
+                                        <p className='text-sm text-gray-400 dark:text-dark-text'>Example: Work Type</p><span className='px-1 bg-gray-200  text-gray-400 rounded flex items-center gap-2 text-sm'>Commercial <ChevronDown className='w-4 h-4 text-gray-400' /></span>
                                     </div>
 
                                     <div>
                                         <label htmlFor="defaultValue" className="mb-2 text-gray-700 justify-between flex items-center">
-                                            <span className='font-semibold text-gray-500'>Options for dropdown</span>
+                                            <span className='font-semibold text-gray-500 dark:text-dark-text'>Options for dropdown</span>
                                             <CustomButton
                                                 onClick={() => appendDropdownOption({ option: '' })}
                                                 title="Add Option"
@@ -265,13 +265,13 @@ const AddCustomFields = ({ open, onClose, }) => {
                                                             <input
                                                                 type="text"
                                                                 {...register(`dropdownOptions.${index}.option`)}
-                                                                className="border border-gray-300 p-2 focus:outline-none focus:border-green-700 rounded-lg w-full h-11 rounded-r-none"
+                                                                className="border border-gray-300 dark:text-dark-text dark:bg-dark-secondary p-2 focus:outline-none focus:border-green-700 rounded-lg w-full h-11 rounded-r-none"
                                                                 placeholder={index === 0 ? 'Default Option' : 'Option'}
                                                             />
                                                             <input
                                                                 type="text"
                                                                 {...register(`dropdownOptions.${index}.value`)}
-                                                                className="border border-gray-300 p-2 focus:outline-none focus:border-green-700 rounded-lg w-full h-11 rounded-l-none"
+                                                                className="border border-gray-300 dark:text-dark-text dark:bg-dark-secondary p-2 focus:outline-none focus:border-green-700 rounded-lg w-full h-11 rounded-l-none"
                                                                 placeholder={index === 0 ? 'Default Value' : 'Value'}
                                                             />
                                                         </div>

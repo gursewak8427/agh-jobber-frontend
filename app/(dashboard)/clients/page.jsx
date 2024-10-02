@@ -81,7 +81,7 @@ export default function Page() {
 
   }, [clients])
   return (
-    <div className="flex flex-col gap-8 px-4 py-6">
+    <div className="flex flex-col gap-8 px-4 py-6 dark:text-dark-text dark:bg-dark-secondary">
       <PageHeading title={"Clients"}>
         <div className="flex items-center gap-2">
           <CustomButton onClick={() => router.push("/clients/new")} title={"New Client"} variant={"primary"} />
@@ -89,14 +89,14 @@ export default function Page() {
         </div>
       </PageHeading>
 
-      <div className="flex flex-wrap gap-4 text-sm text-tprimary">
+      <div className="flex flex-wrap gap-4 text-sm text-tprimary dark:text-dark-text">
         {/* Conversion rate */}
-        <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary cursor-pointer">
+        <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary cursor-pointer dark:hover:bg-dark-hover">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">New leads</h3>
             <ChevronRight className='' />
           </div>
-          <p className="text-sm text-gray-500">Past 30 days</p>
+          <p className="text-sm text-gray-500 dark:text-dark-text">Past 30 days</p>
           <div className="flex items-center space-x-2 mt-4">
             <span className="text-3xl font-semibold">45</span>
             <span className="text-sm text-tprimary bg-primary-dark px-2 py-1 rounded-xl">100%</span>
@@ -104,12 +104,12 @@ export default function Page() {
         </div>
 
         {/* Sent */}
-        <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary cursor-pointer">
+        <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary dark:hover:bg-dark-hover cursor-pointer">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">New clients</h3>
             <ChevronRight className='' />
           </div>
-          <p className="text-sm text-gray-500">Past 30 days</p>
+          <p className="text-sm text-gray-500 dark:text-dark-text">Past 30 days</p>
           <div className="flex items-center space-x-2 mt-4">
             <span className="text-3xl font-semibold">8</span>
             <span className="text-sm text-tprimary bg-primary-dark px-2 py-1 rounded-xl">100%</span>
@@ -117,12 +117,12 @@ export default function Page() {
         </div>
 
         {/* Converted */}
-        <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary cursor-pointer">
+        <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary cursor-pointer dark:hover:bg-dark-hover">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">Total new clients</h3>
             <ChevronRight className='' />
           </div>
-          <p className="text-sm text-gray-500">Past 30 days</p>
+          <p className="text-sm text-gray-500 dark:text-dark-text">Past 30 days</p>
           <div className="flex items-center space-x-2 mt-4">
             <span className="text-3xl font-semibold">8</span>
           </div>
@@ -138,12 +138,12 @@ export default function Page() {
 
       <div className="w-[97%] space-y-4">
         <div className="w-full flex gap-2 items-center justify-between">
-          <div className="space-x-2 flex text-tprimary">
-            <div className="flex items-center gap-2 border-primary-dark border hover:bg-primary-dark cursor-pointer px-4 py-2 rounded-[40px] text-sm">
+          <div className="space-x-2 flex text-tprimary dark:text-dark-text">
+            <div className="flex items-center gap-2 border-primary-dark border dark:hover:bg-dark-hover hover:bg-primary-dark cursor-pointer px-4 py-2 rounded-[40px] text-sm">
               <span>Tags</span>
               <span><PlusIcon className='w-4 h-4' /></span>
             </div>
-            <div className="flex items-center gap-2 border-primary border bg-primary hover:bg-primary-dark cursor-pointer px-4 py-2 rounded-[40px] text-sm">
+            <div className="flex items-center gap-2 border-primary dark:bg-dark-secondary border dark:hover:bg-dark-hover bg-primary hover:bg-primary-dark cursor-pointer px-4 py-2 rounded-[40px] text-sm">
               <span>Status</span>
               <span>|</span>
               <span>Leads and active</span>

@@ -145,7 +145,7 @@ const TabBox = () => {
             <Tab label="Invoices" {...a11yProps(2)} />
         </Tabs>
         <CustomTabPanel value={value} index={0}>
-            <table className="w-full text-tprimary text-sm">
+            <table className="w-full text-tprimary text-sm dark:text-dark-text">
                 <tbody>
                     <tr>
                         <td className="py-6">
@@ -176,10 +176,10 @@ const TabBox = () => {
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
             <div className="w-full flex items-start justify-start gap-2">
-                <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center dark:text-dark-text dark:bg-dark-primary">
                     <Download />
                 </div>
-                <div className="">
+                <div className="dark:text-dark-text">
                     <p className="font-semibold">Client hasn't requested any work yets</p>
                     <p>Clients can submit new requests for work online. You and your team can also create requests to keep track of new work that comes up.</p>
                     <div className="my-1">
@@ -189,7 +189,7 @@ const TabBox = () => {
             </div>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
-            <table className="w-full text-tprimary">
+            <table className="w-full text-tprimary dark:text-dark-text">
                 <tbody>
                     <tr>
                         <td className="py-6">
@@ -220,10 +220,10 @@ const TabBox = () => {
         </CustomTabPanel>
         <CustomTabPanel value={value} index={3}>
             <div className="w-full flex items-start justify-start gap-2">
-                <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center dark:text-dark-text dark:bg-dark-primary">
                     <Hammer />
                 </div>
-                <div className="">
+                <div className="dark:text-dark-text">
                     <p className="font-semibold">No Jobs</p>
                     <p>Let's get out there and work. Begin by creating this client's first job.</p>
                     <div className="my-1">
@@ -234,10 +234,10 @@ const TabBox = () => {
         </CustomTabPanel>
         <CustomTabPanel value={value} index={4}>
             <div className="w-full flex items-start justify-start gap-2">
-                <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center dark:text-dark-text dark:bg-dark-primary">
                     <DollarSign />
                 </div>
-                <div className="">
+                <div className="dark:text-dark-text">
                     <p className="font-semibold">No invoices</p>
                     <p>There are no current invoices for this client yet</p>
                     <div className="my-1">
@@ -266,44 +266,44 @@ export default function Page() {
     const MoreActionsMenuItems = () => {
         return (<Fragment>
             {/* Menu Items */}
-            <MenuItem className="text-tprimary text-sm gap-2 flex">
-                <MapPin className="text-tprimary" />
+            <MenuItem className="text-tprimary text-sm gap-2 flex dark:text-dark-text">
+                <MapPin className="text-tprimary dark:text-dark-text" />
                 Adjust map <br /> location
             </MenuItem>
 
             <Divider />
 
-            <Typography className="py-2 px-4 text-gray-500">Create New...</Typography>
+            <Typography className="py-2 px-4 text-gray-500 dark:text-dark-text">Create New...</Typography>
 
-            <MenuItem className="text-tprimary text-sm">
+            <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                 <ListItemIcon>
                     <Download className="text-orange-700" size={16} />
                 </ListItemIcon>
                 Request
             </MenuItem>
 
-            <MenuItem className="text-tprimary text-sm">
+            <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                 <ListItemIcon>
                     <PencilRuler className="text-purple-700" size={16} />
                 </ListItemIcon>
                 Quote
             </MenuItem>
 
-            <MenuItem className="text-tprimary text-sm">
+            <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                 <ListItemIcon>
                     <Hammer className="text-green-700" size={16} />
                 </ListItemIcon>
                 Job
             </MenuItem>
 
-            <MenuItem className="text-tprimary text-sm">
+            <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                 <ListItemIcon>
                     <FileIcon className="text-blue-700" size={16} />
                 </ListItemIcon>
                 Task
             </MenuItem>
 
-            <MenuItem className="text-tprimary text-sm">
+            <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                 <ListItemIcon>
                     <Calendar className="text-yellow-700" size={16} />
                 </ListItemIcon>
@@ -315,11 +315,11 @@ export default function Page() {
     return (
         <div className="w-full mx-auto space-y-4">
             <HeadingBox>
-                <div className="text-sm text-tprimary flex items-center gap-2">
+                <div className="text-sm text-tprimary flex items-center gap-2 dark:text-dark-text">
                     Back to:
                     <Breadcrumbs>
-                        <Link href={"/clients"} className="text-green-700 underline">Clients</Link>
-                        <Link href={`/clients/view/${id}`} className="text-green-700 underline">{client.fname ? client.fname + ' ' + client.lname : client.companyname}</Link>
+                        <Link href={"/clients"} className="text-green-700 underline dark:text-dark-second-text">Clients</Link>
+                        <Link href={`/clients/view/${id}`} className="text-green-700 underline dark:text-dark-second-text">{client.fname ? client.fname + ' ' + client.lname : client.companyname}</Link>
                     </Breadcrumbs>
                 </div>
                 <div className="flex gap-4">
@@ -334,35 +334,35 @@ export default function Page() {
             <div className="flex items-center gap-4 mb-8 w-full">
                 <div className="font-black tracking-tight text-4xl">Property Details</div>
             </div>
-            <div className="p-8 border flex gap-4 items-start justify-start border-gray-200 rounded-xl text-tprimary">
+            <div className="p-8 border flex gap-4 items-start justify-start border-gray-200 rounded-xl text-tprimary dark:text-dark-text">
                 <div className="w-1/3">
                     <SectionBox>
                         <HeadingBox>
-                            <div className="text-xl font-bold text-tprimary">
+                            <div className="text-xl font-bold text-tprimary dark:text-dark-text">
                                 Location
                             </div>
                         </HeadingBox>
                         <div className="space-y-3">
                             <div>
-                                <p className="font-semibold">Client</p>
-                                <p className="text-green-700">{client.fname ? client.fname + ' ' + client.lname : client.companyname}</p>
+                                <p className="font-semibold dark:text-dark-text">Client</p>
+                                <p className="text-green-700 dark:text-dark-second-text">{client.fname ? client.fname + ' ' + client.lname : client.companyname}</p>
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded border-green-700 border grid place-content-center hover:bg-green-700 hover:bg-opacity-20 cursor-pointer">
-                                    <MapPin className="text-green-700" />
+                                    <MapPin className="text-green-700 dark:text-dark-second-text" />
                                 </div>
-                                <p className="max-w-[200px]">{property.address1 + ' ' + property.address2 + ' ' + property.city + ' ' + property.province + ' ' + property.country + ' ' + property.postalcode}</p>
+                                <p className="max-w-[200px] dark:text-dark-text">{property.address1 + ' ' + property.address2 + ' ' + property.city + ' ' + property.province + ' ' + property.country + ' ' + property.postalcode}</p>
                             </div>
                         </div>
                     </SectionBox>
                     <SectionBox padding={"p-0"}>
                         <div className="p-4 space-y-3 w-full">
                             <HeadingBox>
-                                <div className="text-xl font-bold text-tprimary">
+                                <div className="text-xl font-bold text-tprimary dark:text-dark-text">
                                     Recent pricing for this property
                                 </div>
                             </HeadingBox>
-                            <table className="w-full">
+                            <table className="w-full dark:text-dark-text">
                                 <thead>
                                     <tr>
                                         <th className="text-left">Line Item</th>
@@ -376,7 +376,7 @@ export default function Page() {
                                             Doors Installation
                                         </td>
                                         <td className="max-w-[30%] w-[30%] py-4">
-                                            <div className="font-semibold text-green-700">
+                                            <div className="font-semibold text-green-700 dark:text-dark-second-text">
                                                 $1,200.00*
                                             </div>
                                         </td>
@@ -387,17 +387,17 @@ export default function Page() {
                                 </tbody>
                             </table>
                         </div>
-                        <div className="text-sm border-t border-t-gray-300 w-full p-2">
+                        <div className="text-sm border-t border-t-gray-300 w-full p-2 dark:text-dark-text">
                             * Hover for notes regarding this cost
                         </div>
                     </SectionBox>
                     <SectionBox>
                         <HeadingBox>
-                            <div className="text-xl font-bold text-tprimary">
+                            <div className="text-xl font-bold text-tprimary dark:text-dark-text">
                                 Tax rate
                             </div>
                         </HeadingBox>
-                        <p>GST (5.0%) (Default)</p>
+                        <p className="dark:text-dark-text">GST (5.0%) (Default)</p>
                     </SectionBox>
                 </div>
 
@@ -406,7 +406,7 @@ export default function Page() {
                     {/* Overview */}
                     <SectionBox>
                         <HeadingBox>
-                            <div className="text-xl font-bold text-tprimary">
+                            <div className="text-xl font-bold text-tprimary dark:text-dark-text">
                                 Overview
                             </div>
                             <div className="flex gap-4">
@@ -445,7 +445,7 @@ export default function Page() {
                     {/* Schedule */}
                     <SectionBox>
                         <HeadingBox>
-                            <div className="text-xl font-bold text-tprimary">
+                            <div className="text-xl font-bold text-tprimary dark:text-dark-text">
                                 Schedule
                             </div>
                             <div className="flex gap-4">
@@ -472,28 +472,28 @@ export default function Page() {
                             </div>
                         </HeadingBox>
 
-                        <div className="font-semibold border-b border-b-tprimary w-full">
+                        <div className="font-semibold border-b border-b-tprimary w-full dark:text-dark-text">
                             Tomorrow
                         </div>
 
                         <table>
                             <tbody>
                                 <tr>
-                                    <td className="flex flex-grow flex-1">
+                                    <td className="flex flex-grow flex-1 dark:text-dark-text">
                                         <div className="flex">
-                                            <Checkbox />
+                                            <Checkbox className="dark:text-dark-text text-blue-950"/>
                                             <div>
                                                 <p className="font-semibold text-sm">Reminder about quote #5 for Md. Ashraful Islam</p>
                                                 <p className="text-sm">re: Md. Ashraful Islam</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="max-w-[30%] w-[30%]">
+                                    <td className="max-w-[30%] w-[30%] dark:text-dark-text">
                                         <div className="w-2/3 text-sm">
                                             Quote was sent on 19/09/2024 but no job has been generated yet
                                         </div>
                                     </td>
-                                    <td className="max-w-[20%] w-[20%]">
+                                    <td className="max-w-[20%] w-[20%] dark:text-dark-text">
                                         <div className="text-sm">
                                             <div>Sep 21, 2024</div>
                                             <div>Assigned to Gurvinder Singh</div>

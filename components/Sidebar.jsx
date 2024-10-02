@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Home, Calendar, Users, ClipboardList, FileText, Briefcase, DollarSign, BarChart2, PieChart, Clock, App, UserPlus, LayoutGrid, ArrowLeft, ArrowLeftCircle, ArrowLeftIcon, PlusCircle, LucidePlusCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@mui/material';
+import ChainCircleLogo from './logo';
 
 const Section = ({ children, border }) => {
     return <section className={`py-2 px-3 w-full flex flex-col gap-1 ${border ? 'border-b border-gray-400' : ''}`}>
@@ -15,9 +16,10 @@ const Sidebar = () => {
     const [collapse, setCollapse] = useState(false)
 
     return (
-        <div className={`bg-primary dark:bg-dark-primary dark:text-dark-text text-tprimary h-screen sticky top-0 ${!collapse ? 'w-48' : 'w-16'} transition-all`}>
+        <div className={`bg-primary dark:bg-dark-primary font-bold dark:text-dark-text text-tprimary h-screen sticky top-0 ${!collapse ? 'w-48' : 'w-16'} transition-all`}>
             <div className="py-6 px-4">
-                <img src="https://cdn.jobber.com/yr/logos/v1/logo_jobber_bug.svg" alt="" className='w-8 object-contain' />
+                {/* <img src="https://cdn.jobber.com/yr/logos/v1/logo_jobber_bug.svg" alt="" className='w-8 object-contain' /> */}
+                <ChainCircleLogo />
             </div>
             <nav className="flex flex-col">
                 <Section border={true}>

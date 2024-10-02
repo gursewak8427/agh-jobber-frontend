@@ -38,10 +38,11 @@ module.exports = {
         "secondary": '#FFFFFF',
         "tprimary": '#032B3A',
         // Define dark mode colors
-        "dark-primary": "#1e1e1e", // Example dark background
+        "dark-primary": "#171B1C", // Example dark background
         "dark-secondary": "#273135", // Dark secondary color
         "dark-text": "#f5f5f5", // Light text on dark background
-        "dark-hover":"#FFFFFF1A"
+        "dark-hover":"#FFFFFF1A",
+        "dark-second-text":"#4ADE80"
       },
     },
   },

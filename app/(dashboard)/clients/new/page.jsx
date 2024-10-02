@@ -214,19 +214,19 @@ export default function Page() {
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-4">
-      <div className="text-sm text-tprimary">
-        Back to: <Link href={"/clients"} className="text-green-700">Clients</Link>
+      <div className="text-sm text-tprimary dark:text-dark-text">
+        Back to: <Link href={"/clients"} className="text-green-700 dark:text-dark-second-text">Clients</Link>
       </div>
       {/* Header */}
       <div className="flex justify-start items-center mb-6">
-        <div className="text-4xl font-semibold text-tprimary">New Client</div>
+        <div className="text-4xl font-semibold text-tprimary dark:text-dark-text">New Client</div>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="p-8 border flex gap-4 items-start justify-start border-gray-200 rounded-xl text-tprimary">
+        <div className="p-8 border flex gap-4 items-start justify-start border-gray-200 rounded-xl text-tprimary dark:text-dark-text">
           <div className="w-1/2 space-y-3">
             <div className="flex items-center gap-3 mb-8">
-              <Avatar />
+              <Avatar className="dark:text-dark-text dark:bg-dark-primary"/>
               <div className="font-bold text-2xl">Client details</div>
             </div>
             <div className="flex flex-col text-sm space-y-4">
@@ -237,7 +237,7 @@ export default function Page() {
                 <div className="flex flex-row">
                   <select
                     {...register("nameTitle")}
-                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none rounded-r-none text-sm"
+                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary dark:text-dark-text border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none rounded-r-none text-sm"
                   >
                     <option value="">No title</option>
                     <option value="Mr.">Mr.</option>
@@ -249,18 +249,18 @@ export default function Page() {
                   <input
                     {...register("firstName")}
                     placeholder="First Name"
-                    className={`w-full h-11 focus:outline-none border px-3 py-2  focus:border-gray-400 ${requiredError?.includes("fname") ? 'border-red-500 border-b-0' : "border-gray-300 border-r-0 border-l-0"}`}
+                    className={`w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2  focus:border-gray-400 ${requiredError?.includes("fname") ? 'border-red-500 border-b-0' : "border-gray-300 border-r-0 border-l-0"}`}
                   />
                   <input
                     {...register("lastName")}
                     placeholder="Last Name"
-                    className={`w-full h-11 focus:outline-none border px-3 py-2 focus:border-gray-400 rounded-lg rounded-l-none rounded-b-none ${requiredError?.includes("lname") ? 'border-red-500 border-b-0' : "border-gray-300"}`}
+                    className={`w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 focus:border-gray-400 rounded-lg rounded-l-none rounded-b-none ${requiredError?.includes("lname") ? 'border-red-500 border-b-0' : "border-gray-300"}`}
                   />
                 </div>
                 <input
                   {...register("companyName")}
                   placeholder="Company Name"
-                  className={`w-full h-11 focus:outline-none border px-3 py-2  focus:border-gray-400 rounded-lg rounded-t-none ${requiredError?.includes("companyname") ? 'border-red-500' : "border-gray-300 border-t-0"}`}
+                  className={`w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2  focus:border-gray-400 rounded-lg rounded-t-none ${requiredError?.includes("companyname") ? 'border-red-500' : "border-gray-300 border-t-0"}`}
                 />
               </div>
 
@@ -301,7 +301,7 @@ export default function Page() {
                             }
                             <select
                               {...register(`mobiles.${index}.type`)}
-                              className="w-[100px] h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none text-sm"
+                              className="w-[100px] h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none text-sm"
                             >
                               <option value="personal">Main</option>
                               <option value="work">Work</option>
@@ -311,7 +311,7 @@ export default function Page() {
                             <input
                               {...register(`mobiles.${index}.number`)}
                               placeholder="Phone number"
-                              className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 border-r-0 border-l-0 focus:border-gray-400"
+                              className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 border-r-0 border-l-0 focus:border-gray-400"
                             />
                           </div>
                           {mobileFields.length > 1 && <div className="w-full flex justify-end">
@@ -361,7 +361,7 @@ export default function Page() {
                         }
                         <select
                           {...register(`emails.${index}.type`)}
-                          className="w-[100px] focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none text-sm"
+                          className="w-[100px] dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none text-sm"
                         >
                           <option value="main">Main</option>
                           <option value="work">Work</option>
@@ -370,7 +370,7 @@ export default function Page() {
                         <input
                           {...register(`emails.${index}.email`)}
                           placeholder="Email address"
-                          className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
+                          className="w-full dark:bg-dark-secondary dark:text-dark-text h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
                         />
                       </div>
                       {emailFields.length > 1 && <div className="w-full flex justify-end">
@@ -390,12 +390,12 @@ export default function Page() {
                     <select {...register("leadSource")}
                       placeholder='Name'
                       id="leadSource"
-                      className="w-full h-11 focus:ring-2 ring-offset-2 ring-green-600  focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg text-sm"
+                      className="w-full dark:bg-dark-secondary dark:text-dark-text h-11 focus:ring-2 ring-offset-2 ring-green-600  focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg text-sm"
                     >
-                      <option className='text-tprimary' value="">Select a source</option>
-                      <option className='text-tprimary' value="Referral">Referral</option>
-                      <option className='text-tprimary' value="Google">Google</option>
-                      <option className='text-tprimary' value="Facebook">Facebook</option>
+                      <option className='text-tprimary dark:text-dark-text' value="">Select a source</option>
+                      <option className='text-tprimary dark:text-dark-text' value="Referral">Referral</option>
+                      <option className='text-tprimary dark:text-dark-text' value="Google">Google</option>
+                      <option className='text-tprimary dark:text-dark-text' value="Facebook">Facebook</option>
                     </select>
                   </div>
 
@@ -404,16 +404,16 @@ export default function Page() {
                       expandIcon={<ChevronDown />}
                       aria-controls="panel1-content"
                       id="panel1-header"
-                      className='font-bold text-[15px] text-tprimary hover:bg-primary-dark'
+                      className='font-bold text-[15px] text-tprimary hover:bg-primary-dark dark:hover:bg-dark-hover dark:text-dark-text'
                     >
                       Automated notifications
                     </AccordionSummary>
                     <AccordionDetails>
                       <div className="space-y-4">
-                        <div className='flex justify-between items-center text-tprimary'>
+                        <div className='flex justify-between items-center text-tprimary dark:text-dark-text'>
                           <div className="flex flex-col">
                             <div className='font-semibold'>Quote follow-up</div>
-                            <div>Follow up on an outstanding quote. <Link href={"#"} className='text-green-700'>Settings</Link></div>
+                            <div>Follow up on an outstanding quote. <Link href={"#"} className='text-green-700 dark:text-dark-second-text'>Settings</Link></div>
                           </div>
                           <input
                             {...register("quoteFollowUp")}
@@ -423,10 +423,10 @@ export default function Page() {
                           />
                         </div>
 
-                        <div className='flex justify-between items-center text-tprimary'>
+                        <div className='flex justify-between items-center text-tprimary dark:text-dark-text'>
                           <div className="flex flex-col">
                             <div className='font-semibold'>Assessment and visit reminders</div>
-                            <div>Remind your client of an upcoming assessment or visit. <Link href={"#"} className='text-green-700'>Settings</Link></div>
+                            <div>Remind your client of an upcoming assessment or visit. <Link href={"#"} className='text-green-700 dark:text-dark-second-text'>Settings</Link></div>
                           </div>
                           <input
                             {...register("assessmentAndVisitReminders")}
@@ -436,10 +436,10 @@ export default function Page() {
                           />
                         </div>
 
-                        <div className='flex justify-between items-center text-tprimary'>
+                        <div className='flex justify-between items-center text-tprimary dark:text-dark-text'>
                           <div className="flex flex-col">
                             <div className='font-semibold'>Job follow-up</div>
-                            <div>Follow up when you close a job. <Link href={"#"} className='text-green-700'>Settings</Link></div>
+                            <div>Follow up when you close a job. <Link href={"#"} className='text-green-700 dark:text-dark-second-text'>Settings</Link></div>
                           </div>
                           <input
                             {...register("jobFollowUp")}
@@ -449,10 +449,10 @@ export default function Page() {
                           />
                         </div>
 
-                        <div className='flex justify-between items-center text-tprimary'>
+                        <div className='flex justify-between items-center text-tprimary dark:text-dark-text'>
                           <div className="flex flex-col">
                             <div className='font-semibold'>Invoice follow-up</div>
-                            <div>Follow up on an overdue invoice. <Link href={"#"} className='text-green-700'>Settings</Link></div>
+                            <div>Follow up on an overdue invoice. <Link href={"#"} className='text-green-700 dark:text-dark-second-text'>Settings</Link></div>
                           </div>
                           <input
                             {...register("invoiceFollowUp")}
@@ -470,7 +470,7 @@ export default function Page() {
                       expandIcon={<ChevronDown />}
                       aria-controls="panel2-content"
                       id="panel2-header"
-                      className='font-bold text-[15px] text-tprimary hover:bg-primary-dark'
+                      className='font-bold text-[15px] text-tprimary hover:bg-primary-dark dark:hover:bg-dark-hover dark:text-dark-text'
                     >
                       Additional client details
                     </AccordionSummary>
@@ -497,7 +497,7 @@ export default function Page() {
           {/* Right */}
           <div div className="w-1/2" >
             <div className="flex items-center gap-3 mb-8">
-              <Avatar />
+              <Avatar className="dark:bg-dark-primary dark:text-dark-text"/>
               <div className="font-bold text-2xl">Property details</div>
             </div>
             <div className="flex flex-col text-sm space-y-4">
@@ -506,46 +506,46 @@ export default function Page() {
                   <input {...register("street1")}
                     type="text"
                     placeholder='Street 1'
-                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                    className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                   />
                 </div>
                 <div>
                   <input {...register("street2")}
                     type="text"
                     placeholder='Street 2'
-                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-b-none"
+                    className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-b-none"
                   />
                 </div>
                 <div className="flex flex-row">
                   <input {...register("city")}
                     type="text"
                     placeholder='City'
-                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
+                    className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
                   />
                   <input {...register("province")}
                     type="text"
                     placeholder='Province'
-                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
+                    className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
                   />
                 </div>
 
                 <div className="flex flex-row">
                   <input {...register("postalCode")}
                     placeholder='Postal Code'
-                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-r-none"
+                    className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-r-none"
                   />
                   <select {...register("country")}
-                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-l-none"
+                    className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-l-none"
                   >
-                    <option className='text-tprimary' value="">Select Country</option>
-                    <option className='text-tprimary' value="India">India</option>
-                    <option className='text-tprimary' value="Canada">Canada</option>
+                    <option className='text-tprimary dark:text-dark-text' value="">Select Country</option>
+                    <option className='text-tprimary dark:text-dark-text' value="India">India</option>
+                    <option className='text-tprimary dark:text-dark-text' value="Canada">Canada</option>
                   </select>
                 </div>
               </div>
 
 
-              <p>Taxes <span className='text-green-700 underline ml-2 font-semibold'>GST (5.0%) (Default)</span></p>
+              <p>Taxes <span className='text-green-700 underline ml-2 font-semibold dark:text-dark-second-text'>GST (5.0%) (Default)</span></p>
               <div className="flex gap-2 items-center select-none">
                 <input type="checkbox" {...register("billingAddressSameProperty")} className='w-5 h-5' name="billingAddressSameProperty" id="billingAddressSamePropertyCheckbox" />
                 <label className='cursor-pointer' htmlFor="billingAddressSamePropertyCheckbox">Billing address is the same as property address</label>
@@ -557,36 +557,36 @@ export default function Page() {
                   <div>
                     <input {...register("billingStreet1")}
                       placeholder='Street 1'
-                      className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                      className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                     />
                   </div>
                   <div>
                     <input {...register("billingStreet2")}
                       placeholder='Street 2'
-                      className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-b-none"
+                      className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-b-none"
                     />
                   </div>
                   <div className="flex flex-row">
                     <input {...register("billingCity")}
                       placeholder='City'
-                      className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
+                      className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
                     />
                     <input {...register("billingProvince")}
                       placeholder='Province'
-                      className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
+                      className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
                     />
                   </div>
 
                   <div className="flex flex-row">
                     <input {...register("billingPostalCode")}
                       placeholder='Postal Code'
-                      className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-r-none"
+                      className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-r-none"
                     />
                     <select {...register("billingCountry")}
-                      className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-l-none"
+                      className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-l-none"
                     >
-                      <option className='text-tprimary' value="India">India</option>
-                      <option className='text-tprimary' value="Canada">Canada</option>
+                      <option className='text-tprimary dark:text-dark-text' value="India">India</option>
+                      <option className='text-tprimary dark:text-dark-text' value="Canada">Canada</option>
                     </select>
                   </div>
                 </div>)}
@@ -596,7 +596,7 @@ export default function Page() {
                   expandIcon={<ChevronDown />}
                   aria-controls="panel2-content"
                   id="panel2-header"
-                  className='font-bold text-[15px] text-tprimary hover:bg-primary-dark'
+                  className='font-bold text-[15px] text-tprimary hover:bg-primary-dark dark:text-dark-text dark:hover:bg-dark-hover'
                 >
                   Additional property details
                 </AccordionSummary>

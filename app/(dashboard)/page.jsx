@@ -11,7 +11,7 @@ export default function Home() {
   const { profile } = useSelector(state => state.clients)
 
   return (
-    <div className="flex flex-col gap-8 px-4 py-6  dark:text-dark-text dark:bg-dark-secondary ">
+    <div className="flex flex-col gap-8 px-4 py-6  dark:text-dark-text dark:bg-dark-secondary">
       <Greeting profile={profile}/>
       <Workflow />
 
@@ -25,33 +25,33 @@ export default function Home() {
             <ul className="space-y-4 border rounded-xl shadow-md">
               <li className="flex items-center justify-between border-b p-4">
                 <div className="flex items-center space-x-4">
-                  <FileText className="text-black bg-black bg-opacity-15 p-2 rounded-lg w-10 h-10" />
+                  <FileText className="text-black bg-black bg-opacity-15 p-2 rounded-lg w-10 h-10 dark:text-dark-text" />
                   <div>
                     <h3 className="font-semibold text-md">Explore your personalized online client portal</h3>
-                    <p className="text-sm text-gray-500">Clients can approve quotes, review jobs, and pay all online</p>
+                    <p className="text-sm text-gray-500 dark:text-dark-text">Clients can approve quotes, review jobs, and pay all online</p>
                   </div>
                 </div>
-                <span className="text-sm text-gray-400">5 minutes</span>
+                <span className="text-sm text-gray-400 dark:text-dark-text">5 minutes</span>
               </li>
               <li className="flex items-center justify-between border-b p-4">
                 <div className="flex items-center space-x-4">
-                  <DollarSign className="text-black bg-black bg-opacity-15 p-2 rounded-lg w-10 h-10" />
+                  <DollarSign className="text-black bg-black bg-opacity-15 p-2 rounded-lg w-10 h-10 dark:text-dark-text" />
                   <div>
                     <h3 className="font-semibold text-md">Get paid with fast invoicing</h3>
-                    <p className="text-sm text-gray-500">Create and send invoices your clients can pay online</p>
+                    <p className="text-sm text-gray-500 dark:text-dark-text">Create and send invoices your clients can pay online</p>
                   </div>
                 </div>
-                <span className="text-sm text-gray-400">2 minutes</span>
+                <span className="text-sm text-gray-400 dark:text-dark-text">2 minutes</span>
               </li>
               <li className="flex items-center justify-between p-4">
                 <div className="flex items-center space-x-4">
-                  <FileText className="text-black bg-black bg-opacity-15 p-2 rounded-lg w-10 h-10" />
+                  <FileText className="text-black bg-black bg-opacity-15 p-2 rounded-lg w-10 h-10 dark:text-dark-text" />
                   <div>
                     <h3 className="font-semibold text-md">Create a winning quote</h3>
-                    <p className="text-sm text-gray-500">Boost your revenue with custom quotes</p>
+                    <p className="text-sm text-gray-500 dark:text-dark-text">Boost your revenue with custom quotes</p>
                   </div>
                 </div>
-                <span className="text-sm text-gray-400">2 minutes</span>
+                <span className="text-sm text-gray-400 dark:text-dark-text">2 minutes</span>
               </li>
             </ul>
           </div>
@@ -111,7 +111,7 @@ export default function Home() {
                 <div className="flex items-center space-x-4 border-l-8 rounded-l border-green-800 p-2">
                   <div>
                     <p className="text-sm font-semibold">Mahmuda Mahmuda - Visit for Mahmuda Mahmuda</p>
-                    <p className="text-sm text-gray-500">9:00 AM - 7:00 PM</p>
+                    <p className="text-sm text-gray-500 dark:text-dark-text">9:00 AM - 7:00 PM</p>
                   </div>
                 </div>
                 <XCircle className="text-red-600 w-6 h-6" />
@@ -133,9 +133,9 @@ export default function Home() {
               <h2 className="font-semibold mb-4">Payments</h2>
             </div>
             <div className="flex flex-col items-start justify-normal space-y-4">
-              <p className="font-semibold text-lg">Get paid 4x faster with Jobber Payments</p>
-              <p className="text-sm text-gray-400">Stop chasing payments and offer your clients the convenience of online payments.</p>
-              <Button variant='outlined' className="text-sm border-green-800 text-green-800 py-2 px-2 rounded-lg hover:bg-green-800 hover:bg-opacity-20">Enable Jobber Payments</Button>
+              <p className="font-semibold text-lg">Get paid 4x faster with Prosbro Payments</p>
+              <p className="text-sm text-gray-400 dark:text-dark-text">Stop chasing payments and offer your clients the convenience of online payments.</p>
+              <Button variant='outlined' className="text-sm border-green-800 text-green-800 py-2 px-2 rounded-lg hover:bg-green-800 hover:bg-opacity-20 ">Enable Prosbro Payments</Button>
             </div>
           </div>
 
@@ -168,7 +168,7 @@ export default function Home() {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <p className="text-2xl font-semibold">$0</p>
-                    <p className="text-xs bg-gray-600 bg-opacity-20 px-4 py-[7px] rounded-full cursor-pointer text-gray-600">0%</p>
+                    <p className="text-xs bg-gray-600 bg-opacity-20 px-4 py-[7px] rounded-full cursor-pointer text-gray-600 dark:text-dark-text">0%</p>
                   </div>
                   <p className="text-xs font-semibold underline">View reports</p>
                 </div>
