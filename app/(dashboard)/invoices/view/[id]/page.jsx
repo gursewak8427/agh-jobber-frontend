@@ -19,8 +19,8 @@ import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 import Heading from '@/components/Heading';
 import PageHeading from '@/components/PageHeading';
-import TextMessageModal from '@/app/_components/quote/TextMessageModal';
-import SendEmailModal from '@/app/_components/quote/SendEmailModal';
+import TextMessageModal from '@/app/_components/invoice/TextMessageModal';
+import SendEmailModal from '@/app/_components/invoice/SendEmailModal';
 import ShowCustomFields from '@/app/_components/ShowCustomFields';
 
 
@@ -31,7 +31,7 @@ export default function Page() {
   const [menu, setmenu] = useState(false)
   const { id } = useParams()
   const dispatch = useAppDispatch()
-  const { invoice } = useAppSelector(store => store.clients)
+  const { invoice, profile } = useAppSelector(store => store.clients)
 
   const getStatusBox = status => {
     switch (status) {
@@ -58,9 +58,9 @@ export default function Page() {
       <MenuItem onClick={() => {
         // setsendemail(true)
         // setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <MessageSquare className="text-gray-700" size={16} />
+          <MessageSquare className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Text Message
       </MenuItem>
@@ -70,9 +70,9 @@ export default function Page() {
       <MenuItem onClick={() => {
         // setsendemail(true)
         // setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <Mail className="text-gray-700" size={16} />
+          <Mail className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Email
       </MenuItem>
@@ -83,9 +83,9 @@ export default function Page() {
       <MenuItem onClick={() => {
         // setsendemail(true)
         // setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <Eye className="text-gray-700" size={16} />
+          <Eye className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Preview as client
       </MenuItem>
@@ -95,15 +95,15 @@ export default function Page() {
       <MenuItem onClick={() => {
         // setsendemail(true)
         // setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <FileSignatureIcon className="text-gray-700" size={16} />
+          <FileSignatureIcon className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Collect Signature
       </MenuItem>
 
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
           <FileText className="text-red-700" size={16} />
         </ListItemIcon>
@@ -111,18 +111,18 @@ export default function Page() {
       </MenuItem>
 
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <Printer className="text-gray-700" size={16} />
+          <Printer className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Print
       </MenuItem>
 
       <Divider />
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <DollarSign className="text-blue-700" size={16} />
+          <DollarSign className="text-blue-700 dark:text-blue-500" size={16} />
         </ListItemIcon>
         Close Invoice
       </MenuItem>
@@ -138,10 +138,10 @@ export default function Page() {
   console.log({ invoice }, '===invoice')
 
   return (
-    <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary'>
+    <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary dark:text-dark-text'>
       <PageHeading>
-        <div className='text-sm text-tprimary '>
-          Back to : <Link href={"/invoices"} className='text-green-700'>invoices</Link>
+        <div className='text-sm text-tprimary dark:text-dark-text'>
+          Back to : <Link href={"/invoices"} className='text-green-700 dark:text-dark-second-text'>invoices</Link>
         </div>
         <div className="flex items-center gap-2">
           <CustomButton onClick={() => setsendtextmsg(true)} frontIcon={<CreditCard className='text-white' />} title={"Collect Payments"} variant={"primary"} />
@@ -174,7 +174,7 @@ export default function Page() {
             <div className="flex">
               <div className="w-1/3">
                 <h1 className='font-bold mb-2'>Billing address</h1>
-                <p className='max-w-[150px] font-extralight text-gray-500 text-sm'>
+                <p className='max-w-[150px] font-extralight text-gray-500 text-sm dark:text-dark-text'>
                   {getAddress(invoice?.property)}
                 </p>
                 {/* <Button className='text-green-700 p-0' onClick={() => {
@@ -183,15 +183,15 @@ export default function Page() {
               </div>
               <div className="w-1/3">
                 <h1 className='font-bold mb-2'>Service address</h1>
-                <p className='max-w-[150px] font-extralight text-gray-500 text-sm'>
+                <p className='max-w-[150px] font-extralight text-gray-500 text-sm dark:text-dark-text'>
                   (Same as billing address)
                 </p>
                 {/* <Button className='text-green-700 p-0' onClick={() => {
                   setPropertyModal("SELECT")
                 }}>change</Button> */}
               </div>
-              <div className="w-1/3 font-extralight text-gray-500 text-sm">
-                <h1 className='font-bold mb-2 text-black'>Contact details</h1>
+              <div className="w-1/3 font-extralight text-gray-500 text-sm dark:text-gray-300">
+                <h1 className='font-bold mb-2 text-black dark:text-dark-text'>Contact details</h1>
                 <p className='max-w-[140px]'>{getPrimary(invoice?.client?.mobile)?.number}</p>
                 <p className='max-w-[140px]'>{getPrimary(invoice?.client?.email)?.email}</p>
               </div>
@@ -199,7 +199,7 @@ export default function Page() {
           </div>
           {/* Quote Details */}
           <div className="p-4 w-1/3 border-l-4 border-gray-300">
-            <h1 className='font-bold mb-2 text-black'>Invoice details</h1>
+            <h1 className='font-bold mb-2 text-black dark:text-dark-text'>Invoice details</h1>
             <table className='w-full'>
               <tbody>
                 <tr className='border-b'>
@@ -236,7 +236,7 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="lg:col-span-3 py-4 text-tprimary space-y-4 bg-white p-4 rounded-lg">
+        <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 bg-white p-4 rounded-lg dark:bg-dark-primary">
           <table className='w-full'>
             <thead>
               <tr className='border-b'>
@@ -263,7 +263,7 @@ export default function Page() {
                     <td className='pr-2 py-4 text-center'>${service?.labour}</td>
                     <td className='pr-2 py-4 text-center'>
                       <div className="flex flex-col items-center justify-center gap-2">
-                        <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700'><i>(${service?.markuppercentage}%)</i></small></span>
+                        <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700 dark:text-gray-400'><i>(${service?.markuppercentage}%)</i></small></span>
                       </div>
                     </td>
                     <td className='pr-2 py-4 text-right'>${service?.total}</td>
@@ -282,27 +282,27 @@ export default function Page() {
             <div className="p-4 rounded-lg w-1/2">
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">Subtotal</div>
-                <p className='text-sm text-gray-700'>${invoice?.subtotal}</p>
+                <p className='text-sm text-gray-700 dark:text-dark-text'>${invoice?.subtotal}</p>
               </div>
 
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">Discount</div>
-                <span className='text-sm '>-(${parseFloat(invoice?.discount || 0)?.toFixed(1)})<small className='ml-1 text-gray-700'><i>({invoice?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
+                <span className='text-sm '>-(${parseFloat(invoice?.discount || 0)?.toFixed(1)})<small className='ml-1 text-gray-700 dark:text-dark-text'><i>({invoice?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
               </div>
 
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">GST (5.0)%</div>
-                <p className='text-sm text-gray-700'>${invoice?.tax}</p>
+                <p className='text-sm text-gray-700 dark:text-dark-text'>${invoice?.tax}</p>
               </div>
 
               <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
                 <div className="font-semibold min-w-[200px]">Total</div>
-                <p className='text-gray-700 font-semibold'>${invoice?.costs}</p>
+                <p className='text-gray-700 font-semibold dark:text-dark-text'>${invoice?.costs}</p>
               </div>
 
               <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">Account balance <div className="text-red-500">Pending</div></div>
-                <span className='text-sm '>$25<small className='ml-1 text-gray-700'><i>(10%)</i></small></span>
+                <span className='text-sm '>$25<small className='ml-1 text-gray-700 dark:text-dark-text'><i>(10%)</i></small></span>
               </div>
             </div>
           </div>
@@ -312,10 +312,10 @@ export default function Page() {
       </div>
 
 
-      <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg">
+      <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg dark:bg-dark-secondary">
         <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
         <div className="mt-4">
-          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full dark:bg-dark-primary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
             {invoice?.internalnote}
           </textarea>
         </div>
@@ -328,7 +328,7 @@ export default function Page() {
         <Divider className='my-2' />
 
         <div className="mt-4 space-y-2">
-          <p className='font-normal text-sm text-tprimary'>Link not to related</p>
+          <p className='font-normal text-sm text-tprimary dark:text-dark-text'>Link not to related</p>
           <div className="flex gap-2 text-sm items-center capitalize">
             <div className="flex gap-2 items-center">
               <input readOnly type="checkbox" className='w-5 h-5' name="" id="jobs" />
@@ -349,8 +349,8 @@ export default function Page() {
       </div>
 
 
-      <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} />
+      <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} client={invoice.client} profile={profile} invoice={invoice} />
       <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} />
-    </div >
+    </div>
   );
 }

@@ -40,7 +40,7 @@ export default function Page() {
 
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  const { clientslist, client, team, invoicecount, invoicecustomfields } = useSelector(state => state.clients);
+  const { loadingObj, client, team, invoicecount, invoicecustomfields } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -56,6 +56,8 @@ export default function Page() {
       products: [defaultProductLineItem],
       discount: 0,
       requireddeposite: 0,
+      clientview_quantities: true,
+      clientview_total: true
     },
   });
 
@@ -200,13 +202,17 @@ export default function Page() {
     delete _data?.quoteno
 
     let jsonData = {
-      ...(clientView && {
-        clientview_quantities: data?.clientview_quantities,
-        clientview_unitprices: data?.clientview_unitprices,
-        clientview_line_item_total: data?.clientview_line_item_total,
-        clientview_account_balance: data?.clientview_account_balance,
-        clientview_late_stamp: data?.clientview_late_stamp,
-      }),
+      "clientinvoicestyle": {
+        ...(clientView && {
+          quantities: data?.clientview_quantities,
+          materials: data?.clientview_materials,
+          markuppercentage: data?.clientview_markuppercentage,
+          markupamount: data?.clientview_markupamount,
+          labour: data?.clientview_labour,
+          total: data?.clientview_total,
+          late_stamp: data?.clientview_late_stamp,
+        }),
+      },
       "service": data?.products?.map(product => ({
         ...product,
       })),
@@ -233,23 +239,28 @@ export default function Page() {
       // "totalprice": data?.totalcost,
 
       "internalnote": data?.internalnote,
+      "clientmessage": data?.clientmessage,
 
       "property_id": selectedProperty?.id,
       "client_id": client_id,
     }
-    dispatch(createInvoice(jsonData))
+    dispatch(createInvoice(jsonData)).then(({ payload }) => {
+      if (payload?.id) {
+        router.push(`/invoices/view/${payload?.id}`)
+      }
+    })
     console.log({ jsonData });
   };
 
   return (
     <div className='max-w-[1200px] mx-auto space-y-4'>
-      <div className='text-sm text-tprimary'>
-        Back to : <Link href={"/invoices"} className='text-green-700'>Invoices</Link>
+      <div className='text-sm text-tprimary dark:text-dark-text'>
+        Back to : <Link href={"/invoices"} className='text-green-700 dark:text-dark-second-text'>Invoices</Link>
       </div>
       <div className="p-8 border border-gray-200 rounded-xl border-t-8 border-t-green-700 space-y-4">
         {/* Header */}
         <div className="flex justify-between w-full items-center mb-6 gap-2">
-          <div className="text-4xl font-semibold text-tprimary">Invoice for {getClientName(client)}</div>
+          <div className="text-4xl font-semibold text-tprimary dark:text-dark-text">Invoice for {getClientName(client)}</div>
           <div className='font-bold'>Invoice #{invoicecount}</div>
         </div>
 
@@ -262,7 +273,7 @@ export default function Page() {
                   {...register("subject")}
                   placeholder='Subject'
                   name='subject'
-                  className="focus:outline-gray-500 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                  className="focus:outline-gray-500 dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
                 />
               </div>
               {
@@ -295,7 +306,7 @@ export default function Page() {
                 {
                   issueDateStatus ? <div className="flex gap-2 items-center">
                     <input type="date" {...register("issueddate")} defaultValue={invoicecount}
-                      className="h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
+                      className="h-8 text-right dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
                     <CustomButton onClick={() => { setIssueDateStatus(false) }} title={"Cancel"} />
                   </div> :
                     <Button onClick={() => setIssueDateStatus(true)} className='px-0 text-green-700 underline font-semibold capitalize'>Date sent</Button>
@@ -306,7 +317,7 @@ export default function Page() {
                 <div className="font-medium min-w-[200px] text-sm">Payment due</div>
                 {
                   paymentDueStatus ? <div className="flex gap-2 items-center">
-                    <select {...register("paymentdue")} onBlur={onBlur} name="paymentdue" id="paymentdue" className='w-auto border-gray-400 focus:outline-gray-500 border p-2 rounded-md h-11 text-sm'>
+                    <select {...register("paymentdue")} onBlur={onBlur} name="paymentdue" id="paymentdue" className='w-auto dark:bg-dark-secondary border-gray-400 focus:outline-gray-500 border p-2 rounded-md h-11 text-sm'>
                       <option value="upon_receipt">Upon receipt</option>
                       <option value="net_15">Net 15</option>
                       <option value="net_30">Net 30</option>
@@ -325,14 +336,14 @@ export default function Page() {
                 <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px] text-sm">Due date</div>
                   <input type="date" {...register("paymentduedate")} onBlur={onBlur}
-                    className="h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
+                    className="h-8 text-right focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg" />
                 </div>
               }
 
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium min-w-[200px] text-sm">Salesperson</div>
                 {
-                  selectedSalesPerson ? <div className="flex items-center bg-primary p-2 rounded-full">
+                  selectedSalesPerson ? <div className="flex items-center bg-gray-400 p-2 rounded-full dark:bg-dark-primary">
                     <Avatar className="mr-2 bg-slate-600 text-sm">{selectedSalesPerson?.name[0]}</Avatar>
                     <div className="text-sm">{selectedSalesPerson?.name}</div>
                     <IconButton color="error" onClick={() => setSalesPerson(null)}>
@@ -365,7 +376,7 @@ export default function Page() {
           </div>
 
           {/* Line Items */}
-          <div className="lg:col-span-3 py-4 text-tprimary space-y-4">
+          <div className="lg:col-span-3 py-4 text-tprimary space-y-4 dark:text-dark-text">
             <table className='w-full'>
               <thead>
                 <tr>
@@ -391,23 +402,23 @@ export default function Page() {
                               {...register(`products.${index}.type`)}
                               placeholder='Name'
                               value={product?.type}
-                              className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                              className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                             />
                             <input
                               {...register(`products.${index}.name`)}
                               placeholder='Name'
-                              className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                              className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                             />
                             <textarea
                               {...register(`products.${index}.description`)}
                               placeholder='Description'
-                              className="w-full border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                              className="w-full border-t-0 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
                             ></textarea>
                           </div>
                         </td>
                         <td className='pr-2 pb-4 h-[100px]'>
                           <div className="flex flex-col h-full items-start justify-start">
-                            <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
+                            <div className="w-full h-full flex-1 border px-3 py-2 dark:bg-dark-secondary border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
                               <CameraIcon className='text-green-800' />
                             </div>
                           </div>
@@ -425,17 +436,17 @@ export default function Page() {
                             {...register(`products.${index}.type`)}
                             placeholder='Name'
                             value={product?.type}
-                            className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                           />
                           <input
                             {...register(`products.${index}.name`)}
                             placeholder='Name'
-                            className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                           />
                           <textarea
                             {...register(`products.${index}.description`)}
                             placeholder='Description'
-                            className="w-full border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                            className="w-full border-t-0 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
                           ></textarea>
                         </div>
                       </td>
@@ -445,7 +456,7 @@ export default function Page() {
                             {...register(`products.${index}.quantity`)}
                             onBlur={onBlur}
                             placeholder='Quantity'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2"
+                            className="focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg mb-2"
                           />
                           <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
                             <CameraIcon className='text-green-800' />
@@ -458,13 +469,13 @@ export default function Page() {
                             {...register(`products.${index}.material`)}
                             onBlur={onBlur}
                             placeholder='Material'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            className="focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                           />
                           <input
                             {...register(`products.${index}.labour`)}
                             onBlur={onBlur}
                             placeholder='Labour'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                            className="focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
                           />
                         </div>
                       </td>
@@ -474,13 +485,13 @@ export default function Page() {
                             {...register(`products.${index}.markuppercentage`)}
                             onBlur={onBlur}
                             placeholder='Markup (%)'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            className="focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                           />
                           <input
                             readOnly
                             {...register(`products.${index}.markupamount`)}
                             placeholder='Amount'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                            className="focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
                           />
                         </div>
                       </td>
@@ -490,7 +501,7 @@ export default function Page() {
                             {...register(`products.${index}.total`)}
                             readOnly
                             placeholder='Total'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                            className="focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                           />
                           <div className='flex gap-2 items-center py-2'>
                             {
@@ -498,7 +509,7 @@ export default function Page() {
                                 setValue(`products.${index}.servicedate`, new Date())
                               }}>Set Service Date</p> :
                                 <div className="flex items-center gap-2">
-                                  <input type="date" {...register(`products.${index}.servicedate`)} name="servicedate" id="servicedate" className='text-sm border p-1 rounded-full' />
+                                  <input type="date" {...register(`products.${index}.servicedate`)} name="servicedate" id="servicedate" className='text-sm border p-1 rounded-full dark:bg-dark-secondary' />
                                   <IconButton>
                                     <X className='w-4 h-4 hover:text-black text-gray-400' />
                                   </IconButton>
@@ -537,7 +548,7 @@ export default function Page() {
 
                   {
                     clientView && <div>
-                      <p className='text-sm text-gray-600'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</Link></p>
+                      <p className='text-sm text-gray-600 dark:text-gray-400'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</Link></p>
                       <div className="flex items-center flex-wrap">
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
@@ -553,37 +564,49 @@ export default function Page() {
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_unitprices")}
+                            {...register("clientview_materials")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_unitprices"
+                            id="clientview_materials"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_unitprices">
-                            Unit prices
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_materials">
+                            Material Price
                           </label>
                         </div>
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_line_item_total")}
+                            {...register("clientview_markuppercentage")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_line_item_total"
+                            id="clientview_markuppercentage"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_line_item_total">
-                            Line item totals
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_markuppercentage">
+                            Markup Percentage
                           </label>
                         </div>
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_account_balance")}
+                            {...register("clientview_markupamount")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_account_balance"
+                            id="clientview_markupamount"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_account_balance">
-                            Account balance
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_markupamount">
+                            Markup Amount
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_labour")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_labour"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_labour">
+                            Labour
                           </label>
                         </div>
 
@@ -598,6 +621,18 @@ export default function Page() {
                             Late stamp (if overdue)
                           </label>
                         </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_total")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_total"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_total">
+                            Total
+                          </label>
+                        </div>
                       </div>
                     </div>
                   }
@@ -606,7 +641,7 @@ export default function Page() {
               <div className="p-4 rounded-lg w-1/2">
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px]">Subtotal</div>
-                  <p className='text-gray-700'>${subtotal || `0.00`}</p>
+                  <p className='text-gray-700 dark:text-dark-text'>${subtotal || `0.00`}</p>
                 </div>
 
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
@@ -616,8 +651,8 @@ export default function Page() {
                       <div className="flex items-center gap-2 justify-between w-full">
                         <div className="flex items-center">
                           <input type="text" {...register("discount")} onBlur={onBlur}
-                            className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
-                          <select name="discounttype" id="discounttype" {...register("discounttype")} onBlur={onBlur} className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
+                            className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
+                          <select name="discounttype" id="discounttype" {...register("discounttype")} onBlur={onBlur} className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
                             <option value="amount">$</option>
                             <option value="percentage">%</option>
                           </select>
@@ -634,14 +669,14 @@ export default function Page() {
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px]">GST (5.0)%</div>
                   <div className="flex items-center gap-2">
-                    <p className='text-gray-700'>${gst || `0.00`}</p>
+                    <p className='text-gray-700 dark:text-dark-text'>${gst || `0.00`}</p>
                     <Trash2 className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
                   </div>
                 </div>
 
                 <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
                   <div className="font-semibold min-w-[200px]">Total</div>
-                  <p className='text-gray-700 font-semibold'>${totalcost || `0.00`}</p>
+                  <p className='text-gray-700 font-semibold dark:text-dark-text'>${totalcost || `0.00`}</p>
                 </div>
 
                 <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
@@ -651,8 +686,8 @@ export default function Page() {
                     isRequiredDeposit ? <div className="flex items-center gap-2 justify-between w-full">
                       <div className="flex items-center">
                         <input type="text" {...register("requireddeposite")} onBlur={onBlur}
-                          className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
-                        <select name="requiredtype" id="requiredtype" {...register("requiredtype")} onBlur={onBlur} className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
+                          className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
+                        <select name="requiredtype" id="requiredtype" {...register("requiredtype")} onBlur={onBlur} className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
                           <option value="amount">$</option>
                           <option value="percentage">%</option>
                         </select>
@@ -670,13 +705,13 @@ export default function Page() {
 
             <div className="mt-4">
               <h1 className='font-bold mb-2'>Client message</h1>
-              <textarea name="" id="" rows={3}  {...register("clientmessage")} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+              <textarea name="clientmessage" id="clientmessage" rows={3}  {...register("clientmessage")}  className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
             </div>
 
             <div className="border border-gray-300 p-4 rounded-lg">
               <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
               <div className="mt-4">
-                <textarea {...register("internalnote")} placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+                <textarea {...register("internalnote")} name="internalnote" id="internalnote" placeholder='Note details' rows={3} className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
               </div>
 
               <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
@@ -691,30 +726,30 @@ export default function Page() {
               {
                 !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
                   <div className="flex gap-2 items-center">
-                    <CustomButton type={"submit"} title="Save Invoice"></CustomButton>
-                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"submit"} variant="primary" title="Save and"></CustomButton>}>
+                    <CustomButton loading={loadingObj.createinvoice} type={"submit"} title="Save Invoice"></CustomButton>
+                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
                       {/* Menu Items */}
                       <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
                         Save and...
                       </Typography>
 
-                      <MenuItem className="text-tprimary text-sm">
+                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                         <ListItemIcon>
-                          <MessageSquareText className="text-gray-700" size={16} />
+                          <MessageSquareText className="text-gray-700 dark:text-gray-400" size={16} />
                         </ListItemIcon>
                         Send as text mesage
                       </MenuItem>
 
-                      <MenuItem className="text-tprimary text-sm">
+                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                         <ListItemIcon>
-                          <Mail className="text-gray-700" size={16} />
+                          <Mail className="text-gray-700 dark:text-gray-400" size={16} />
                         </ListItemIcon>
                         Send as email
                       </MenuItem>
 
-                      <MenuItem className="text-tprimary text-sm">
+                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                         <ListItemIcon>
-                          <CreditCard className="text-blue-700" size={16} />
+                          <CreditCard className="text-blue-700 dark:text-blue-500" size={16} />
                         </ListItemIcon>
                         Collect Payment
                       </MenuItem>
@@ -726,7 +761,7 @@ export default function Page() {
             </div>
           </div>
         </form>
-      </div >
+      </div>
 
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
 
@@ -741,6 +776,6 @@ export default function Page() {
         setSelectedProperty(property)
         setPropertyModal(false)
       }} client={client} />
-    </div >
+    </div>
   );
 }

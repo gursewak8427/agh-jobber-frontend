@@ -12,7 +12,7 @@ import { darkmodeState } from '@/store/slices/client';
 const Topbar = () => {
     const router = useRouter();
     const dispatch = useDispatch()
-    const { profile,darkMode } = useSelector(state => state.clients)
+    const { profile, darkMode } = useSelector(state => state.clients)
     const [state, setState] = useState({
         notification: false,
         help: false,
@@ -137,11 +137,11 @@ const Topbar = () => {
     }
 
     const onSetDarkMode = () => {
-        dispatch(darkmodeState())
+        dispatch(darkmodeState(!darkMode))
     }
     return (
         <>
-            <div className="flex justify-between items-center p-4 bg-white shadow-sm sticky top-0 z-10 dark:bg-dark-secondary  dark:text-dark-text"> 
+            <div className="flex justify-between items-center p-4 bg-white shadow-sm sticky top-0 z-10 dark:bg-dark-secondary  dark:text-dark-text">
                 <div className="text-sm text-gray-500  dark:text-dark-text">
                     <p className="font-bold">{profile?.company_name}</p>
                 </div>
@@ -181,8 +181,8 @@ const Topbar = () => {
                         <MenuItem onClick={null}>Product Updates</MenuItem>
                         <MenuItem onClick={onSetDarkMode}>
                             <div className="flex items-center">
-                                <span>Dark Mode</span>
-                                <span className="ml-2">🌙</span>
+                                <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                                <span className="ml-2">{darkMode ? '☀️' : '🌙'}</span>
                             </div>
                         </MenuItem>
                         <Divider />

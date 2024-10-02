@@ -208,7 +208,7 @@ export const createJob = createAsyncThunk("createJob", async (data, { rejectWith
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/job/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -255,7 +255,7 @@ export const createInvoice = createAsyncThunk("createInvoice", async (data, { re
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/invoice/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -441,7 +441,8 @@ const clientSlice = createSlice({
             state.errorList = null
         },
         darkmodeState: (state, action) => {
-            state.darkMode = !state.darkMode
+            localStorage.setItem('mode', action.payload)
+            state.darkMode = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -652,12 +653,17 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(createJob.pending, (state, action) => {
+                state.loadingObj['jobcreate'] = true
+            })
             .addCase(createJob.fulfilled, (state, action) => {
+                delete state.loadingObj['jobcreate'];
+                state.successList = "Job Created Succesfully!!"
                 state.job = action.payload;
             })
             .addCase(createJob.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['jobcreate'];
+                state.errorList = action.payload.error || 'Failed to create job';
             });
         builder
             .addCase(fetchJobs.pending, (state, action) => {
@@ -684,12 +690,17 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(createInvoice.pending, (state, action) => {
+                state.loadingObj['createinvoice'] = true
+            })
             .addCase(createInvoice.fulfilled, (state, action) => {
+                delete state.loadingObj['createinvoice']
+                state.successList = "Invoice Created Successfully"
                 state.invoice = action.payload;
             })
             .addCase(createInvoice.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['createinvoice']
+                state.errorList = action.payload.error || 'Failed to create invoice';
             });
         builder
             .addCase(fetchInvoices.pending, (state, action) => {
@@ -732,23 +743,35 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(createJobService.pending, (state, action) => {
+                state.loadingObj['newlineitem'] = true
+            })
             .addCase(createJobService.fulfilled, (state, action) => {
+                delete state.loadingObj['newlineitem']
                 state.job['service'].push(action.payload);
             })
             .addCase(createJobService.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['newlineitem']
+                state.errorList = action.payload.error || 'Failed to create new line';
             });
         builder
+            .addCase(createJobVisit.pending, (state, action) => {
+                state.loadingObj['schedulevisit'] = true
+            })
             .addCase(createJobVisit.fulfilled, (state, action) => {
+                delete state.loadingObj['schedulevisit']
                 state.job['visit'].push(action.payload);
             })
             .addCase(createJobVisit.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['schedulevisit']
+                state.errorList = action.payload?.message || 'Failed to create visit';
             });
         builder
+            .addCase(putJobVisit.pending, (state, action) => {
+                state.loadingObj['schedulevisit'] = true
+            })
             .addCase(putJobVisit.fulfilled, (state, action) => {
+                delete state.loadingObj['schedulevisit']
                 state.job['visit'] = state.job['visit'].map(visit => {
                     if (visit?.id == action.payload?.id) {
                         return action?.payload
@@ -758,20 +781,28 @@ const clientSlice = createSlice({
                 });
             })
             .addCase(putJobVisit.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['schedulevisit']
+                state.errorList = action.payload?.message || 'Failed to update visit';
             });
 
         builder
+            .addCase(createInvoiceReminder.pending, (state, action) => {
+                state.loadingObj['invoicereminder'] = true
+            })
             .addCase(createInvoiceReminder.fulfilled, (state, action) => {
+                delete state.loadingObj['invoicereminder']
                 state.job['invoicereminder'].push(action.payload);
             })
             .addCase(createInvoiceReminder.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['invoicereminder']
+                state.errorList = action.payload.error || 'Failed to create invoice reminder';
             });
         builder
+            .addCase(putInvoiceReminder.pending, (state, action) => {
+                state.loadingObj['invoicereminder'] = true
+            })
             .addCase(putInvoiceReminder.fulfilled, (state, action) => {
+                delete state.loadingObj['invoicereminder']
                 state.job['invoicereminder'] = state.job['invoicereminder'].map(visit => {
                     if (visit?.id == action.payload?.id) {
                         return action?.payload
@@ -781,19 +812,28 @@ const clientSlice = createSlice({
                 });
             })
             .addCase(putInvoiceReminder.rejected, (state, action) => {
+                delete state.loadingObj['invoicereminder']
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(createJobExepense.pending, (state, action) => {
+                state.loadingObj['expense'] = true
+            })
             .addCase(createJobExepense.fulfilled, (state, action) => {
                 state.job['expense'].push(action.payload);
+                delete state.loadingObj['expense']
             })
             .addCase(createJobExepense.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['expense']
+                state.errorList = action.payload.error || 'Failed to create expense';
             });
         builder
+            .addCase(putJobExepense.pending, (state, action) => {
+                state.loadingObj['expense'] = true
+            })
             .addCase(putJobExepense.fulfilled, (state, action) => {
+                delete state.loadingObj['expense']
                 state.job['expense'] = state.job['expense'].map(item => {
                     if (item?.id == action.payload?.id) {
                         return action?.payload
@@ -803,30 +843,37 @@ const clientSlice = createSlice({
                 });
             })
             .addCase(putJobExepense.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['expense']
+                state.errorList = action.payload.error || 'Failed to update expense';
             });
         builder
+            .addCase(createJobEmployeeSheet.pending, (state, action) => {
+                state.loadingObj['labourentry'] = true
+            })
             .addCase(createJobEmployeeSheet.fulfilled, (state, action) => {
                 state.job['labour'].push(action.payload);
+                delete state.loadingObj['labourentry'];
             })
             .addCase(createJobEmployeeSheet.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['labourentry'];
+                state.errorList = action.payload.error || 'Failed to fetch clients';
             });
         builder
+            .addCase(putJobEmployeeSheet.pending, (state, action) => {
+                state.loadingObj['labourentry'] = true;
+            })
             .addCase(putJobEmployeeSheet.fulfilled, (state, action) => {
+                delete state.loadingObj['labourentry'];
                 state.job['labour'] = state.job['labour'].map(item => {
                     if (item?.id == action.payload?.id) {
                         return action?.payload
                     }
-
                     return item;
                 });
             })
             .addCase(putJobEmployeeSheet.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['labourentry'];
+                state.errorList = action.payload.error || 'Failed to fetch clients';
             });
         builder
             .addCase(sentClientCustommail.pending, (state, action) => {
@@ -865,5 +912,5 @@ const clientSlice = createSlice({
     },
 });
 
-export const { setLoading, removeLoading, clearsuccessList, clearerrorList,darkmodeState } = clientSlice.actions;
+export const { setLoading, removeLoading, clearsuccessList, clearerrorList, darkmodeState } = clientSlice.actions;
 export default clientSlice.reducer;

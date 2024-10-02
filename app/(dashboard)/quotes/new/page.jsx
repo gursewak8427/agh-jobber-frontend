@@ -264,21 +264,21 @@ export default function Page() {
 
   return (
     <div className='max-w-[1200px] mx-auto space-y-4'>
-      <div className='text-sm text-tprimary'>
-        Back to : <Link href={"/quotes"} className='text-green-700'>Quotes</Link>
+      <div className='text-sm text-tprimary dark:text-dark-text'>
+        Back to : <Link href={"/quotes"} className='text-green-700 dark:text-dark-second-text'>Quotes</Link>
       </div>
       <div className="p-8 border border-gray-200 rounded-xl border-t-8 border-t-pink-950">
         {/* Header */}
         <div className="flex justify-start items-center mb-6">
-          <div className="text-4xl font-semibold text-tprimary">Quote for</div>
+          <div className="text-4xl font-semibold text-tprimary dark:text-dark-text">Quote for</div>
           <Button onClick={() => setSelectClientModal(true)} className='ml-2 capitalize flex items-center gap-2 border-b border-dashed'>
             {
               !client_id ? <>
-                <div className="text-4xl font-semibold text-tprimary">Client Name</div>
+                <div className="text-4xl font-semibold text-tprimary dark:text-dark-second-text">Client Name</div>
                 <div className="bg-green-700 px-4 py-1 rounded">
                   <PlusIcon className='text-white' />
                 </div>
-              </> : <div className="text-4xl font-semibold text-tprimary">{getClientName(client)}</div>
+              </> : <div className="text-4xl font-semibold text-tprimary dark:text-dark-second-text">{getClientName(client)}</div>
             }
 
           </Button>
@@ -289,12 +289,12 @@ export default function Page() {
           <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300 pb-4">
             <div className="w-1/2 flex flex-col space-y-4">
               <div className="flex flex-col space-y-2">
-                <label htmlFor="" className='text-tprimary font-bold'>{selectPropertyModal} Job Title</label>
+                <label htmlFor="" className='text-tprimary dark:text-dark-text font-bold'>{selectPropertyModal} Job Title</label>
                 <input
                   {...register("title")}
                   label="Title"
                   placeholder='Title'
-                  className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                  className="focus:outline-none border dark:bg-dark-secondary px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
                 />
               </div>
               {
@@ -305,7 +305,7 @@ export default function Page() {
                       <>
                         <h1 className='font-bold mb-2'>Property address</h1>
                         <p className='max-w-[150px]'>{getAddress(selectedProperty)}</p>
-                        <Button className='text-green-700 p-0' onClick={() => {
+                        <Button className='text-green-700 p-0 dark:text-dark-second-text' onClick={() => {
                           setPropertyModal("SELECT")
                         }}>change</Button>
                       </>
@@ -327,7 +327,7 @@ export default function Page() {
                 {
                   isQuoteNo ? <div className="flex gap-2 items-center">
                     <input type="text" {...register("quoteno")} onBlur={onBlur} defaultValue={quotecount}
-                      className="w-16 h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
+                      className="w-16 h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg dark:bg-dark-secondary" />
                     <CustomButton onClick={() => { setValue("quoteno", quotecount); setQuoteNo(false) }} title={"Cancel"} />
                   </div> :
                     <Button onClick={() => setQuoteNo(true)} className='px-0 text-green-700 underline font-semibold'>change</Button>
@@ -347,8 +347,8 @@ export default function Page() {
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium min-w-[200px]">Salesperson</div>
                 {
-                  selectedSalesPerson ? <div className="flex items-center bg-primary p-2 rounded-full">
-                    <Avatar className="mr-2 bg-slate-600 text-sm">{selectedSalesPerson?.name[0]}</Avatar>
+                  selectedSalesPerson ? <div className="flex items-center bg-secondary p-2 rounded-full dark:bg-dark-primary">
+                    <Avatar className="mr-2 bg-slate-600 text-sm dark:text-dark-text">{selectedSalesPerson?.name[0]}</Avatar>
                     <div className="text-sm">{selectedSalesPerson?.name}</div>
                     <IconButton color="error" onClick={() => setSalesPerson(null)}>
                       <X />
@@ -382,7 +382,7 @@ export default function Page() {
           </div>
 
           {/* Line Item Details */}
-          <div className="lg:col-span-3 py-4 text-tprimary space-y-4">
+          <div className="lg:col-span-3 py-4 text-tprimary space-y-4 dark:text-dark-text">
             <table className='w-full'>
               <thead>
                 <tr>
@@ -405,17 +405,17 @@ export default function Page() {
                               {...register(`products.${index}.type`)}
                               placeholder='Name'
                               value={product?.type}
-                              className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                              className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                             />
                             <input
                               {...register(`products.${index}.name`)}
                               placeholder='Name'
-                              className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                              className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                             />
                             <textarea
                               {...register(`products.${index}.description`)}
                               placeholder='Description'
-                              className="w-full border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                              className="w-full dark:bg-dark-secondary border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
                             ></textarea>
                           </div>
                         </td>
@@ -447,12 +447,12 @@ export default function Page() {
                           <input
                             {...register(`products.${index}.name`)}
                             placeholder='Name'
-                            className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                           />
                           <textarea
                             {...register(`products.${index}.description`)}
                             placeholder='Description'
-                            className="w-full border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                            className="w-full dark:bg-dark-secondary border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
                           ></textarea>
                         </div>
                       </td>
@@ -462,7 +462,7 @@ export default function Page() {
                             {...register(`products.${index}.quantity`)}
                             onBlur={onBlur}
                             placeholder='Quantity'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2"
+                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2"
                           />
                           <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
                             <CameraIcon className='text-green-800' />
@@ -475,13 +475,13 @@ export default function Page() {
                             {...register(`products.${index}.material`)}
                             onBlur={onBlur}
                             placeholder='Material'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                           />
                           <input
                             {...register(`products.${index}.labour`)}
                             onBlur={onBlur}
                             placeholder='Labour'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
                           />
                         </div>
                       </td>
@@ -491,13 +491,13 @@ export default function Page() {
                             {...register(`products.${index}.markuppercentage`)}
                             onBlur={onBlur}
                             placeholder='Markup (%)'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                           />
                           <input
                             readOnly
                             {...register(`products.${index}.markupamount`)}
                             placeholder='Amount'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
                           />
                         </div>
                       </td>
@@ -507,7 +507,7 @@ export default function Page() {
                             {...register(`products.${index}.total`)}
                             readOnly
                             placeholder='Total'
-                            className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
                           />
                           <div className="flex justify-end w-full">
                             <Button className='text-red-500 underline' onClick={() => removeProduct(index)}>Delete</Button>
@@ -555,7 +555,7 @@ export default function Page() {
 
                   {
                     clientView && <div>
-                      <p className='text-sm text-gray-600'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</Link></p>
+                      <p className='text-sm text-gray-600 dark:text-dark-text'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800 dark:text-dark-second-text'>PDF Style.</Link></p>
                       <div className="flex items-center flex-wrap">
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
@@ -636,7 +636,7 @@ export default function Page() {
               <div className="p-4 rounded-lg w-1/2">
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px]">Subtotal</div>
-                  <p className='text-gray-700'>${subtotal || `0.00`}</p>
+                  <p className='text-gray-700 dark:text-dark-text'>${subtotal || `0.00`}</p>
                 </div>
 
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
@@ -646,8 +646,8 @@ export default function Page() {
                       <div className="flex items-center gap-2 justify-between w-full">
                         <div className="flex items-center">
                           <input type="text" {...register("discount")} onBlur={onBlur}
-                            className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
-                          <select name="discounttype" id="discounttype" {...register("discounttype")} onBlur={onBlur} className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
+                            className="w-16 h-10 dark:bg-dark-secondary text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
+                          <select name="discounttype" id="discounttype" {...register("discounttype")} onBlur={onBlur} className="w-16 dark:bg-dark-secondary h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
                             <option value="amount">$</option>
                             <option value="percentage">%</option>
                           </select>
@@ -664,14 +664,14 @@ export default function Page() {
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px]">GST (5.0)%</div>
                   <div className="flex items-center gap-2">
-                    <p className='text-gray-700'>${gst || `0.00`}</p>
+                    <p className='text-gray-700 dark:text-dark-text'>${gst || `0.00`}</p>
                     <Trash2 className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
                   </div>
                 </div>
 
                 <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
                   <div className="font-semibold min-w-[200px]">Total</div>
-                  <p className='text-gray-700 font-semibold'>${totalcost || `0.00`}</p>
+                  <p className='text-gray-700 font-semibold dark:text-dark-text'>${totalcost || `0.00`}</p>
                 </div>
 
                 <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
@@ -681,8 +681,8 @@ export default function Page() {
                     isRequiredDeposit ? <div className="flex items-center gap-2 justify-between w-full">
                       <div className="flex items-center">
                         <input type="text" {...register("requireddeposite")} onBlur={onBlur}
-                          className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
-                        <select name="requiredtype" id="requiredtype" {...register("requiredtype")} onBlur={onBlur} className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
+                          className="w-16 dark:bg-dark-secondary h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
+                        <select name="requiredtype" id="requiredtype" {...register("requiredtype")} onBlur={onBlur} className="w-16 dark:bg-dark-secondary h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
                           <option value="amount">$</option>
                           <option value="percentage">%</option>
                         </select>
@@ -700,12 +700,12 @@ export default function Page() {
 
             <div className="mt-4">
               <h1 className='font-bold mb-2'>Client message</h1>
-              <textarea name="" id="" rows={3}  {...register("clientmessage")} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+              <textarea name="" id="" rows={3}  {...register("clientmessage")} className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
             </div>
 
             <div className="mt-4">
               <h1 className='font-bold mb-2'>Contract / Disclaimer</h1>
-              <textarea {...register("disclaimer")} name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+              <textarea {...register("disclaimer")} name="" id="" rows={3} className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
                 This quote is valid for the next 15 days, after which values may be subject to change.
               </textarea>
             </div>
@@ -713,7 +713,7 @@ export default function Page() {
             <div className="border border-gray-300 p-4 rounded-lg">
               <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
               <div className="mt-4">
-                <textarea {...register("internalnote")} placeholder='Note details' name="internalnote" id="internalnote" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+                <textarea {...register("internalnote")} placeholder='Note details' name="internalnote" id="internalnote" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg dark:bg-dark-primary"></textarea>
               </div>
 
               <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
@@ -724,7 +724,7 @@ export default function Page() {
               <Divider className='my-2' />
 
               <div className="mt-4 space-y-2">
-                <p className='font-normal text-sm text-tprimary'>Link not to related</p>
+                <p className='font-normal text-sm text-tprimary dark:text-dark-text'>Link not to related</p>
                 <div className="flex gap-2 text-sm items-center capitalize">
                   <div className="flex gap-2 items-center">
                     <input {...register("isrelatedjobs")} type="checkbox" className='w-5 h-5' name="isrelatedjobs" id="isrelatedjobs" />
@@ -750,30 +750,30 @@ export default function Page() {
                         Save and...
                       </Typography>
 
-                      <MenuItem className="text-tprimary text-sm">
+                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                         <ListItemIcon>
-                          <MessageSquareText className="text-orange-700" size={16} />
+                          <MessageSquareText className="text-orange-700 dark:text-orange-500" size={16} />
                         </ListItemIcon>
                         Send as text mesage
                       </MenuItem>
 
-                      <MenuItem className="text-tprimary text-sm">
+                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                         <ListItemIcon>
-                          <Mail className="text-gray-700" size={16} />
+                          <Mail className="text-gray-700 dark:text-gray-400" size={16} />
                         </ListItemIcon>
                         Send as email
                       </MenuItem>
 
-                      <MenuItem className="text-tprimary text-sm">
+                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                         <ListItemIcon>
-                          <Hammer className="text-green-700" size={16} />
+                          <Hammer className="text-green-700 dark:text-green-500" size={16} />
                         </ListItemIcon>
                         Convert to Job
                       </MenuItem>
 
-                      <MenuItem className="text-tprimary text-sm">
+                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
                         <ListItemIcon>
-                          <MessageCircle className="text-orange-700" size={16} />
+                          <MessageCircle className="text-orange-700 dark:text-orange-500" size={16} />
                         </ListItemIcon>
                         Mark as awaiting Response
                       </MenuItem>
@@ -785,7 +785,7 @@ export default function Page() {
             </div>
           </div>
         </form>
-      </div >
+      </div>
 
 
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
@@ -805,6 +805,6 @@ export default function Page() {
         setSelectedProperty(property)
         setPropertyModal(false)
       }} client={client} />
-    </div >
+    </div>
   );
 }

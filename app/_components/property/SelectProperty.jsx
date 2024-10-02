@@ -17,7 +17,7 @@ const SelectProperty = ({ open, onClose, onSelect, properties, onCreateNew }) =>
         <CustomModal show={Boolean(open)} onClose={onClose}>
             <div className="space-y-6">
                 <ModalHeading onClose={onClose}>Select or create property</ModalHeading>
-                <p className='text-sm text-gray-600'>Which property would you like to use for this?</p>
+                <p className='text-sm text-gray-600 dark:text-gray-400'>Which property would you like to use for this?</p>
                 <SectionBox padding={"p-0"}>
                     <div className="p-4 pb-0 space-y-3 w-full">
                         <div className="flex items-center justify-evenly gap-2 w-full">
@@ -34,13 +34,13 @@ const SelectProperty = ({ open, onClose, onSelect, properties, onCreateNew }) =>
                     <List className='w-full max-h-[40vh] overflow-y-auto'>
                         {
                             properties?.map((property, index) => {
-                                return <ListItem onClick={() => onSelect(property)} className='border-b border-gray-500 relative h-24 hover:bg-primary cursor-pointer'>
+                                return <ListItem onClick={() => onSelect(property)} className='border-b border-gray-500 relative h-24 hover:bg-primary dark:hover:bg-dark-hover cursor-pointer'>
                                     <ListItemAvatar>
-                                        <Avatar className='text-tprimary'>
+                                        <Avatar className='text-tprimary dark:text-dark-text dark:bg-dark-primary'>
                                             <UserIcon />
                                         </Avatar>
                                     </ListItemAvatar>
-                                    <ListItemText primary={getAddress(property)} secondary="" />
+                                    <ListItemText primary={getAddress(property)} secondary="" className='dark:text-dark-text'/>
                                 </ListItem>
                             })
                         }

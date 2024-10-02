@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux'
 import { sendQuoteMessage } from '@/store/slices/client'
 import { useAppSelector } from '@/store/hooks'
 
-const TextMessageModal = ({ open, onClose, client, quote, profile }) => {
+const TextMessageModal = ({ open, onClose, client, job, profile }) => {
     const dispatch = useDispatch()
     const { loadingObj } = useAppSelector(store => store.clients)
     const {
@@ -27,10 +27,10 @@ const TextMessageModal = ({ open, onClose, client, quote, profile }) => {
             ...data,
             message: data?.message,
             client: client.id,
-            quote:quote.id
+            job:job.id
         }
         console.log({ jsonData })
-        dispatch(sendQuoteMessage(jsonData)).then(() => onClose());
+        // dispatch(sendQuoteMessage(jsonData)).then(() => onClose());
     }
 
     const message = watch("message")
@@ -48,7 +48,7 @@ const TextMessageModal = ({ open, onClose, client, quote, profile }) => {
     return (
         <CustomModal wide={true} show={Boolean(open)} onClose={onClose}>
             <div className="space-y-6">
-                <ModalHeading onClose={onClose}>Send quote #{quote.quoteno} to {getClientName(client)} as text message</ModalHeading>
+                <ModalHeading onClose={onClose}>Send Job #{job.jobno} to {getClientName(client)} as text message</ModalHeading>
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="content mt-6 space-y-5">
@@ -71,14 +71,14 @@ const TextMessageModal = ({ open, onClose, client, quote, profile }) => {
                             <div className='rounded-xl rounded-bl-none bg-primary-dark p-4 text-sm dark:bg-dark-primary'>
                                 {message}
 
-                                <div className="mt-4">View your quote here https://client.prosbro.com/TfdR00c5tr9</div>
+                                <div className="mt-4">View your Job here https://client.prosbro.com/TfdR00c5tr9</div>
                             </div>
-                            <p className="text-gray-500 italic">Your client can view the quote in their client hub.</p>
+                            <p className="text-gray-500 italic">Your client can view the Job in their client hub.</p>
                         </div>
                     </div>
                     <div className="flex gap-2 items-center justify-end">
                         <CustomButton onClick={onClose} title="Cancel"></CustomButton>
-                        <CustomButton type={"submit"} loading={loadingObj.quotemessage} variant={"primary"} title="Send"></CustomButton>
+                        <CustomButton type={"submit"} loading={loadingObj.jobmessage} variant={"primary"} title="Send"></CustomButton>
                     </div>
                 </div>
             </form>

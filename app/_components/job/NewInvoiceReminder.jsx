@@ -32,7 +32,7 @@ const NewInvoiceReminder = ({ open, onClose, job }) => {
     const router = useRouter();
     const dispatch = useAppDispatch();
 
-    const { team } = useSelector(state => state.clients);
+    const { team, loadingObj } = useSelector(state => state.clients);
 
     useEffect(() => {
         if (!open) return;
@@ -78,9 +78,9 @@ const NewInvoiceReminder = ({ open, onClose, job }) => {
             console.log({ jsonData })
 
             if (Boolean(open) && open != true) {
-                dispatch(putInvoiceReminder({ id: open?.id, ...jsonData }))
+                dispatch(putInvoiceReminder({ id: open?.id, ...jsonData })).then(()=>onClose())
             } else {
-                dispatch(createInvoiceReminder(jsonData))
+                dispatch(createInvoiceReminder(jsonData)).then(()=>onClose())
             }
             onClose()
         } catch (error) {
@@ -99,7 +99,7 @@ const NewInvoiceReminder = ({ open, onClose, job }) => {
                             <textarea
                                 {...register("details")}
                                 placeholder='Details'
-                                className="focus:outline-gray-500 outline-offset-2 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="focus:outline-gray-500 outline-offset-2 border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                             ></textarea>
                         </div>
                         <div className="w-1/3 flex flex-col text-xs">
@@ -156,11 +156,11 @@ const NewInvoiceReminder = ({ open, onClose, job }) => {
                                     <div className="flex">
                                         <div className="w-1/2">
                                             <label className="block mb-1 font-semibold text-sm">Start date</label>
-                                            <input {...register('startdate')} type="date" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-r-none" />
+                                            <input {...register('startdate')} type="date" className="focus:outline-gray-500 w-full border p-2 dark:bg-dark-secondary rounded-md rounded-r-none" />
                                         </div>
                                         <div className="w-1/2">
                                             <label className="block mb-1 font-semibold text-sm">End date</label>
-                                            <input {...register('enddate')} type="date" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-l-none" placeholder="Optional" />
+                                            <input {...register('enddate')} type="date" className="focus:outline-gray-500 w-full border p-2 dark:bg-dark-secondary rounded-md rounded-l-none" placeholder="Optional" />
                                         </div>
                                     </div>
 
@@ -173,11 +173,11 @@ const NewInvoiceReminder = ({ open, onClose, job }) => {
                                     <div className="flex">
                                         <div className="w-1/2">
                                             <label className="block mb-1 font-semibold text-sm">Start time</label>
-                                            <input {...register('starttime')} type="time" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-r-none" />
+                                            <input {...register('starttime')} type="time" className="focus:outline-gray-500 w-full border p-2 dark:bg-dark-secondary rounded-md rounded-r-none" />
                                         </div>
                                         <div className="w-1/2">
                                             <label className="block mb-1 font-semibold text-sm">End time</label>
-                                            <input {...register('endtime')} type="time" className="focus:outline-gray-500 w-full border p-2 rounded-md rounded-l-none" placeholder="Optional" />
+                                            <input {...register('endtime')} type="time" className="focus:outline-gray-500 w-full border p-2 dark:bg-dark-secondary rounded-md rounded-l-none" placeholder="Optional" />
                                         </div>
                                     </div>
                                     <div className="flex items-center mb-4 pt-2">
@@ -218,16 +218,16 @@ const NewInvoiceReminder = ({ open, onClose, job }) => {
                                 </div>
                                 {
                                     teamList?.length == 0 ?
-                                        <p className="text-sm mt-2 text-gray-700 italic">No users are currently assigned</p> :
+                                        <p className="text-sm mt-2 text-gray-700 italic dark:text-gray-400">No users are currently assigned</p> :
                                         <div className="flex items-start justify-start gap-4 flex-wrap">
                                             {
                                                 teamList?.map(t => {
-                                                    return <div className='px-3 py-1 bg-primary rounded-full'>
+                                                    return <div className='px-3 py-1 bg-gray-400 rounded-full dark:bg-dark-primary'>
                                                         <span className='text-xs'>{t?.name}</span>
                                                         <IconButton onClick={() => {
                                                             setTeamList(teamList?.filter(teamId => teamId?.id != t?.id))
                                                         }}>
-                                                            <X className='w-5 h-5' />
+                                                            <X className='w-5 h-5 text-red-700' />
                                                         </IconButton>
                                                     </div>
                                                 })
@@ -244,7 +244,7 @@ const NewInvoiceReminder = ({ open, onClose, job }) => {
                         <CustomButton title="Cancel" onClick={() => {
                             onClose()
                         }}></CustomButton>
-                        <CustomButton type={'submit'} variant="primary" title="Save"></CustomButton>
+                        <CustomButton type={'submit'} loading={loadingObj.invoicereminder} variant="primary" title="Save"></CustomButton>
                     </div>
                 </form>
             </div>

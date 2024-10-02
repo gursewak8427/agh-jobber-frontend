@@ -54,16 +54,16 @@ export default function Page() {
 
   const MoreActionsMenuItems = () => {
     return (<Fragment>
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
-          <Hammer className="text-green-700" size={16} />
+          <Hammer className="text-green-700 dark:text-dark-second-text" size={16} />
         </ListItemIcon>
         Convert to Job
       </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
-          <Copy className="text-gray-700" size={16} />
+          <Copy className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Create Similar Quote
       </MenuItem>
@@ -71,15 +71,15 @@ export default function Page() {
       <Divider />
 
       <MenuItem>
-        <Typography className='text-sm text-gray-500'>Send as...</Typography>
+        <Typography className='text-sm text-gray-500 dark:text-dark-text'>Send as...</Typography>
       </MenuItem>
 
       <MenuItem onClick={() => {
         setsendemail(true)
         setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
-          <Mail className="text-gray-700" size={16} />
+          <Mail className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Email
       </MenuItem>
@@ -87,52 +87,52 @@ export default function Page() {
       <Divider />
 
       <MenuItem>
-        <Typography className='text-sm text-gray-500'>Mark as...</Typography>
+        <Typography className='text-sm text-gray-500 dark:text-dark-text'>Mark as...</Typography>
       </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
-          <Check className="text-green-700" size={16} />
+          <Check className="text-green-700 dark:text-dark-second-text" size={16} />
         </ListItemIcon>
         Approved
       </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
-          <Archive className="text-gray-700" size={16} />
+          <Archive className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Archived
       </MenuItem>
 
       <Divider />
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
-          <Eye className="text-gray-700" size={16} />
+          <Eye className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Preview as Client
       </MenuItem>
 
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
-          <FileSignature className="text-gray-700" size={16} />
+          <FileSignature className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Collect Signature
       </MenuItem>
 
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
-          <FileText className="text-red-700" size={16} />
+          <FileText className="text-red-700 dark:text-red-500" size={16} />
         </ListItemIcon>
         Download PDF
       </MenuItem>
 
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
-          <Printer className="text-gray-700" size={16} />
+          <Printer className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Print
       </MenuItem>
@@ -154,10 +154,10 @@ export default function Page() {
     }
   }, [quote]);
   return (
-    <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary'>
+    <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary dark:text-dark-text'>
       <PageHeading>
-        <div className='text-sm text-tprimary '>
-          Back to : <Link href={"/quotes"} className='text-green-700'>Quotes</Link>
+        <div className='text-sm text-tprimary dark:text-dark-text'>
+          Back to : <Link href={"/quotes"} className='text-green-700 dark:text-dark-second-text'>Quotes</Link>
         </div>
         <div className="flex items-center gap-2">
           <CustomButton onClick={() => setsendtextmsg(true)} title={"Send text message"} variant={"primary"} />
@@ -247,7 +247,7 @@ export default function Page() {
         </div>
 
         {/* Line Item Details */}
-        <div className="lg:col-span-3 py-4 text-tprimary space-y-4">
+        <div className="lg:col-span-3 py-4 text-tprimary space-y-4 dark:text-dark-text">
           <table className='w-full'>
             <thead>
               <tr className='border-b'>
@@ -274,7 +274,7 @@ export default function Page() {
                     <td className='pr-2 py-4 text-center'>${service?.labour || 0}</td>
                     <td className='pr-2 py-4 text-center'>
                       <div className="flex flex-col items-center justify-center gap-2">
-                        <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700'><i>(${service?.markuppercentage}%)</i></small></span>
+                        <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700 dark:text-gray-400'><i>(${service?.markuppercentage}%)</i></small></span>
                       </div>
                     </td>
                     <td className='pr-2 py-4 text-right'>${service?.total}</td>
@@ -289,25 +289,25 @@ export default function Page() {
             <div className="p-4 rounded-lg w-1/2">
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">Subtotal</div>
-                <p className='text-sm text-gray-700'>${quote?.subtotal}</p>
+                <p className='text-sm text-gray-700 dark:text-dark-text'>${quote?.subtotal}</p>
               </div>
 
               {
                 quote?.discount > 0 &&
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium text-sm min-w-[200px]">Discount</div>
-                  <span className='text-sm '>-(${parseFloat(quote?.discount || 0)?.toFixed(1)})<small className='ml-1 text-gray-700'><i>({quote?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
+                  <span className='text-sm '>-(${parseFloat(quote?.discount || 0)?.toFixed(1)})<small className='ml-1 text-gray-700 dark:text-dark-text'><i>({quote?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
                 </div>
               }
 
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">GST (5.0)%</div>
-                <p className='text-sm text-gray-700'>${quote?.tax}</p>
+                <p className='text-sm text-gray-700 dark:text-dark-text'>${quote?.tax}</p>
               </div>
 
               <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
                 <div className="font-semibold min-w-[200px]">Total</div>
-                <p className='text-gray-700 font-semibold'>${quote?.costs}</p>
+                <p className='text-gray-700 font-semibold dark:text-dark-text'>${quote?.costs}</p>
               </div>
 
               {
@@ -335,10 +335,10 @@ export default function Page() {
       </div>
 
 
-      <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg">
+      <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg dark:bg-dark-secondary">
         <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
         <div className="mt-4">
-          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">{quote?.internalnote || "--"}</textarea>
+          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full dark:bg-dark-primary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">{quote?.internalnote || "--"}</textarea>
         </div>
 
         <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">

@@ -1,6 +1,6 @@
 "use client"
 import React, { Fragment, useEffect } from 'react';
-import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon, Tabs, Tab, Box } from '@mui/material';
+import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon, Tabs, Tab, Box, CircularProgress } from '@mui/material';
 import { useState } from 'react';
 import { Archive, Bell, BoxSelect, BoxSelectIcon, CameraIcon, Check, ChevronDown, Copy, Delete, Divide, DollarSign, Download, Eye, FileIcon, FileSignature, FileSignatureIcon, FileText, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, MoreHorizontal, PencilIcon, PencilLine, Plus, PlusIcon, Printer, SignatureIcon, Star, Trash2 } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
@@ -19,8 +19,8 @@ import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 import Heading from '@/components/Heading';
 import PageHeading from '@/components/PageHeading';
-import TextMessageModal from '@/app/_components/quote/TextMessageModal';
-import SendEmailModal from '@/app/_components/quote/SendEmailModal';
+import TextMessageModal from '@/app/_components/job/TextMessageModal';
+import SendEmailModal from '@/app/_components/job/SendEmailModal';
 import NewTimeEntry from '@/app/_components/job/NewTimeEntry';
 import NewExpense from '@/app/_components/job/NewExpense';
 import NewVisit from '@/app/_components/job/NewVisit';
@@ -41,7 +41,7 @@ export default function Page() {
   const [menu, setmenu] = useState(false)
   const { id } = useParams()
   const dispatch = useAppDispatch()
-  const { job } = useAppSelector(store => store.clients)
+  const { job, profile, loadingObj } = useAppSelector(store => store.clients)
 
   const {
     register,
@@ -120,8 +120,8 @@ export default function Page() {
       </Tabs>
       <CustomTabPanel value={value} index={0}>
         <div className="w-full flex items-start justify-start gap-6">
-          <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center">
-            <DollarSign />
+          <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center dark:bg-dark-secondary">
+            <DollarSign className='dark:text-dark-text'/>
           </div>
           <div className="">
             <p className="font-semibold">No invoices</p>
@@ -140,14 +140,14 @@ export default function Page() {
                 <tbody>
                   {
                     job?.invoicereminder?.map((item, index) => {
-                      return <tr onClick={() => setinvoicereminder(item)} key={`item-${index}`} className={`${index + 1 != job?.item?.length && 'border-b'} hover:bg-gray-100 cursor-pointer`}>
-                        <td className='px-2 py-2 flex-1 w-[80%] text-tprimary text-sm font-semibold'>{(new Date(item?.startdate)?.toLocaleDateString())}</td>
+                      return <tr onClick={() => setinvoicereminder(item)} key={`item-${index}`} className={`${index + 1 != job?.item?.length && 'border-b'} hover:bg-gray-100 dark:hover:bg-dark-hover cursor-pointer`}>
+                        <td className='px-2 py-2 flex-1 w-[80%] text-tprimary dark:text-dark-text text-sm font-semibold'>{(new Date(item?.startdate)?.toLocaleDateString())}</td>
                         <td className='px-2 py-2'>
                           {(item?.team && item?.team?.length > 0 ? <>
                             <div className="flex gap-2 items-center space-y-2">
                               {
                                 item?.team?.map(t => {
-                                  return <div className='bg-gray-200 rounded px-3'>{t?.name}</div>
+                                  return <div className='bg-gray-200 rounded px-3 dark:bg-dark-secondary'>{t?.name}</div>
                                 })
                               }
                             </div>
@@ -158,7 +158,7 @@ export default function Page() {
                   }
                 </tbody>
               </table> : <>
-                <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center dark:bg-dark-secondary">
                   <Bell />
                 </div>
                 <div className="">
@@ -173,8 +173,8 @@ export default function Page() {
 
 
         </div>
-      </CustomTabPanel >
-    </div >)
+      </CustomTabPanel>
+    </div>)
   }
 
   const watchProducts = watch("products");
@@ -203,16 +203,16 @@ export default function Page() {
 
   const MoreActionsMenuItems = () => {
     return (<Fragment>
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
           <Hammer className="text-green-700" size={16} />
         </ListItemIcon>
         Close Job
       </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <Copy className="text-gray-700" size={16} />
+          <Copy className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Create Similar Job
       </MenuItem>
@@ -220,9 +220,9 @@ export default function Page() {
       <MenuItem onClick={() => {
         // setsendemail(true)
         // setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <Mail className="text-gray-700" size={16} />
+          <Mail className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Send job follow-up email
       </MenuItem>
@@ -230,9 +230,9 @@ export default function Page() {
       <MenuItem onClick={() => {
         // setsendemail(true)
         // setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <MessageSquare className="text-gray-700" size={16} />
+          <MessageSquare className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Text Booking Confirmation
       </MenuItem>
@@ -242,9 +242,9 @@ export default function Page() {
       <MenuItem onClick={() => {
         // setsendemail(true)
         // setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <Mail className="text-gray-700" size={16} />
+          <Mail className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Email Booking Confirmation
       </MenuItem>
@@ -255,9 +255,9 @@ export default function Page() {
       <MenuItem onClick={() => {
         // setsendemail(true)
         // setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <DollarSign className="text-blue-700" size={16} />
+          <DollarSign className="text-blue-700 dark:text-blue-400" size={16} />
         </ListItemIcon>
         Generate Invoice
       </MenuItem>
@@ -267,9 +267,9 @@ export default function Page() {
       <MenuItem onClick={() => {
         // setsendemail(true)
         // setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <FileSignatureIcon className="text-gray-700" size={16} />
+          <FileSignatureIcon className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Collect Signature
       </MenuItem>
@@ -277,14 +277,14 @@ export default function Page() {
       <MenuItem onClick={() => {
         // setsendemail(true)
         // setmenu(false)
-      }} className="text-tprimary text-sm">
+      }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
           <FileIcon className="text-green-700" size={16} />
         </ListItemIcon>
         Email job costs CSV
       </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
           <FileText className="text-red-700" size={16} />
         </ListItemIcon>
@@ -292,9 +292,9 @@ export default function Page() {
       </MenuItem>
 
 
-      <MenuItem className="text-tprimary text-sm">
+      <MenuItem className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
-          <Printer className="text-gray-700" size={16} />
+          <Printer className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
         Print
       </MenuItem>
@@ -329,17 +329,15 @@ export default function Page() {
       "job": job?.id
     }
 
-    dispatch(createJobService(jsonData))
-
-    setAddNewLineItem(false)
+    dispatch(createJobService(jsonData)).then(()=>setAddNewLineItem(false))
   }
 
 
   return (
-    <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary'>
+    <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary dark:text-dark-text'>
       <PageHeading>
-        <div className='text-sm text-tprimary '>
-          Back to : <Link href={"/jobs"} className='text-green-700'>Jobs</Link>
+        <div className='text-sm text-tprimary dark:text-dark-text'>
+          Back to : <Link href={"/jobs"} className='text-green-700 dark:text-dark-second-text'>Jobs</Link>
         </div>
         <div className="flex items-center gap-2">
           <CustomButton onClick={() => setsendtextmsg(true)} title={"Show late visit"} variant={"primary"} />
@@ -372,7 +370,7 @@ export default function Page() {
             <div className="flex">
               <div className="w-1/2">
                 <h1 className='font-bold mb-2'>Property address</h1>
-                <p className='max-w-[150px] font-extralight text-gray-500 text-sm'>
+                <p className='max-w-[150px] font-extralight text-gray-500 text-sm dark:text-dark-text'>
                   {getAddress(job?.property)}
                 </p>
                 {/* <Button className='text-green-700 p-0' onClick={() => {
@@ -380,15 +378,15 @@ export default function Page() {
                 }}>change</Button> */}
               </div>
               <div className="w-1/2 font-extralight text-gray-500 text-sm">
-                <h1 className='font-bold mb-2 text-black'>Contact details</h1>
-                <p className='max-w-[140px]'>{getPrimary(job?.client?.mobile)?.number}</p>
-                <p className='max-w-[140px]'>{getPrimary(job?.client?.email)?.email}</p>
+                <h1 className='font-bold mb-2 text-black dark:text-dark-text'>Contact details</h1>
+                <p className='max-w-[140px] dark:text-dark-text'>{getPrimary(job?.client?.mobile)?.number}</p>
+                <p className='max-w-[140px] dark:text-dark-text'>{getPrimary(job?.client?.email)?.email}</p>
               </div>
             </div>
           </div>
           {/* Quote Details */}
           <div className="p-4 w-1/2 border-l-4 border-gray-300">
-            <h1 className='font-bold mb-2 text-black'>Job details</h1>
+            <h1 className='font-bold mb-2 text-black dark:text-dark-text'>Job details</h1>
             <table className='w-full'>
               <tbody>
                 <tr className='border-b'>
@@ -436,7 +434,7 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="bg-primary p-2 rounded space-y-4">
+        <div className="bg-primary p-2 rounded space-y-4 dark:bg-dark-secondary">
 
           <CustomButton title={"Show Profitability"} backIcon={<ChevronDown />} />
           {/* Line Item Details */}
@@ -445,36 +443,36 @@ export default function Page() {
           <div className="flex items-center justify-between p-4">
             {/* Left Side: Profit margin percentage */}
             <div className="flex flex-col items-start">
-              <p className="text-lg font-semibold text-gray-700">100%</p>
-              <p className="text-sm text-gray-500">Profit margin</p>
+              <p className="text-lg font-semibold text-gray-700 dark:text-dark-text">100%</p>
+              <p className="text-sm text-gray-500 dark:text-dark-text">Profit margin</p>
             </div>
 
             <div className="flex items-center space-x-4">
               {/* Middle: Price breakdown */}
               <div className="flex items-center space-x-4">
                 <div className="text-center">
-                  <p className="text-xs text-gray-500">Total price</p>
-                  <p className="text-sm font-semibold text-gray-700">${job?.totalprice}</p>
+                  <p className="text-xs text-gray-500 dark:text-dark-text">Total price</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-dark-text">${job?.totalprice}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-blue-500">Line Item Cost</p>
-                  <p className="text-sm font-semibold text-gray-700">$0.00</p>
+                  <p className="text-xs text-blue-500 dark:text-blue-300">Line Item Cost</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">$0.00</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-blue-500">Labour</p>
-                  <p className="text-sm font-semibold text-gray-700">${job?.service?.reduce((total, job) => total + parseFloat(job?.labour), 0)}</p>
+                  <p className="text-xs text-blue-500 dark:text-blue-300">Labour</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">${job?.service?.reduce((total, job) => total + parseFloat(job?.labour), 0)}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-blue-500">Material</p>
-                  <p className="text-sm font-semibold text-gray-700">${job?.service?.reduce((total, job) => total + parseFloat(job?.material), 0)}</p>
+                  <p className="text-xs text-blue-500 dark:text-blue-300">Material</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">${job?.service?.reduce((total, job) => total + parseFloat(job?.material), 0)}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-blue-500">Expenses</p>
-                  <p className="text-sm font-semibold text-gray-700">$0.00</p>
+                  <p className="text-xs text-blue-500 dark:text-blue-300">Expenses</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">$0.00</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-green-500">Profit</p>
-                  <p className="text-sm font-semibold text-gray-700">$0.00</p>
+                  <p className="text-xs text-green-500 dark:text-dark-second-text">Profit</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">$0.00</p>
                 </div>
               </div>
 
@@ -488,9 +486,9 @@ export default function Page() {
           </div>
 
 
-          <div className="lg:col-span-3 py-4 text-tprimary space-y-4 bg-white p-4 rounded-lg">
+          <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 bg-white p-4 rounded-lg dark:bg-dark-primary">
             <div className="pb-3 flex gap-4 items-center justify-between w-full">
-              <h1 className='text-2xl font-bold text-tprimary'>Line Items</h1>
+              <h1 className='text-2xl font-bold text-tprimary dark:text-dark-text'>Line Items</h1>
               <CustomButton title={"New Line Item"} onClick={() => setAddNewLineItem(true)} />
             </div>
 
@@ -520,7 +518,7 @@ export default function Page() {
                       <td className='pr-2 py-4 text-center'>${service?.labour || 0}</td>
                       <td className='pr-2 py-4 text-center'>
                         <div className="flex flex-col items-center justify-center gap-2">
-                          <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700'><i>(${service?.markuppercentage}%)</i></small></span>
+                          <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700 dark:text-gray-400'><i>(${service?.markuppercentage}%)</i></small></span>
                         </div>
                       </td>
                       <td className='pr-2 py-4 text-right'>${service?.total}</td>
@@ -537,12 +535,12 @@ export default function Page() {
                           <input
                             {...register(`products[0].name`)}
                             placeholder='Name'
-                            className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                           />
                           <textarea
                             {...register(`products[0].description`)}
                             placeholder='Description'
-                            className="w-full border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                            className="w-full border-t-0 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
                           ></textarea>
                         </div>
                       </td>
@@ -552,9 +550,9 @@ export default function Page() {
                             {...register(`products[0].quantity`)}
                             onBlur={onBlur}
                             placeholder='Quantity'
-                            className="focus:outline-none w-full border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2"
+                            className="focus:outline-none w-full border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg mb-2"
                           />
-                          <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
+                          <div className="w-full h-full flex-1 border px-3 py-2 dark:bg-dark-secondary border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
                             <CameraIcon className='text-green-800' />
                           </div>
                         </div>
@@ -565,7 +563,7 @@ export default function Page() {
                             {...register(`products[0].material`)}
                             onBlur={onBlur}
                             placeholder='Material'
-                            className="focus:outline-none w-full border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                            className="focus:outline-none w-full border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                           />
                         </div>
                       </td>
@@ -575,7 +573,7 @@ export default function Page() {
                             {...register(`products[0].labour`)}
                             onBlur={onBlur}
                             placeholder='Labour'
-                            className="focus:outline-none w-full border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                            className="focus:outline-none w-full border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                           />
                         </div>
                       </td>
@@ -585,13 +583,13 @@ export default function Page() {
                             {...register(`products[0].markuppercentage`)}
                             onBlur={onBlur}
                             placeholder='Markup (%)'
-                            className="focus:outline-none w-full border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            className="focus:outline-none w-full border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                           />
                           <input
                             readOnly
                             {...register(`products[0].markupamount`)}
                             placeholder='Amount'
-                            className="focus:outline-none  w-full border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                            className="focus:outline-none  w-full border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
                           />
                         </div>
                       </td>
@@ -601,7 +599,7 @@ export default function Page() {
                             {...register(`products[0].total`)}
                             readOnly
                             placeholder='Total'
-                            className="focus:outline-none  w-full  border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                            className="focus:outline-none  w-full  border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                           />
                         </div>
                       </td>
@@ -614,7 +612,19 @@ export default function Page() {
                       <td></td>
                       <td>
                         <div className="flex gap-2 items-center">
-                          <Button onClick={() => saveService()} type='submit' className="text-green-700 border-green-700" variant='outlined'>Save</Button>
+                          <Button
+                            onClick={() => saveService()}
+                            type='submit'
+                            className="text-green-700 border-green-700"
+                            variant='outlined'
+                            disabled={loadingObj.newlineitem}
+                          >
+                            {
+                              loadingObj.newlineitem ? <><CircularProgress size={10} color="black" /> Wait...</> : <>
+                                Save
+                              </>
+                            }
+                          </Button>
                           <Button onClick={() => setAddNewLineItem(false)} type='button' className="text-red-400 border-red-400" variant='outlined'>Cancel</Button>
                         </div>
                       </td>
@@ -655,15 +665,15 @@ export default function Page() {
             </table>
           </div>
 
-          <div className="lg:col-span-3 py-4 text-tprimary space-y-4 bg-white p-4 rounded-lg">
+          <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 bg-white p-4 rounded-lg dark:bg-dark-primary">
             <div className="pb-3 flex gap-4 items-center justify-between w-full">
-              <h1 className='text-2xl font-bold text-tprimary'>Labour</h1>
+              <h1 className='text-2xl font-bold text-tprimary dark:text-dark-text'>Labour</h1>
               <CustomButton title={"New Time Entry"} onClick={() => setnewtimeentry(true)} />
             </div>
 
             {
               job?.labour?.length == 0 || !job?.labour ?
-                <p className='text-gray-500'>
+                <p className='text-gray-500 dark:text-gray-300'>
                   Time tracked to this job by you or your team will show here
                 </p> :
 
@@ -680,7 +690,7 @@ export default function Page() {
                   <tbody>
                     {
                       job?.labour?.map((labour, index) => {
-                        return <tr className='border-b hover:bg-gray-200 cursor-pointer' onClick={() => {
+                        return <tr className='border-b hover:bg-gray-200 cursor-pointer dark:hover:bg-dark-hover' onClick={() => {
                           setnewtimeentry(labour)
                         }} key={index}>
                           <td className='pr-2 py-4 text-left'>{labour?.date}</td>
@@ -697,15 +707,15 @@ export default function Page() {
 
           </div>
 
-          <div className="lg:col-span-3 py-4 text-tprimary space-y-4 bg-white p-4 rounded-lg">
+          <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 bg-white p-4 rounded-lg dark:bg-dark-primary">
             <div className="pb-3 flex gap-4 items-center justify-between w-full">
-              <h1 className='text-2xl font-bold text-tprimary'>Expenses</h1>
+              <h1 className='text-2xl font-bold text-tprimary dark:text-dark-text'>Expenses</h1>
               <CustomButton title={"New Expense"} onClick={() => setnewexpense(true)} />
             </div>
 
             {
               job?.expense?.length == 0 || !job?.expense ?
-                <p className='text-gray-500'>
+                <p className='text-gray-500 dark:text-gray-300'>
                   Get an accurate picture of various job costs by recording expenses
                 </p> :
 
@@ -721,7 +731,7 @@ export default function Page() {
                   <tbody>
                     {
                       job?.expense?.map((expense, index) => {
-                        return <tr className='border-b hover:bg-gray-200 cursor-pointer' onClick={() => {
+                        return <tr className='border-b hover:bg-gray-200 cursor-pointer dark:hover:bg-dark-hover' onClick={() => {
                           setnewexpense(expense)
                         }} key={index}>
                           <td className='pr-2 py-4 w-[700px] px-2'>
@@ -756,13 +766,13 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="lg:col-span-3 py-4 text-tprimary space-y-4 bg-white p-4 rounded-lg border text-sm">
+        <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 bg-white p-4 rounded-lg border text-sm dark:bg-dark-primary">
           <div className="pb-3 flex gap-4 items-center justify-between w-full">
-            <h1 className='text-2xl font-bold text-tprimary'>Visits</h1>
+            <h1 className='text-2xl font-bold text-tprimary dark:text-dark-text'>Visits</h1>
             <CustomButton title={"New Visit"} onClick={() => setnewvisit(true)} />
           </div>
 
-          <div className="font-semibold text-sm border-b text-green-700">
+          <div className="font-semibold text-sm border-b text-green-700 dark:text-dark-second-text">
             Scheduled
           </div>
 
@@ -770,14 +780,14 @@ export default function Page() {
             <tbody>
               {
                 job?.visit?.map((visit, index) => {
-                  return <tr onClick={() => setnewvisit(visit)} key={`visit-${index}`} className={`${index + 1 != job?.visit?.length && 'border-b'} hover:bg-gray-100 cursor-pointer`}>
-                    <td className='px-2 py-2 flex-1 w-[80%] text-tprimary text-sm font-semibold'>{(new Date(visit?.startdate)?.toLocaleDateString())}</td>
+                  return <tr onClick={() => setnewvisit(visit)} key={`visit-${index}`} className={`${index + 1 != job?.visit?.length && 'border-b'} hover:bg-gray-100 cursor-pointer dark:hover:bg-dark-hover`}>
+                    <td className='px-2 py-2 flex-1 w-[80%] text-tprimary dark:text-dark-text text-sm font-semibold'>{(new Date(visit?.startdate)?.toLocaleDateString())}</td>
                     <td className='px-2 py-2'>
                       {(visit?.team && visit?.team?.length > 0 ? <>
                         <div className="flex gap-2 items-center space-y-2">
                           {
                             visit?.team?.map(t => {
-                              return <div className='bg-gray-200 rounded px-3'>{t?.name}</div>
+                              return <div className='bg-gray-200 dark:bg-dark-secondary rounded px-3'>{t?.name}</div>
                             })
                           }
                         </div>
@@ -817,11 +827,11 @@ export default function Page() {
           </table> */}
         </div>
 
-        <div className="lg:col-span-3 text-tprimary space-y-4 bg-white rounded-lg border text-sm">
+        <div className="lg:col-span-3 text-tprimary dark:text-dark-text space-y-4 bg-white rounded-lg border text-sm dark:bg-dark-primary">
           <div className="pb-3 flex gap-4 items-center justify-between w-full p-4">
-            <h1 className='text-2xl font-bold text-tprimary'>Billing</h1>
+            <h1 className='text-2xl font-bold text-tprimary dark:text-dark-text'>Billing</h1>
             <CustomMenu open={menu == "invoicereminder"} icon={<CustomButton title={"New"} backIcon={<ChevronDown className='w-4 h-4' />} onClick={() => setmenu("invoicereminder")} />}>
-              <MenuItem className="text-tprimary text-sm">
+              <MenuItem className="text-tprimary dark:text-dark-text text-sm">
                 <ListItemIcon>
                   <Hammer className="text-green-700" size={16} />
                 </ListItemIcon>
@@ -830,7 +840,7 @@ export default function Page() {
               <MenuItem onClick={() => {
                 setinvoicereminder(true)
                 setmenu(null)
-              }} className="text-tprimary text-sm">
+              }} className="text-tprimary dark:text-dark-text text-sm">
                 <ListItemIcon>
                   <DollarSign className="text-blue-700" size={16} />
                 </ListItemIcon>
@@ -843,10 +853,10 @@ export default function Page() {
       </div>
 
 
-      <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg">
+      <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg dark:bg-dark-secondary">
         <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
         <div className="mt-4">
-          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none dark:bg-dark-primary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
             {job?.internalnote || ""}
           </textarea>
         </div>
@@ -859,12 +869,8 @@ export default function Page() {
         <Divider className='my-2' />
 
         <div className="mt-4 space-y-2">
-          <p className='font-normal text-sm text-tprimary'>Link not to related</p>
+          <p className='font-normal text-sm text-tprimary dark:text-dark-text'>Link note to related</p>
           <div className="flex gap-2 text-sm items-center capitalize">
-            <div className="flex gap-2 items-center">
-              <input type="checkbox" className='w-5 h-5' name="" id="jobs" />
-              <label htmlFor="jobs">jobs</label>
-            </div>
             <div className="flex gap-2 items-center">
               <input type="checkbox" className='w-5 h-5' name="" id="invoices" />
               <label htmlFor="invoices">invoices</label>
@@ -879,13 +885,13 @@ export default function Page() {
       </div>
 
 
-      <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} />
+      <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} job={job} profile={profile} client={job.client} />
       <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} />
 
       <NewTimeEntry job={job} open={newtimeentry} onClose={() => setnewtimeentry(false)} />
       <NewExpense job={job} open={newexpense} onClose={() => setnewexpense(false)} />
       <NewVisit job={job} open={newvisit} onClose={() => setnewvisit(false)} />
       <NewInvoiceReminder job={job} open={invoicereminder} onClose={() => setinvoicereminder(false)} />
-    </div >
+    </div>
   );
 }

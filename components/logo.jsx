@@ -3,8 +3,8 @@ const ChainCircleLogo = () => {
       <div className="text-black dark:text-white">
         <svg
           fill="currentColor"  // Uses current text color from Tailwind
-          height="40px"
-          width="40px"
+          height="30px"
+          width="30px"
           version="1.1"
           id="Capa_1"
           xmlns="http://www.w3.org/2000/svg"

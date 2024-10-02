@@ -92,28 +92,28 @@ export default function Page() {
         </div>
       </PageHeading>
 
-      <div className="flex flex-wrap gap-4 bg-gray-50 text-sm text-tprimary">
+      <div className="flex flex-wrap gap-4 bg-gray-50 text-sm text-tprimary dark:bg-dark-secondary dark:text-dark-text">
         {/* Overview */}
         <div className="w-[300px] p-4 rounded-md border-2">
           <h3 className="font-semibold mb-4">Overview</h3>
           <ul className="">
-            <li className="flex items-center space-x-2 p-1 hover:bg-primary cursor-pointer">
+            <li className="flex items-center space-x-2 p-1 hover:bg-primary cursor-pointer dark:hover:bg-dark-hover">
               <span className="w-2 h-2 rounded-full bg-red-600"></span>
               <span>Ending within 30 days (0)</span>
             </li>
-            <li className="flex items-center space-x-2 p-1 hover:bg-primary cursor-pointer">
+            <li className="flex items-center space-x-2 p-1 hover:bg-primary cursor-pointer dark:hover:bg-dark-hover">
               <span className="w-2 h-2 rounded-full bg-red-600"></span>
               <span>Late (0)</span>
             </li>
-            <li className="flex items-center space-x-2 p-1 hover:bg-primary cursor-pointer">
+            <li className="flex items-center space-x-2 p-1 hover:bg-primary cursor-pointer dark:hover:bg-dark-hover">
               <span className="w-2 h-2 rounded-full bg-yellow-600"></span>
               <span>Requires Invoicing (0)</span>
             </li>
-            <li className="flex items-center space-x-2 p-1 hover:bg-primary cursor-pointer">
+            <li className="flex items-center space-x-2 p-1 hover:bg-primary cursor-pointer dark:hover:bg-dark-hover">
               <span className="w-2 h-2 rounded-full bg-yellow-600"></span>
               <span>Action Required (0)</span>
             </li>
-            <li className="flex items-center space-x-2 p-1 hover:bg-primary cursor-pointer">
+            <li className="flex items-center space-x-2 p-1 hover:bg-primary cursor-pointer dark:hover:bg-dark-hover">
               <span className="w-2 h-2 rounded-full bg-yellow-600"></span>
               <span>Unscheduled (0)</span>
             </li>
@@ -121,7 +121,7 @@ export default function Page() {
         </div>
 
         {/* Recent visits */}
-        <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary cursor-pointer">
+        <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary cursor-pointer dark:hover:bg-dark-hover">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">Recent visits</h3>
             <ChevronRight className='' />
@@ -143,7 +143,7 @@ export default function Page() {
         </div>
 
         {/* Visits scheduled */}
-        <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary cursor-pointer">
+        <div className="w-[300px] p-4 rounded-md border-2 hover:bg-primary cursor-pointer dark:hover:bg-dark-hover">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">Visits scheduled</h3>
             <ChevronRight className='' />

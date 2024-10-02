@@ -28,7 +28,7 @@ const NewExpense = ({ open, onClose, job }) => {
     const router = useRouter();
     const dispatch = useAppDispatch();
 
-    const { team } = useSelector(state => state.clients);
+    const { team,loadingObj } = useSelector(state => state.clients);
 
     useEffect(() => {
         if (!open) return;
@@ -70,12 +70,10 @@ const NewExpense = ({ open, onClose, job }) => {
 
             if (Boolean(open) && open != true) {
                 fd?.append("id", open?.id)
-                dispatch(putJobExepense(fd))
+                dispatch(putJobExepense(fd)).then(()=>onClose())
             } else {
-                dispatch(createJobExepense(fd))
+                dispatch(createJobExepense(fd)).then(()=>onClose())
             }
-            onClose()
-
         } catch (error) {
             console.error("Error submitting form", error);
         }
@@ -94,46 +92,46 @@ const NewExpense = ({ open, onClose, job }) => {
                                 {...register("itemname", { required: true })}
                                 type='text'
                                 placeholder='Item name'
-                                className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                             />
 
                             <select {...register("accountingcode")}
-                                className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                             >
                                 <option className='text-tprimary' value="">Accounting code</option>
                             </select>
 
                             <textarea  {...register("description")}
                                 placeholder='Description'
-                                className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                                 rows={4}
                             ></textarea>
                             <input
                                 {...register("date", { required: true })}
                                 type='date'
                                 placeholder='Notes'
-                                className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                                 rows={4}
                             />
 
                             <input
                                 {...register("total", { required: true })}
                                 placeholder='Total'
-                                className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                             />
 
                             <select {...register("reimburseto")}
-                                className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                             >
-                                <option className='text-tprimary' value="">Not reimburseto</option>
+                                <option className='text-tprimary dark:text-dark-text' value="">Expense reimburseto</option>
                                 {
-                                    team?.map(t => <option key={t?.id} className='text-tprimary' value={t?.id}>{t?.name}</option>)
+                                    team?.map(t => <option key={t?.id} className='text-tprimary dark:text-dark-text' value={t?.id}>{t?.name}</option>)
                                 }
                             </select>
 
                             <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex flex-col space-y-3 justify-center items-center">
-                                <label htmlFor="receipt" className='cursor-pointer text-gray-500 text-center flex flex-col items-center justify-center gap-2'>
-                                    <div className="bg-white text-green-700 hover:bg-green-700 hover:bg-opacity-20 cursor-pointer px-4 py-2 rounded-full border-green-700 border-2">Add Recipt</div>
+                                <label htmlFor="receipt" className='cursor-pointer text-gray-500 dark:text-gray-300 text-center flex flex-col items-center justify-center gap-2'>
+                                    <div className="bg-white dark:bg-green-700 dark:text-dark-text dark:hover:bg-green-900 text-green-700 hover:bg-green-700 hover:bg-opacity-20 cursor-pointer px-4 py-2 rounded-full border-green-700 border-2">Add Recipt</div>
                                     Select your file here to upload
                                 </label>
                                 <input hidden type="file" name="receipt" id="receipt" {...register("receipt")} />
@@ -145,7 +143,7 @@ const NewExpense = ({ open, onClose, job }) => {
                         <CustomButton title="Cancel" onClick={() => {
                             onClose()
                         }}></CustomButton>
-                        <CustomButton type={'submit'} variant="primary" title="Save Expense"></CustomButton>
+                        <CustomButton type={'submit'} loading={loadingObj.expense} variant="primary" title="Save Expense"></CustomButton>
                     </div>
                 </form>
             </div>

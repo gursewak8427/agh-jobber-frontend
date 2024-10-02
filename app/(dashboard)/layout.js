@@ -8,7 +8,7 @@ import { Loading } from "../_components/loading";
 import { Bounce, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from "react-redux";
-import { clearerrorList, clearsuccessList, fetchBusniessProfile } from "@/store/slices/client";
+import { clearerrorList, clearsuccessList, darkmodeState, fetchBusniessProfile } from "@/store/slices/client";
 import theme from "@/theme";
 
 const MainLayout = ({ children }) => {
@@ -43,15 +43,16 @@ const MainLayout = ({ children }) => {
   }, [successList, errorList])
   useEffect(() => {
     dispatch(fetchBusniessProfile());
+    if(localStorage.getItem('mode')){
+      dispatch(darkmodeState(localStorage.getItem('mode')))
+    }
   }, [])
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
-      console.log('adding dark');
       
     } else {
       document.documentElement.classList.remove('dark');
-      console.log('removing dark');
     }
   }, [darkMode]);
   return (

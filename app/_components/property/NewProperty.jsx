@@ -69,46 +69,46 @@ const NewProperty = ({ open, onClose, onCreate, client }) => {
                                 <input {...register("address1")}
                                     type="text"
                                     placeholder='Street 1'
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                                 />
                             </div>
                             <div>
                                 <input {...register("address2")}
                                     type="text"
                                     placeholder='Street 2'
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-b-none"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-b-none"
                                 />
                             </div>
                             <div className="flex flex-row">
                                 <input {...register("city")}
                                     type="text"
                                     placeholder='City'
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400"
                                 />
                                 <input {...register("province")}
                                     type="text"
                                     placeholder='Province'
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400"
                                 />
                             </div>
 
                             <div className="flex flex-row">
                                 <input {...register("postalcode")}
                                     placeholder='Postal Code'
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-r-none"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-r-none"
                                 />
                                 <select {...register("country")}
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-l-none"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none rounded-l-none"
                                 >
-                                    <option className='text-tprimary' value="">Select Country</option>
-                                    <option className='text-tprimary' value="India">India</option>
-                                    <option className='text-tprimary' value="Canada">Canada</option>
+                                    <option className='text-tprimary dark:text-dark-text' value="">Select Country</option>
+                                    <option className='text-tprimary dark:text-dark-text' value="India">India</option>
+                                    <option className='text-tprimary dark:text-dark-text' value="Canada">Canada</option>
                                 </select>
                             </div>
                         </div>
 
 
-                        <p>Taxes <span className='text-green-700 underline ml-2 font-semibold'>GST (5.0%) (Default)</span></p>
+                        <p>Taxes <span className='text-green-700 underline ml-2 font-semibold dark:text-dark-second-text'>GST (5.0%) (Default)</span></p>
 
                     </div>
                     <div className="mt-4 space-y-2 flex justify-between items-center w-full">

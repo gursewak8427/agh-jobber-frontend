@@ -29,7 +29,7 @@ const NewTimeEntry = ({ open, onClose, job }) => {
     const dispatch = useAppDispatch();
     const [totalcost, settotalcost] = useState(0)
 
-    const { team } = useSelector(state => state.clients);
+    const { team,loadingObj } = useSelector(state => state.clients);
     const hour = watch("hour")
     const minutes = watch("minutes")
     const employeecost = watch("employeecost") // per hour cost
@@ -80,11 +80,10 @@ const NewTimeEntry = ({ open, onClose, job }) => {
 
             if (Boolean(open) && open != true) {
                 jsonData["id"] = open?.id;
-                dispatch(putJobEmployeeSheet(jsonData))
+                dispatch(putJobEmployeeSheet(jsonData)).then(()=>onClose())
             } else {
-                dispatch(createJobEmployeeSheet(jsonData))
+                dispatch(createJobEmployeeSheet(jsonData)).then(()=>onClose())
             }
-            onClose()
         } catch (error) {
             console.error("Error submitting form", error);
         }
@@ -102,45 +101,45 @@ const NewTimeEntry = ({ open, onClose, job }) => {
                                 <input {...register("starttime")}
                                     type="time"
                                     placeholder='Street 1'
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none"
                                 />
                                 <input {...register("endtime")}
                                     type="time"
                                     placeholder='Street 2'
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none"
                                 />
                             </div>
                             <div className="flex">
                                 <input {...register("hour")}
                                     type="text"
                                     placeholder='Hour'
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none"
                                 />
                                 <input {...register("minutes")}
                                     type="text"
                                     placeholder='Minutes'
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none"
                                 />
                             </div>
                             <textarea  {...register("notes")}
                                 placeholder='Notes'
-                                className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                                 rows={4}
                             ></textarea>
                             <input
                                 {...register("date")}
                                 type='date'
                                 placeholder='Notes'
-                                className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                                 rows={4}
                             />
 
                             <select {...register("employee", { required: true })}
-                                className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                             >
-                                <option className='text-tprimary' value="">Select Employee</option>
+                                <option className='text-tprimary dark:text-dark-text' value="">Select Employee</option>
                                 {
-                                    team?.map(t => <option key={t?.id} className='text-tprimary' value={t?.id}>{t?.name}</option>)
+                                    team?.map(t => <option key={t?.id} className='text-tprimary dark:text-dark-text' value={t?.id}>{t?.name}</option>)
                                 }
                             </select>
 
@@ -148,7 +147,7 @@ const NewTimeEntry = ({ open, onClose, job }) => {
                                 <input
                                     {...register("employeecost")}
                                     placeholder='Employee cost per hour'
-                                    className="w-full h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                    className="w-full h-11 focus:outline-none border px-3 py-2 dark:bg-dark-secondary border-gray-300 focus:border-gray-400 rounded-lg"
                                 />
                                 <p className='text-xs text-gray-400'>Total cost: ${totalcost}</p>
                             </div>
@@ -158,7 +157,7 @@ const NewTimeEntry = ({ open, onClose, job }) => {
                         <CustomButton title="Cancel" onClick={() => {
                             onClose()
                         }}></CustomButton>
-                        <CustomButton type={'submit'} variant="primary" title={Boolean(open) && open != true ? "Update" : "Create Time Entry"}></CustomButton>
+                        <CustomButton type={'submit'} variant="primary" loading={loadingObj.labourentry} title={Boolean(open) && open != true ? "Update" : "Create Time Entry"}></CustomButton>
                     </div>
                 </form>
             </div>

@@ -46,7 +46,7 @@ export default function Page() {
 
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  const { clientslist, client, team, jobcount, jobcustomfields } = useSelector(state => state.clients);
+  const { clientslist, client, team, jobcount, jobcustomfields, loadingObj } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -275,6 +275,8 @@ export default function Page() {
       "totalvisit": data?.totalvisit,
       "totalcost": data?.totalcost,
       "totalprice": data?.totalcost,
+      "internalnote": data?.internalnote,
+      "isrelatedinvoices": data?.isrelatedinvoices,
       "status": "Upcoming",
       "visit": data?.schedulelater ? [] : visits?.map(v => ({
         title: data?.title,
@@ -333,21 +335,21 @@ export default function Page() {
   // dispatch(createJobEmployeeSheet())
   return (
     <div className='max-w-[1200px] mx-auto space-y-4'>
-      <div className='text-sm text-tprimary'>
-        Back to : <Link href={"/jobs"} className='text-green-700'>Jobs</Link>
+      <div className='text-sm text-tprimary dark:text-dark-text'>
+        Back to : <Link href={"/jobs"} className='text-green-700 dark:text-dark-second-text'>Jobs</Link>
       </div>
       <div className="p-8 border border-gray-200 rounded-xl border-t-8 border-t-green-700 space-y-4">
         {/* Header */}
         <div className="flex justify-start items-center mb-6">
-          <div className="text-4xl font-semibold text-tprimary">Job for</div>
+          <div className="text-4xl font-semibold text-tprimary dark:text-dark-text">Job for</div>
           <Button onClick={() => setSelectClientModal(true)} className='ml-2 capitalize flex items-center gap-2 border-b border-dashed'>
             {
               !client_id ? <>
-                <div className="text-4xl font-semibold text-tprimary">Client Name</div>
+                <div className="text-4xl font-semibold text-tprimary dark:text-dark-text">Client Name</div>
                 <div className="bg-green-700 px-4 py-1 rounded">
                   <PlusIcon className='text-white' />
                 </div>
-              </> : <div className="text-4xl font-semibold text-tprimary">{getClientName(client)}</div>
+              </> : <div className="text-4xl font-semibold text-tprimary dark:text-dark-text">{getClientName(client)}</div>
             }
 
           </Button>
@@ -361,12 +363,12 @@ export default function Page() {
                 <input
                   {...register("title")}
                   placeholder='Title'
-                  className="focus:outline-gray-500 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                  className="focus:outline-gray-500 dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                 />
                 <textarea
                   {...register("instructions")}
                   placeholder='Instructions'
-                  className="focus:outline-gray-500 outline-offset-2 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                  className="focus:outline-gray-500 dark:bg-dark-secondary outline-offset-2 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
                 ></textarea>
               </div>
               {
@@ -395,11 +397,11 @@ export default function Page() {
             <div className="p-4 rounded-lg w-1/2">
               <h1 className='font-bold mb-2'>Job details</h1>
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium min-w-[200px]">Job number #1</div>
+                <div className="font-medium min-w-[200px]">Job number #{jobcount}</div>
                 {
                   isJobno ? <div className="flex gap-2 items-center">
                     <input type="text" {...register("jobno")} onBlur={onBlur} defaultValue={jobcount}
-                      className="w-16 h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
+                      className="w-16 h-8 dark:bg-dark-secondary text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
                     <CustomButton onClick={() => { setValue("jobno", jobcount); setJobNo(false) }} title={"Cancel"} />
                   </div> :
                     <Button onClick={() => setJobNo(true)} className='px-0 text-green-700 underline font-semibold'>change</Button>
@@ -409,8 +411,8 @@ export default function Page() {
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium min-w-[200px]">Salesperson</div>
                 {
-                  selectedSalesPerson ? <div className="flex items-center bg-primary p-2 rounded-full">
-                    <Avatar className="mr-2 bg-slate-600 text-sm">{selectedSalesPerson?.name[0]}</Avatar>
+                  selectedSalesPerson ? <div className="flex items-center bg-secondary p-2 rounded-full dark:bg-dark-primary">
+                    <Avatar className="mr-2 bg-slate-600 text-sm dark:text-dark-text">{selectedSalesPerson?.name[0]}</Avatar>
                     <div className="text-sm">{selectedSalesPerson?.name}</div>
                     <IconButton color="error" onClick={() => setSalesPerson(null)}>
                       <X />
@@ -443,7 +445,7 @@ export default function Page() {
 
           <div className="py-2">
             <h2 className="text-2xl font-semibold mb-2">Type</h2>
-            <div className="lg:col-span-3 py-4 text-tprimary space-y-4 flex flex-row items-start justify-start gap-2">
+            <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 flex flex-row items-start justify-start gap-2">
               <div className="w-2/5 space-y-3">
                 <JobType visits={visits} register={register} watch={watch} setValue={setValue} />
 
@@ -477,14 +479,14 @@ export default function Page() {
                   </div>
                   {
                     teamList?.length == 0 ?
-                      <p className="text-sm mt-2 text-gray-700 italic">No users are currently assigned</p> :
+                      <p className="text-sm mt-2 text-gray-700 italic dark:text-dark-text">No users are currently assigned</p> :
                       <div className="flex items-start justify-start gap-4 flex-wrap">
                         {
                           teamList?.map(t => {
-                            return <div className='px-3 py-1 bg-primary rounded-full'>
+                            return <div className='px-3 py-1 bg-primary rounded-full dark:bg-dark-primary'>
                               <span className='text-xs'>{t?.name}</span>
                               <IconButton>
-                                <X className='w-5 h-5' />
+                                <X className='w-5 h-5 text-red-700' />
                               </IconButton>
                             </div>
                           })
@@ -514,18 +516,18 @@ export default function Page() {
                     <div className="flex gap-4 items-center">
                       <div className="gap-2 flex">
                         <input type="radio" {...register("invocieReceiveType")} value={"per_visit"} id="per-visit" className='focus:outline-none' />
-                        <label className='cursor-pointer text-sm text-gray-500' htmlFor="per-visit">Per Visit</label>
+                        <label className='cursor-pointer text-sm text-gray-500 dark:text-dark-text' htmlFor="per-visit">Per Visit</label>
                       </div>
                       <div className="gap-2 flex">
                         <input type="radio" {...register("invocieReceiveType")} value={"fixed_price"} id="fixed-price" className='focus:outline-none' />
-                        <label className='cursor-pointer text-sm text-gray-500' htmlFor="fixed-price">Fixed price</label>
+                        <label className='cursor-pointer text-sm text-gray-500 dark:text-dark-text' htmlFor="fixed-price">Fixed price</label>
                       </div>
                     </div>
                   </div>
                   <div className="space-y-1">
                     <div className='text-sm font-semibold cursor-pointer'>When do you want to invoice?</div>
                     <div className="mb-4 flex flex-col">
-                      <select {...register('invoiceTiming')} name="invoiceTiming" id="invoiceTiming" className='max-w-full w-[400px] border-gray-400 focus:outline-gray-500 border p-2 rounded-md h-11 text-sm'>
+                      <select {...register('invoiceTiming')} name="invoiceTiming" id="invoiceTiming" className='max-w-full w-[400px] dark:bg-dark-secondary border-gray-400 focus:outline-gray-500 border p-2 rounded-md h-11 text-sm'>
                         <option className='text-sm' value="monthly_last">Monthly on the last of the month</option>
                         <option className='text-sm' value="after_each_vist">After each visit is complete</option>
                         <option className='text-sm' value="as_we_need">As needed -- no reminder</option>
@@ -538,7 +540,7 @@ export default function Page() {
                 </div>
                 <div className="w-1/2 space-y-3">
                   <span className='font-semibold text-md'>Get paid automatically</span>
-                  <p className='text-md text-gray-500'>Sit back as the money rolls in. Clients are automatically invoiced and charged based on their billing frequency once they save a payment method on file. Learn more in <Link href={"#"} className='text-green-600'>Help Center</Link></p>
+                  <p className='text-md text-gray-500 dark:text-dark-text'>Sit back as the money rolls in. Clients are automatically invoiced and charged based on their billing frequency once they save a payment method on file. Learn more in <Link href={"#"} className='text-green-600 dark:text-dark-second-text'>Help Center</Link></p>
                 </div>
               </div>
             </div> : jobtype == "oneoff" && <div className='border mb-4 border-gray-400 rounded-xl p-4 space-y-4'>
@@ -582,17 +584,17 @@ export default function Page() {
                                 {...register(`products.${index}.type`)}
                                 placeholder='Name'
                                 value={product?.type}
-                                className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                                className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                               />
                               <input
                                 {...register(`products.${index}.name`)}
                                 placeholder='Name'
-                                className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                                className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                               />
                               <textarea
                                 {...register(`products.${index}.description`)}
                                 placeholder='Description'
-                                className="w-full border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                                className="w-full border-t-0 focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
                               ></textarea>
                             </div>
                           </td>
@@ -602,9 +604,9 @@ export default function Page() {
                                 {...register(`products.${index}.quantity`)}
                                 onBlur={onBlur}
                                 placeholder='Quantity'
-                                className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2"
+                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg mb-2"
                               />
-                              <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
+                              <div className="w-full h-full flex-1 border px-3 py-2 dark:bg-dark-primary border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
                                 <CameraIcon className='text-green-800' />
                               </div>
                             </div>
@@ -615,13 +617,13 @@ export default function Page() {
                                 {...register(`products.${index}.material`)}
                                 onBlur={onBlur}
                                 placeholder='Material'
-                                className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                               />
                               <input
                                 {...register(`products.${index}.labour`)}
                                 onBlur={onBlur}
                                 placeholder='Labour'
-                                className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
                               />
                             </div>
                           </td>
@@ -631,13 +633,13 @@ export default function Page() {
                                 {...register(`products.${index}.markuppercentage`)}
                                 onBlur={onBlur}
                                 placeholder='Markup (%)'
-                                className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                               />
                               <input
                                 readOnly
                                 {...register(`products.${index}.markupamount`)}
                                 placeholder='Amount'
-                                className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
                               />
                             </div>
                           </td>
@@ -647,7 +649,7 @@ export default function Page() {
                                 {...register(`products.${index}.total`)}
                                 readOnly
                                 placeholder='Total'
-                                className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg"
                               />
                             </div>
                           </td>
@@ -663,8 +665,8 @@ export default function Page() {
                   <div className='font-semibold'>total price</div>
                 </div>
                 <div className='space-y-2'>
-                  <p className='text-gray-700 font-semibold'>${totalcost || `0.00`}</p>
-                  <p className='text-gray-700 font-semibold'>${totalcost || `0.00`}</p>
+                  <p className='text-gray-700 font-semibold dark:text-dark-text'>${totalcost || `0.00`}</p>
+                  <p className='text-gray-700 font-semibold dark:text-dark-text'>${totalcost || `0.00`}</p>
                 </div>
               </div>
 
@@ -675,7 +677,7 @@ export default function Page() {
           <div className="border border-gray-300 p-4 rounded-lg">
             <h1 className='text-2xl font-bold mb-2'>Internal notes & attachments</h1>
             <div className="mt-4">
-              <textarea {...register("internalnote")} placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+              <textarea {...register("internalnote")} placeholder='Note details' name="internalnote" id="internalnote" rows={3} className="w-full dark:bg-dark-primary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
             </div>
 
             <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
@@ -686,10 +688,10 @@ export default function Page() {
             <Divider className='my-2' />
 
             <div className="mt-4 space-y-2">
-              <p className='font-normal text-sm text-tprimary'>Link not to related</p>
+              <p className='font-normal text-sm text-tprimary dark:text-dark-text'>Link not to related</p>
               <div className="flex gap-2 text-sm items-center capitalize">
                 <div className="flex gap-2 items-center">
-                  <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="" id="invoices" />
+                  <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="isrelatedinvoices" id="isrelatedinvoices" />
                   <label htmlFor="invoices">invoices</label>
                 </div>
               </div>
@@ -701,30 +703,30 @@ export default function Page() {
             {
               !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
                 <div className="flex gap-2 items-center">
-                  <CustomButton type={"submit"} title="Save Job"></CustomButton>
-                  <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"submit"} variant="primary" title="Save and"></CustomButton>}>
+                  <CustomButton type={"submit"} loading={loadingObj.jobcreate} title="Save Job"></CustomButton>
+                  <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
                     {/* Menu Items */}
                     <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
                       Save and...
                     </Typography>
 
-                    <MenuItem className="text-tprimary text-sm">
+                    <MenuItem className="text-tprimary dark:text-dark-text text-sm">
                       <ListItemIcon>
                         <Hammer className="text-green-700" size={16} />
                       </ListItemIcon>
                       Create Another
                     </MenuItem>
 
-                    <MenuItem className="text-tprimary text-sm">
+                    <MenuItem className="text-tprimary dark:text-dark-text text-sm">
                       <ListItemIcon>
                         <MessageSquareText className="text-orange-700" size={16} />
                       </ListItemIcon>
                       Text Booking Confirmation
                     </MenuItem>
 
-                    <MenuItem className="text-tprimary text-sm">
+                    <MenuItem className="text-tprimary dark:text-dark-text text-sm">
                       <ListItemIcon>
-                        <Mail className="text-gray-700" size={16} />
+                        <Mail className="text-gray-700 dark:text-gray-400" size={16} />
                       </ListItemIcon>
                       Email Booking Confirmation
                     </MenuItem>
@@ -734,7 +736,7 @@ export default function Page() {
             }
           </div>
         </form>
-      </div >
+      </div>
 
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
       <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={id => {
@@ -753,6 +755,6 @@ export default function Page() {
         setSelectedProperty(property)
         setPropertyModal(false)
       }} client={client} />
-    </div >
+    </div>
   );
 }
