@@ -2,25 +2,26 @@
 import React, { useState } from 'react'
 import 'react-toastify/dist/ReactToastify.css';
 import { toast, Bounce } from "react-toastify";
-import { useDispatch } from "react-redux";
 import { authtoken, profileAction } from "@/store/slices/auth";
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/store/hooks';
 import { useForm } from "react-hook-form"
 import axios from 'axios';
+import { CircularProgress } from '@mui/material';
 
 const page = () => {
     const {
         register,
         handleSubmit,
     } = useForm()
-
+    const [btnloading, setBtnloading] = useState(false);
     const router = useRouter();
     const dispatch = useAppDispatch();
 
 
     const onSubmit = async (data) => {
         try {
+            setBtnloading(true)
             const response = await axios.post('/api/login', data)
             if (response.status == 200) {
                 toast.success('Login Successfull', {
@@ -32,10 +33,11 @@ const page = () => {
                     draggable: true,
                 });
                 dispatch(authtoken(response.data.data.token))
-                // dispatch(profileAction([response.data.data.login, response.data.data.profile]))
-                router.push(('/'))
+                router.push(('/'));
+                setBtnloading(false)
             }
         } catch (error) {
+            setBtnloading(false)
             toast.error('Please verify your credentials', {
                 position: "top-right",
                 autoClose: 5000,
@@ -83,7 +85,18 @@ const page = () => {
                                     </div>
                                     <a href="#" className="text-sm font-medium text-primary-600 hover:underline ">Forgot password?</a>
                                 </div> */}
-                                <button type="submit" className="w-full bg-indigo-600 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center   ">Sign in</button>
+
+                                <button
+                                    type="submit"
+                                    className={`w-full ${btnloading ? 'bg-gray-700' : 'bg-indigo-600'} text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center`}
+                                    disabled={btnloading}
+                                >
+                                    {
+                                        btnloading ? <><CircularProgress size={15} /> Please Wait...</> : <>
+                                            Sign in
+                                        </>
+                                    }
+                                </button>
                                 <p className="text-sm font-light text-gray-500 ">
                                     Don’t have an account yet? <a href="#" className="font-medium text-primary-600 hover:underline ">Sign up</a>
                                 </p>

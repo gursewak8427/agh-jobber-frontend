@@ -284,7 +284,7 @@ export default function Page() {
                       <>
                         <h1 className='font-bold mb-2'>Property address</h1>
                         <p className='max-w-[150px]'>{getAddress(selectedProperty)}</p>
-                        <Button className='text-green-700 p-0' onClick={() => {
+                        <Button className='text-green-700 p-0 dark:text-dark-second-text' onClick={() => {
                           setPropertyModal("SELECT")
                         }}>change</Button>
                       </>
@@ -309,7 +309,7 @@ export default function Page() {
                       className="h-8 text-right dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
                     <CustomButton onClick={() => { setIssueDateStatus(false) }} title={"Cancel"} />
                   </div> :
-                    <Button onClick={() => setIssueDateStatus(true)} className='px-0 text-green-700 underline font-semibold capitalize'>Date sent</Button>
+                    <Button onClick={() => setIssueDateStatus(true)} className='px-0 text-green-700 underline font-semibold capitalize dark:text-dark-second-text'>Date sent</Button>
                 }
               </div>
 
@@ -317,7 +317,7 @@ export default function Page() {
                 <div className="font-medium min-w-[200px] text-sm">Payment due</div>
                 {
                   paymentDueStatus ? <div className="flex gap-2 items-center">
-                    <select {...register("paymentdue")} onBlur={onBlur} name="paymentdue" id="paymentdue" className='w-auto dark:bg-dark-secondary border-gray-400 focus:outline-gray-500 border p-2 rounded-md h-11 text-sm'>
+                    <select {...register("paymentdue")} onBlur={onBlur} name="paymentdue" id="paymentdue" className='w-auto dark:text-dark-second-text dark:bg-dark-secondary border-gray-400 focus:outline-gray-500 border p-2 rounded-md h-11 text-sm'>
                       <option value="upon_receipt">Upon receipt</option>
                       <option value="net_15">Net 15</option>
                       <option value="net_30">Net 30</option>
@@ -326,7 +326,7 @@ export default function Page() {
                     </select>
                     <CustomButton onClick={() => { setPaymentDueStatus(false) }} title={"Cancel"} />
                   </div> :
-                    <Button onClick={() => setPaymentDueStatus(true)} className='px-0 text-green-700 underline font-semibold capitalize'>Net 30</Button>
+                    <Button onClick={() => setPaymentDueStatus(true)} className='px-0 text-green-700 underline font-semibold capitalize dark:text-dark-second-text'>Net 30</Button>
                 }
               </div>
 
