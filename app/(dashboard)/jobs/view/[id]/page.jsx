@@ -10,7 +10,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createJobService, createQuote, fetchallClients, fetchClient, fetchJob, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createJobService, createQuote, fetchallClients, fetchClient, fetchJob, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, markJoblatevisit } from '@/store/slices/client';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -67,12 +67,12 @@ export default function Page() {
         <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
         {status}
       </div>
-      case "Lead": return <div className="w-full h-full flex items-center justify-start capitalize">
-        <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+      case "Has a late visit": return <div className="w-full h-full flex items-center justify-start capitalize">
+        <div className="w-3 h-3 bg-red-800 rounded-full mr-2"></div>
         {status}
       </div>
-      case "Awaiting Response": return <div className="w-full h-full flex items-center justify-start capitalize">
-        <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+      case "Upcoming": return <div className="w-full h-full flex items-center justify-start capitalize">
+        <div className="w-3 h-3 bg-orange-800 rounded-full mr-2"></div>
         {status}
       </div>
 
@@ -121,7 +121,7 @@ export default function Page() {
       <CustomTabPanel value={value} index={0}>
         <div className="w-full flex items-start justify-start gap-6">
           <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center dark:bg-dark-secondary">
-            <DollarSign className='dark:text-dark-text'/>
+            <DollarSign className='dark:text-dark-text' />
           </div>
           <div className="">
             <p className="font-semibold">No invoices</p>
@@ -200,6 +200,9 @@ export default function Page() {
     });
   }
 
+  const handlelatevisit = (id) => {
+    dispatch(markJoblatevisit({ job: id }))
+  }
 
   const MoreActionsMenuItems = () => {
     return (<Fragment>
@@ -218,8 +221,8 @@ export default function Page() {
       </MenuItem>
 
       <MenuItem onClick={() => {
-        // setsendemail(true)
-        // setmenu(false)
+        setsendemail(true)
+        setmenu(false)
       }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
           <Mail className="text-gray-700 dark:text-gray-400" size={16} />
@@ -228,8 +231,8 @@ export default function Page() {
       </MenuItem>
 
       <MenuItem onClick={() => {
-        // setsendemail(true)
-        // setmenu(false)
+        setsendtextmsg(true)
+        setmenu(false)
       }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
           <MessageSquare className="text-gray-700 dark:text-gray-400" size={16} />
@@ -240,8 +243,8 @@ export default function Page() {
 
 
       <MenuItem onClick={() => {
-        // setsendemail(true)
-        // setmenu(false)
+        setsendemail(true)
+        setmenu(false)
       }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
           <Mail className="text-gray-700 dark:text-gray-400" size={16} />
@@ -329,7 +332,7 @@ export default function Page() {
       "job": job?.id
     }
 
-    dispatch(createJobService(jsonData)).then(()=>setAddNewLineItem(false))
+    dispatch(createJobService(jsonData)).then(() => setAddNewLineItem(false))
   }
 
 
@@ -340,7 +343,7 @@ export default function Page() {
           Back to : <Link href={"/jobs"} className='text-green-700 dark:text-dark-second-text'>Jobs</Link>
         </div>
         <div className="flex items-center gap-2">
-          <CustomButton onClick={() => setsendtextmsg(true)} title={"Show late visit"} variant={"primary"} />
+          <CustomButton onClick={() => handlelatevisit(job.id)} loading={loadingObj.latevisit} title={"Show late visit"} variant={"primary"} />
           <CustomButton title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
           <CustomMenu open={menu == "more_actions"} icon={<CustomButton onClick={() => setmenu("more_actions")} title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
             <MoreActionsMenuItems />
@@ -352,7 +355,7 @@ export default function Page() {
         <div className="flex justify-between items-center">
           <div className='flex items-center gap-4'>
             <Hammer className='w-8 h-8 text-green-700' />
-            {getStatusBox("Draft")}
+            {getStatusBox(job.status)}
           </div>
           <div className='font-bold'>Job #{job?.jobno}</div>
         </div>
@@ -886,7 +889,7 @@ export default function Page() {
 
 
       <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} job={job} profile={profile} client={job.client} />
-      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} />
+      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} job={job} profile={profile}/>
 
       <NewTimeEntry job={job} open={newtimeentry} onClose={() => setnewtimeentry(false)} />
       <NewExpense job={job} open={newexpense} onClose={() => setnewexpense(false)} />

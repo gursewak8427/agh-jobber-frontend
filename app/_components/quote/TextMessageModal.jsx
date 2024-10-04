@@ -54,7 +54,7 @@ const TextMessageModal = ({ open, onClose, client, quote, profile }) => {
                 <div className="content mt-6 space-y-5">
                     <div className="flex items-center">
                         <span className="w-12 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-l-lg">To</span>
-                        <input readOnly type="text" {...register("mobile")} className="w-full dark:bg-dark-primary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-r-lg" />
+                        <input name='mobile' type="text" {...register("mobile")} className="w-full dark:bg-dark-primary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-r-lg" />
                     </div>
                     <div className="flex gap-4">
                         <div className="w-1/2">

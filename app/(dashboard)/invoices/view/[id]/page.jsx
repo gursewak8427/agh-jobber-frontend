@@ -56,8 +56,8 @@ export default function Page() {
   const MoreActionsMenuItems = () => {
     return (<Fragment>
       <MenuItem onClick={() => {
-        // setsendemail(true)
-        // setmenu(false)
+        setsendtextmsg(true)
+        setmenu(false)
       }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
           <MessageSquare className="text-gray-700 dark:text-gray-400" size={16} />
@@ -68,8 +68,8 @@ export default function Page() {
 
 
       <MenuItem onClick={() => {
-        // setsendemail(true)
-        // setmenu(false)
+        setsendemail(true)
+        setmenu(false)
       }} className="text-tprimary dark:text-dark-text text-sm">
         <ListItemIcon>
           <Mail className="text-gray-700 dark:text-gray-400" size={16} />
@@ -144,7 +144,7 @@ export default function Page() {
           Back to : <Link href={"/invoices"} className='text-green-700 dark:text-dark-second-text'>invoices</Link>
         </div>
         <div className="flex items-center gap-2">
-          <CustomButton onClick={() => setsendtextmsg(true)} frontIcon={<CreditCard className='text-white' />} title={"Collect Payments"} variant={"primary"} />
+          <CustomButton frontIcon={<CreditCard className='text-white' />} title={"Collect Payments"} variant={"primary"} />
           <CustomButton title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
           <CustomMenu open={menu} icon={<CustomButton onClick={() => setmenu(true)} title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
             <MoreActionsMenuItems />
@@ -350,7 +350,7 @@ export default function Page() {
 
 
       <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} client={invoice.client} profile={profile} invoice={invoice} />
-      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} />
+      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} invoice={invoice} profile={profile}/>
     </div>
   );
 }

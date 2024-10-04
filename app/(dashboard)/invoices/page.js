@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchallClients, fetchClients, fetchInvoices } from "@/store/slices/client";
 import { useAppDispatch } from "@/store/hooks";
 import SelectClient from "@/app/_components/client/SelectClient";
+import { formatUserDate } from "@/utils";
 
 const columns = [
   {
@@ -36,6 +37,7 @@ const columns = [
     headerName: "Due date",
     flex: 1,
     minWidth: 150,
+    renderCell: (params) => formatUserDate(params.value),
   },
   {
     field: "name",
@@ -48,6 +50,7 @@ const columns = [
     headerName: "Status",
     flex: 1,
     minWidth: 200,
+    renderCell: (params) => getStatusBox(params?.value?.toString()),
   },
   {
     field: "costs",
@@ -66,12 +69,17 @@ const columns = [
 
 // Function to handle status rendering
 const getStatusBox = status => {
+  console.log(status)
   switch (status) {
-    case "active": return <div className="w-full h-full flex items-center justify-start capitalize">
+    case "Draft": return <div className="w-full h-full flex items-center justify-start capitalize">
       <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
       {status}
     </div>
-    case "lead": return <div className="w-full h-full flex items-center justify-start capitalize">
+    case "Lead": return <div className="w-full h-full flex items-center justify-start capitalize">
+      <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+      {status}
+    </div>
+    case "Awaiting Response": return <div className="w-full h-full flex items-center justify-start capitalize">
       <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
       {status}
     </div>

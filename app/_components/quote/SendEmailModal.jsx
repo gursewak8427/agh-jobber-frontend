@@ -1,15 +1,15 @@
 import CustomModal from '@/components/CustomModal'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ModalHeading from '../ModalHeading'
 import CustomButton from '@/components/CustomButton'
-import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { sentClientCustommail } from '@/store/slices/client'
+import { sentQuoteEmail } from '@/store/slices/client'
+import { formatUserDate, getAddress, getClientName, primaryEmail } from '@/utils'
 
-const SendEmailModal = ({ open, onClose, client, email }) => {
+const SendEmailModal = ({ open, onClose, client, quote }) => {
     const dispatch = useDispatch()
-    const { loadingObj } = useSelector(state => state.clients);
+    const { loadingObj, profile } = useSelector(state => state.clients);
     const {
         register,
         handleSubmit,
@@ -23,14 +23,17 @@ const SendEmailModal = ({ open, onClose, client, email }) => {
     const onSubmit = async (data) => {
         const jsonData = {
             ...data,
-            client:client.id
+            quote: quote.id
         }
-        dispatch(sentClientCustommail(jsonData)).then(() => handleClose());
-        // console.log({ jsonData })
+        dispatch(sentQuoteEmail(jsonData)).then(() => onClose());
+        console.log({ jsonData })
     }
 
     useEffect(() => {
-        setValue(`email`, email)
+        setValue(`email`, primaryEmail(quote))
+        setValue(`subject`, `Quote from ${profile.company_name} - ${new Date().toDateString()}`)
+        setValue(`message`, `Hi ${getClientName(client)},\n\nThank you for asking us to quote on your project.${getAddress(quote?.property)}.\n\nThe quote total is $${quote.costs} as of ${formatUserDate(quote?.createdAt)}.\n\nIf you have any questions or concerns regarding this quote, please don't hesitate to get in touch with us at ${profile.email}.\n\nSincerely,\n\n${profile.company_name}`
+        )
     }, [open])
 
     const handleClose = () => {
@@ -46,21 +49,23 @@ const SendEmailModal = ({ open, onClose, client, email }) => {
     return (
         <CustomModal wide={true} show={Boolean(open)} onClose={handleClose}>
             <div className="space-y-6">
-                <ModalHeading onClose={onClose}>Custom Mail to {client?.fname ? client.fname + ' ' + client.lname : client?.companyname}</ModalHeading>
+                <ModalHeading onClose={onClose}>Email quote #{quote?.quoteno} to {client?.fname ? client.fname + ' ' + client.lname : client?.companyname}</ModalHeading>
             </div>
+
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="content mt-6 space-y-5">
                     <div className="flex items-center">
                         <span className="w-12 focus:outline-none border px-3  py-2 border-gray-300 focus:border-gray-400 rounded-l-lg">To</span>
-                        <input readOnly type="text" {...register("email")} placeholder='Email' className="w-full dark:bg-dark-secondary bg-gray-200 cursor-not-allowed focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-r-lg" />
+                        <input type="text" {...register("email")} name='email' placeholder='Email' className="w-full dark:bg-dark-secondary bg-gray-200 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-r-lg" />
                     </div>
                     <div className="flex gap-4">
                         <div className="w-full">
-                            <input {...register("subject")} type="text" className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-t-lg" placeholder="Subject" />
+                            <input {...register("subject")} name='subject' type="text" className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-t-lg" placeholder="Subject" />
                             <textarea
                                 {...register("message")}
                                 type="text"
-                                className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-b-lg h-[100px] focus:h-[130px] transition-all text-sm">
+                                name='message'
+                                className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-b-lg h-[250px] focus:h-[280px] transition-all text-sm">
                             </textarea>
                             <div className={`flex gap-2 items-center select-none`}>
                                 <input
@@ -77,7 +82,7 @@ const SendEmailModal = ({ open, onClose, client, email }) => {
                     </div>
                     <div className="flex gap-2 items-center justify-end">
                         <CustomButton onClick={handleClose} title="Cancel"></CustomButton>
-                        <CustomButton loading={loadingObj.custommail} type={"submit"} variant={"primary"} title="Send"></CustomButton>
+                        <CustomButton loading={loadingObj.quoteemail} type={"submit"} variant={"primary"} title="Send"></CustomButton>
                     </div>
                 </div>
             </form>

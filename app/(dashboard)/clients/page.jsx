@@ -15,6 +15,7 @@ import CustomButton from '@/components/CustomButton';
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchClients } from "@/store/slices/client";
+import { formatUserDate } from "@/utils";
 
 const columns = [
   {
@@ -47,6 +48,7 @@ const columns = [
     headerName: "Last Activity",
     flex: 1,
     minWidth: 100,
+    renderCell: (params) => formatUserDate(params.value),
   },
 ];
 
@@ -54,15 +56,18 @@ const columns = [
 // Function to handle status rendering
 const getStatusBox = status => {
   switch (status) {
-    case "active": return <div className="w-full h-full flex items-center justify-start capitalize">
+    case "Lead": return <div className="text-sm flex items-center justify-start capitalize bg-blue-400 bg-opacity-20 px-2 py-1 rounded-full w-20 mt-2">
       <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
       {status}
     </div>
-    case "lead": return <div className="w-full h-full flex items-center justify-start capitalize">
+    case "Active": return <div className="text-sm flex items-center justify-start capitalize bg-green-400 bg-opacity-20 px-3 py-1 rounded-full w-20 mt-2">
       <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
       {status}
     </div>
-
+    case "Archived": return <div className="text-sm flex items-center justify-start capitalize bg-gray-400 bg-opacity-20 px-2 py-1 rounded-full text-yellow-700 w-20 mt-2">
+      <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
+      {status}
+    </div>
     default:
       break;
   }

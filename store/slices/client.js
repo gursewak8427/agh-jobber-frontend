@@ -53,7 +53,7 @@ export const fetchPropertyCustomFields = createAsyncThunk("fetchPropertyCustomFi
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/custompropertyfield/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -162,7 +162,7 @@ export const createQuote = createAsyncThunk("createQuote", async (data, { reject
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quote/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -277,6 +277,15 @@ export const createJobService = createAsyncThunk("createJobService", async (data
     }
 });
 
+export const markJoblatevisit = createAsyncThunk("markJoblatevisit", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/joblatevisit/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 export const createJobVisit = createAsyncThunk("createJobVisit", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobvisit/`, data);
@@ -366,6 +375,33 @@ export const sentClientCustommail = createAsyncThunk("sentClientCustommail", asy
     }
 });
 
+export const sentQuoteEmail = createAsyncThunk("sentQuoteEmail", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quoteemail/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const sentJobEmail = createAsyncThunk("sentJobEmail", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobemail/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const sentInvoiceEmail = createAsyncThunk("sentInvoiceEmail", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/invoiceemail/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 export const fetchBusniessProfile = createAsyncThunk("fetchBusniessProfile", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/profile/`,);
@@ -378,6 +414,24 @@ export const fetchBusniessProfile = createAsyncThunk("fetchBusniessProfile", asy
 export const sendQuoteMessage = createAsyncThunk("sendQuoteMessage", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quotesms/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const sendJobMessage = createAsyncThunk("sendJobMessage", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobsms/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const sendInvoiceMessage = createAsyncThunk("sendInvoiceMessage", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/invoicesms/`, data);
         return response.data;
     } catch (error) {
         return handleAsyncThunkError(error, rejectWithValue);
@@ -485,14 +539,17 @@ const clientSlice = createSlice({
         builder
             .addCase(fetchPropertyCustomFields.pending, (state) => {
                 state.loadingList = true;
+                state.loadingFull = true;
             })
             .addCase(fetchPropertyCustomFields.fulfilled, (state, action) => {
                 state.loadingList = false;
+                state.loadingFull = false;
                 state.propertycustomfields = action.payload;
             })
             .addCase(fetchPropertyCustomFields.rejected, (state, action) => {
                 state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                state.loadingFull = false;
+                state.errorList = action.payload.error || 'Failed to fetch custom fields';
             });
         builder
             .addCase(createClientsCustomFields.pending, (state, action) => {
@@ -591,12 +648,17 @@ const clientSlice = createSlice({
                 state.loadingFull = false
             });
         builder
+            .addCase(createQuote.pending, (state, action) => {
+                state.loadingObj['draftquote'] = true;
+            })
             .addCase(createQuote.fulfilled, (state, action) => {
                 state.quote = action.payload;
+                delete state.loadingObj['draftquote'];
+                state.successList = 'Quote Created Successfully!'
             })
             .addCase(createQuote.rejected, (state, action) => {
-                state.loadingList = false;
-                state.errorList = action.payload?.message || 'Failed to fetch clients';
+                delete state.loadingObj['draftquote'];
+                state.errorList = action.payload.error || 'Failed to create quote';
             });
         builder
             .addCase(fetchQuotes.pending, (state, action) => {
@@ -908,6 +970,80 @@ const clientSlice = createSlice({
             })
             .addCase(fetchBusniessProfile.rejected, (state, action) => {
                 state.errorList = action.payload.error || 'Failed to fetch busniess profile';
+            });
+        builder
+            .addCase(sentQuoteEmail.pending, (state, action) => {
+                state.loadingObj['quoteemail'] = true;
+            })
+            .addCase(sentQuoteEmail.fulfilled, (state, action) => {
+                state.quote = action.payload;
+                state.successList = 'Quote Mail Sent Successfully!';
+                delete state.loadingObj['quoteemail'];
+            })
+            .addCase(sentQuoteEmail.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to send mail';
+                delete state.loadingObj['quoteemail'];
+            });
+        builder
+            .addCase(markJoblatevisit.pending, (state, action) => {
+                state.loadingObj['latevisit'] = true;
+            })
+            .addCase(markJoblatevisit.fulfilled, (state, action) => {
+                state.job = action.payload;
+                state.successList = 'Marked as late visit';
+                delete state.loadingObj['latevisit'];
+            })
+            .addCase(markJoblatevisit.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to mark late visit';
+                delete state.loadingObj['latevisit'];
+            });
+        builder
+            .addCase(sendJobMessage.pending, (state, action) => {
+                state.loadingObj['jobmessage'] = true;
+            })
+            .addCase(sendJobMessage.fulfilled, (state, action) => {
+                state.successList = action.payload.message;
+                delete state.loadingObj['jobmessage'];
+            })
+            .addCase(sendJobMessage.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to send message!!!';
+                delete state.loadingObj['jobmessage'];
+            });
+        builder
+            .addCase(sendInvoiceMessage.pending, (state, action) => {
+                state.loadingObj['invoicemessage'] = true;
+            })
+            .addCase(sendInvoiceMessage.fulfilled, (state, action) => {
+                state.successList = action.payload.message;
+                delete state.loadingObj['invoicemessage'];
+            })
+            .addCase(sendInvoiceMessage.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to send message!!!';
+                delete state.loadingObj['invoicemessage'];
+            });
+        builder
+            .addCase(sentJobEmail.pending, (state, action) => {
+                state.loadingObj['jobemail'] = true;
+            })
+            .addCase(sentJobEmail.fulfilled, (state, action) => {
+                state.successList = action.payload.message;
+                delete state.loadingObj['jobemail'];
+            })
+            .addCase(sentJobEmail.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to send message!!!';
+                delete state.loadingObj['jobemail'];
+            });
+        builder
+            .addCase(sentInvoiceEmail.pending, (state, action) => {
+                state.loadingObj['invoiceemail'] = true;
+            })
+            .addCase(sentInvoiceEmail.fulfilled, (state, action) => {
+                state.successList = action.payload.message;
+                delete state.loadingObj['invoiceemail'];
+            })
+            .addCase(sentInvoiceEmail.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to send message!!!';
+                delete state.loadingObj['invoiceemail'];
             });
     },
 });

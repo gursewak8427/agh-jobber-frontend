@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { fetchQuotes } from '@/store/slices/client';
 import { DataGrid } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
+import { formatUserDate } from '@/utils';
 
 
 
@@ -40,12 +41,7 @@ const columns = [
     headerName: "Created",
     flex: 1,
     minWidth: 100,
-    valueFormatter: (value) => {
-      if (value == null) {
-        return '--';
-      }
-      return new Date(value)?.toLocaleString();
-    },
+    renderCell: (params) => formatUserDate(params.value),
   },
   {
     field: "status",

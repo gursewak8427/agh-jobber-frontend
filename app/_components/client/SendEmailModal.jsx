@@ -52,7 +52,7 @@ const SendEmailModal = ({ open, onClose, client, email }) => {
                 <div className="content mt-6 space-y-5 ">
                     <div className="flex items-center">
                         <span className=" w-12 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-l-lg">To</span>
-                        <input readOnly type="text" {...register("email")} placeholder='Email' className="w-full bg-gray-200 cursor-not-allowed focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-r-lg dark:text-dark-text dark:bg-dark-secondary" />
+                        <input name='email' type="text" {...register("email")} placeholder='Email' className="w-full bg-gray-200 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-r-lg dark:text-dark-text dark:bg-dark-secondary" />
                     </div>
                     <div className="flex gap-4">
                         <div className="w-full">

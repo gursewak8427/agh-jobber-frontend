@@ -26,7 +26,6 @@ import SendEmailModal from '@/app/_components/quote/SendEmailModal';
 export default function Page() {
   const [sendtextmsg, setsendtextmsg] = useState(false)
   const [sendemail, setsendemail] = useState(false)
-  const [email, setEmail] = useState(false)
   const [menu, setmenu] = useState(false)
   const { id } = useParams()
   const dispatch = useAppDispatch()
@@ -122,7 +121,14 @@ export default function Page() {
       </MenuItem>
 
 
-      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+      <MenuItem
+        className="text-tprimary text-sm dark:text-dark-text"
+        onClick={() => {
+          if (quote.pdffile) {
+            window.open(quote.pdffile, '_blank');
+          }
+        }}
+      >
         <ListItemIcon>
           <FileText className="text-red-700 dark:text-red-500" size={16} />
         </ListItemIcon>
@@ -130,7 +136,15 @@ export default function Page() {
       </MenuItem>
 
 
-      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+
+      <MenuItem
+        className="text-tprimary text-sm dark:text-dark-text"
+        onClick={() => {
+          if (quote.pdffile) {
+            window.open(quote.pdffile, '_blank');
+          }
+        }}
+      >
         <ListItemIcon>
           <Printer className="text-gray-700 dark:text-gray-400" size={16} />
         </ListItemIcon>
@@ -145,14 +159,6 @@ export default function Page() {
 
   console.log({ quote })
 
-  useEffect(() => {
-    if (quote.client && quote.client.email) {
-      const primaryEmail = quote.client.email.find(email => email.primary === true);
-      if (primaryEmail) {
-        setEmail(primaryEmail.email);
-      }
-    }
-  }, [quote]);
   return (
     <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary dark:text-dark-text'>
       <PageHeading>
@@ -181,7 +187,6 @@ export default function Page() {
         </div>
         <div className="flex justify-start items-center mb-6 w-full gap-3">
           <div className="text-4xl font-semibold ">{getClientName(quote?.client)}</div>
-          <span>{getStatusBox("Lead")}</span>
         </div>
 
         <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300 pb-4">
@@ -221,7 +226,7 @@ export default function Page() {
                 </tr>
                 <tr>
                   <td className='py-2'>
-                    Created At
+                    Created
                   </td>
                   <td className='py-2'>
                     {new Date(quote?.createdAt)?.toLocaleDateString()}
@@ -370,7 +375,7 @@ export default function Page() {
 
 
       <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} client={quote?.client} quote={quote} profile={profile} />
-      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} client={quote?.client} email={email} />
+      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} client={quote?.client} quote={quote} />
     </div>
   );
 }

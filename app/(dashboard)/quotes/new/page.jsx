@@ -251,9 +251,7 @@ export default function Page() {
     }
 
     // console.log({ jsonData });
-    dispatch(setLoading("draftquote"))
     dispatch(createQuote(jsonData)).then(({ payload }) => {
-      dispatch(removeLoading("draftquote"))
       if (payload?.id) {
         router.push(`/quotes/view/${payload?.id}`)
       }

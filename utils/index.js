@@ -4,8 +4,22 @@ export const getAddress = property => `${property?.address1}, ${property?.addres
 export const getPrimary = list => list?.filter((item) => item?.primary)?.[0]
 export const getClientName = client => client?.fname ? client?.fname + ' ' + client?.lname : client?.companyname
 
-export const formatDate = date => moment(date, 'DD MMMM YYYY').format('YYYY-MM-DD');
 
+export const formatDate = date => moment(date, 'DD MMMM YYYY').format('YYYY-MM-DD');
+export const primaryEmail = (data) => {
+    if (data?.client?.email && Array.isArray(data.client.email)) {
+        const primaryEmail = data.client.email.find(email => email.primary === true);
+        return primaryEmail ? primaryEmail.email : null;
+    }
+    return null;
+};
+export const formatUserDate = date => moment(date).format('MMM DD, YYYY');
+export const formatTime = time => {
+    if (!time) {
+        return 'NA';
+    }
+    return moment(time, 'HH:mm:ss').format('h:mmA');
+};
 
 
 // Generate Visits 

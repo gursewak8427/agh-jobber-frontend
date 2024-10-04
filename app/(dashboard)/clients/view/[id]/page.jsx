@@ -77,20 +77,18 @@ import SendEmailModal from "@/app/_components/client/SendEmailModal";
 // Function to handle status rendering
 const getStatusBox = status => {
   switch (status) {
-    case "Active": return <div className="h-full text-sm flex items-center justify-start capitalize bg-blue-400 bg-opacity-20 px-2 py-1 rounded-full">
+    case "Lead": return <div className="h-full text-sm flex items-center justify-start capitalize bg-blue-400 bg-opacity-20 px-2 py-1 rounded-full">
       <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
       {status}
     </div>
-    case "Lead": return <div className="h-full text-sm flex items-center justify-start capitalize bg-green-400 bg-opacity-20 px-3 py-1 rounded-full ">
+    case "Active": return <div className="h-full text-sm flex items-center justify-start capitalize bg-green-400 bg-opacity-20 px-3 py-1 rounded-full ">
       <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
       {status}
     </div>
-    case "Awaiting Response": return <div className="h-full text-sm flex items-center justify-start capitalize bg-yellow-400 bg-opacity-20 px-2 py-1 rounded-full text-yellow-700">
-      <div className="w-3 h-3 bg-yellow-400 rounded-full mr-2"></div>
+    case "Archived": return <div className="h-full text-sm flex items-center justify-start capitalize bg-gray-400 bg-opacity-20 px-2 py-1 rounded-full text-yellow-700">
+      <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
       {status}
     </div>
-
-
     default:
       break;
   }
@@ -130,7 +128,7 @@ const TabBox = () => {
 
   return (<div className="w-full text-sm">
     <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-      <Tab label="Active Work" {...a11yProps(0)}/>
+      <Tab label="Active Work" {...a11yProps(0)} />
       <Tab label="Requests" {...a11yProps(1)} />
       <Tab label="Quotes" {...a11yProps(2)} />
       <Tab label="Jobs" {...a11yProps(2)} />
@@ -169,7 +167,7 @@ const TabBox = () => {
     <CustomTabPanel value={value} index={1}>
       <div className="w-full flex items-start justify-start gap-2">
         <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center dark:bg-dark-primary">
-          <Download className="dark:text-dark-text dark:bg-dark-primary"/>
+          <Download className="dark:text-dark-text dark:bg-dark-primary" />
         </div>
         <div className="dark:text-dark-text">
           <p className="font-semibold">Client hasn't requested any work yets</p>
@@ -213,7 +211,7 @@ const TabBox = () => {
     <CustomTabPanel value={value} index={3}>
       <div className="w-full flex items-start justify-start gap-2 dark:text-dark-text">
         <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center  dark:bg-dark-primary">
-          <Hammer className="dark:text-dark-text dark:bg-dark-primary"/>
+          <Hammer className="dark:text-dark-text dark:bg-dark-primary" />
         </div>
         <div className="">
           <p className="font-semibold">No Jobs</p>
@@ -227,7 +225,7 @@ const TabBox = () => {
     <CustomTabPanel value={value} index={4}>
       <div className="w-full flex items-start justify-start gap-2 dark:text-dark-text">
         <div className="w-12 h-12 rounded-full bg-primary-dark flex items-center justify-center dark:bg-dark-primary">
-          <DollarSign className="dark:text-dark-text dark:bg-dark-primary"/>
+          <DollarSign className="dark:text-dark-text dark:bg-dark-primary" />
         </div>
         <div className="">
           <p className="font-semibold">No invoices</p>
@@ -243,7 +241,7 @@ const TabBox = () => {
 
 export default function Page() {
   const [open, setOpen] = useState(false)
-  const [sendemail, setsendemail] = useState(false)
+  const [sendemail, setsendemail] = useState('')
   const { client } = useAppSelector(store => store.clients)
   const { id } = useParams();
   const [email, setEmail] = useState(false)
@@ -261,10 +259,10 @@ export default function Page() {
       if (primaryEmail) {
         setEmail(primaryEmail.email);
       } else {
-        setEmail(false);
+        setEmail('');
       }
     } else {
-      setEmail(false);
+      setEmail('');
     }
   }, [client]);
 
@@ -396,12 +394,7 @@ export default function Page() {
           Back to: <Link href={"/clients"} className="text-green-700 dark:text-dark-second-text">Clients</Link>
         </div>
         <div className="flex gap-4">
-          {
-            email ?
-              <CustomButton onClick={() => setsendemail(true)} title={"Email"} variant={"primary"} frontIcon={<Mail className="w-4 h-4" />} /> :
-              ''
-          }
-
+          <CustomButton onClick={() => setsendemail(true)} title={"Email"} variant={"primary"} frontIcon={<Mail className="w-4 h-4" />} />
           <CustomButton onClick={() => router.push("/clients/new")} title={"Edit"} frontIcon={<Pencil className="w-4 h-4" />} />
           <CustomMenu open={open == "more_actions"} icon={<CustomButton onClick={() => setOpen("more_actions")} title={"More Actions"} frontIcon={<MoreHorizontal />} />}>
             <MoreActionsMenuItems onClose={() => setOpen(null)} />
@@ -536,7 +529,7 @@ export default function Page() {
                 <tr>
                   <td className="flex flex-grow flex-1 dark:text-dark-text">
                     <div className="flex">
-                      <Checkbox className="dark:text-dark-text"/>
+                      <Checkbox className="dark:text-dark-text" />
                       <div>
                         <p className="font-semibold text-sm">Reminder about quote #5 for Md. Ashraful Islam</p>
                         <p className="text-sm">re: Md. Ashraful Islam</p>
