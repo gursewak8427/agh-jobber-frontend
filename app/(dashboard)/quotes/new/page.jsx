@@ -319,7 +319,7 @@ export default function Page() {
           <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300 pb-4">
             <div className="w-1/2 flex flex-col space-y-4">
               <div className="flex flex-col space-y-2">
-                <label htmlFor="" className='text-tprimary dark:text-dark-text font-bold'>{selectPropertyModal} Job Title</label>
+                <label htmlFor="" className='text-tprimary dark:text-dark-text font-bold'>Job Title</label>
                 <input
                   {...register("title")}
                   label="Title"

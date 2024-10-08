@@ -141,13 +141,13 @@ const Topbar = () => {
     }
     return (
         <>
-            <div className="flex justify-between items-center p-4 bg-white shadow-sm sticky top-0 z-10 dark:bg-dark-secondary  dark:text-dark-text">
+            <div className="flex justify-between items-center p-4 shadow-sm sticky top-0 z-10 dark:bg-dark-secondary  dark:text-dark-text">
                 <div className="text-sm text-gray-500  dark:text-dark-text">
                     <p className="font-bold">{profile?.company_name}</p>
                 </div>
                 <div className="flex items-center space-x-2">
                     <div
-                        className={`bg-primary dark:bg-dark-primary  dark:text-dark-text cursor-pointer p-2 rounded-lg flex items-center transition-all ${state.searchInputFocus ? 'w-[350px] border-2 border-primary-dark' : 'w-[250px] border-2 border-transparent'}`}>
+                        className={`bg-primary-dark dark:bg-dark-primary  dark:text-dark-text cursor-pointer p-2 rounded-lg flex items-center transition-all ${state.searchInputFocus ? 'w-[350px] border-2 border-primary-dark' : 'w-[250px] border-2 border-transparent'}`}>
                         <Search className="mr-2 text-tprimary w-[25px]  dark:text-dark-text" />
                         <input
                             onClick={() => setPopup("searchInputFocus", true)}
