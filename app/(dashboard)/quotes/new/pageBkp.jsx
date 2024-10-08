@@ -17,17 +17,9 @@ import { getAddress, getClientName, getPrimary } from '@/utils';
 import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
-import { toast } from 'react-toastify';
 
-const defaultProductLineItem = {
-  title: "",
-  markuppercentage: 0,
-  total: 0,
-  items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
-}
-
+const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
-
 const defaultProductTextItem = { type: "text", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 
 export default function Page() {
@@ -61,7 +53,6 @@ export default function Page() {
     control,
     formState: { errors },
     setValue,
-    getValues
   } = useForm({
     defaultValues: {
       products: [defaultProductLineItem],
@@ -75,24 +66,6 @@ export default function Page() {
     name: "products",
   });
 
-
-
-  // Function to append a new product
-  const addProduct = () => {
-    appendProduct({
-      title: "",
-      markuppercentage: 0,
-      total: 0,
-      items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
-    });
-  };
-
-  // Function to append a new item to a specific product
-  const addItemToProduct = (productIndex) => {
-    const newItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 };
-    setValue(`products.${productIndex}.items`, [...getValues(`products.${productIndex}.items`), newItem]);
-  };
-
   const watchProducts = watch("products");
   const subtotal = watch("subtotal");
   const discounttype = watch("discounttype");
@@ -104,8 +77,6 @@ export default function Page() {
   const requiredtype = watch("requiredtype");
   const requireddeposite = watch("requireddeposite");
   const requiredAmount = watch("requiredAmount");
-
-
 
 
   useEffect(() => {
@@ -124,35 +95,29 @@ export default function Page() {
   }, [requireddeposite, requiredtype])
 
   // Calculation logic for each product line
-  useEffect(() => {
-    onBlur()
-  }, [JSON.stringify(watchProducts)]);
+  // useEffect(() => {
+
+  // }, [watchProducts, discount, setValue]);
 
   const onBlur = () => {
     let newSubtotal = 0;
+
     watchProducts.forEach((product, index) => {
-      console.log({ product });
-      let totalcost = 0;
-      product?.items?.forEach((item, itemIndex) => {
+      if (product.type !== "text") {
+        const material = parseFloat(product.material) || 0;
+        const labour = parseFloat(product.labour) || 0;
+        const markupPercentage = parseFloat(product.markuppercentage) || 0;
 
-        if (product.type !== "text") {
-          const material = parseFloat(item.material) || 0;
-          const labour = parseFloat(item.labour) || 0;
-          const markupPercentage = parseFloat(item.markuppercentage) || 0;
+        const markupAmount = (material + labour) * (markupPercentage / 100);
+        const totalAmount = (material + labour + markupAmount) * (product?.quantity || 1);
 
-          const markupAmount = (material + labour) * (markupPercentage / 100);
-          const totalAmount = (material + labour + markupAmount) * (item?.quantity || 1);
+        setValue(`products.${index}.markupamount`, markupAmount.toFixed(2));
+        setValue(`products.${index}.total`, totalAmount.toFixed(2));
 
-          setValue(`products.${index}.items.${itemIndex}.markupamount`, markupAmount.toFixed(2));
-          setValue(`products.${index}.items.${itemIndex}.total`, totalAmount.toFixed(2));
-
-          newSubtotal += totalAmount;
-          totalcost += totalAmount;
-        }
-      })
-
-      setValue(`products.${index}.total`, totalcost.toFixed(2));
+        newSubtotal += totalAmount;
+      }
     });
+
 
     let _totatcost = parseFloat(newSubtotal);
 
@@ -400,166 +365,150 @@ export default function Page() {
             </div>
           </div>
 
+          {/* Line Item Details */}
           <div className="lg:col-span-3 py-4 text-tprimary space-y-4">
-
-            <div className="font-black text-lg">Products</div>
-
-            {
-              productsList.map((product, index) => {
-
-                const _items = watch(`products.${index}.items`);
-
-                return <div className='space-y-7 p-4 py-4 border rounded-lg'>
-                  <div className="flex justify-between gap-2 items-center">
-                    <div className="flex flex-col w-full relative">
-                      <label htmlFor="" className='text-sm font-bold absolute left-2 bg-white px-2 transform -translate-y-1/2'>Title</label>
-                      <input
-                        {...register(`products.${index}.title`)}
-                        placeholder='Enter Product Title'
-                        className="w-full focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {/* <div className="flex flex-col w-full relative">
-                        <label htmlFor="" className='text-sm font-bold absolute left-2 bg-white px-2 transform -translate-y-1/2'>Markup(%)</label>
-                        <input
-                          {...register(`products.${index}.markuppercentage`)}
-                          placeholder='Markup (%)'
-                          className="w-full focus:outline-none border rounded px-3 py-2  pt-4 border-gray-300 focus:border-gray-400"
-                        />
-                      </div> */}
-                      <div className="flex flex-col w-full relative">
-                        <label htmlFor="" className='text-sm font-bold absolute left-2 bg-white px-2 transform -translate-y-1/2'>Total</label>
-                        <input
-                          {...register(`products.${index}.total`)}
-                          placeholder='Total'
-                          className="w-full focus:outline-none border rounded px-3 py-2 pt-4 border-gray-300 focus:border-gray-400"
-                          readOnly
-                        // onBlur={() => {
-                        //   productsList?.forEach((product, index) => {
-                        //     product?.items?.forEach((item, itemIndex) => {
-                        //       setValue(`products.${index}.items.${itemIndex}`, 0)
-                        //     })
-                        //   })
-                        // }}
-                        />
-                      </div>
-                    </div>
-                    <IconButton className='text-red-500 underline' onClick={() => removeProduct(index)}>
-                      <Trash2 />
-                    </IconButton>
-                  </div>
-                  <table className='w-full'>
-                    <thead>
+            <table className='w-full'>
+              <thead>
+                <tr>
+                  <th><p className="mb-4 text-md font-semibold text-left">Product / Service</p></th>
+                  <th><p className="mb-4 text-md font-semibold text-left">Qty.</p></th>
+                  <th><p className="mb-4 text-md font-semibold text-left">Material & Labour</p></th>
+                  <th><p className="mb-4 text-md font-semibold text-left">Markup</p></th>
+                  <th><p className="mb-4 text-md font-semibold text-left">Total</p></th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  productsList?.map((product, index) => {
+                    return product?.type == "text" ?
                       <tr>
-                        <th><p className="mb-4 text-md font-semibold text-left">Product / Service</p></th>
-                        <th><p className="mb-4 text-md font-semibold text-left">Qty.</p></th>
-                        <th><p className="mb-4 text-md font-semibold text-left">Material & Labour</p></th>
-                        <th><p className="mb-4 text-md font-semibold text-left">Markup</p></th>
-                        <th><p className="mb-4 text-md font-semibold text-left">Total</p></th>
+                        <td className='pr-2 pb-4 w-[700px] h-[100px]'>
+                          <div className="flex flex-col h-full items-start justify-start">
+                            <input
+                              hidden
+                              {...register(`products.${index}.type`)}
+                              placeholder='Name'
+                              value={product?.type}
+                              className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            />
+                            <input
+                              {...register(`products.${index}.name`)}
+                              placeholder='Name'
+                              className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            />
+                            <textarea
+                              {...register(`products.${index}.description`)}
+                              placeholder='Description'
+                              className="w-full border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                            ></textarea>
+                          </div>
+                        </td>
+                        <td className='pr-2 pb-4 h-[100px]'>
+                          <div className="flex flex-col h-full items-start justify-start">
+                            <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
+                              <CameraIcon className='text-green-800' />
+                            </div>
+                            <div className="flex justify-end items-center p-2 pr-4">
+                              <Button className='text-red-500 underline' onClick={() => removeProduct(index)}>Delete</Button>
+                            </div>
+                          </div>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      <React.Fragment key={index}>
-                        {
-                          _items.map((item, itemIndex) => (
-                            <tr key={`${index}-${itemIndex}`}>
-                              <td className='pr-2 pb-4 w-[700px] h-[100px]'>
-                                <div className="flex flex-col h-full items-start justify-start">
-                                  <input
-                                    hidden
-                                    {...register(`products.${index}.items.${itemIndex}.type`)}
-                                    value={item.type}
-                                    className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                                  />
-                                  <input
-                                    {...register(`products.${index}.items.${itemIndex}.name`)}
-                                    placeholder='Name'
-                                    className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                                  />
-                                  <textarea
-                                    {...register(`products.${index}.items.${itemIndex}.description`)}
-                                    placeholder='Description'
-                                    className="w-full border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
-                                  ></textarea>
-                                </div>
-                              </td>
-                              <td className='pr-2 pb-4 h-[100px]'>
-                                <div className="flex flex-col h-full items-start justify-start">
-                                  <input
-                                    {...register(`products.${index}.items.${itemIndex}.quantity`)}
-                                    placeholder='Quantity'
-                                    className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2"
-                                  />
-                                  <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
-                                    <CameraIcon className='text-green-800' />
-                                  </div>
-                                </div>
-                              </td>
-                              <td className='pr-2 pb-4 h-[100px]'>
-                                <div className="flex flex-col h-full items-start justify-start">
-                                  <input
-                                    {...register(`products.${index}.items.${itemIndex}.material`)}
-                                    placeholder='Material'
-                                    className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                                  />
-                                  <input
-                                    {...register(`products.${index}.items.${itemIndex}.labour`)}
-                                    placeholder='Labour'
-                                    className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
-                                  />
-                                </div>
-                              </td>
-                              <td className='pr-2 pb-4 h-[100px]'>
-                                <div className="flex flex-col h-full items-start justify-start">
-                                  <input
-                                    {...register(`products.${index}.items.${itemIndex}.markuppercentage`)}
-                                    placeholder='Markup (%)'
-                                    className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                                  />
-                                  <input
-                                    readOnly
-                                    {...register(`products.${index}.items.${itemIndex}.markupamount`)}
-                                    placeholder='Amount'
-                                    className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
-                                  />
-                                </div>
-                              </td>
-                              <td className='pr-2 pb-4 h-[100px]'>
-                                <div className="flex flex-col h-full items-start justify-start">
-                                  <input
-                                    readOnly
-                                    {...register(`products.${index}.items.${itemIndex}.total`)}
-                                    placeholder='Total'
-                                    className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
-                                  />
-                                  <div className="flex justify-end items-center w-full mt-2">
-                                    {
-                                      _items?.length > 1 && <IconButton className='text-red-500 underline' onClick={() => {
-                                        const updatedItems = watch(`products.${index}.items`).filter((_, i) => i !== itemIndex);
-                                        setValue(`products.${index}.items`, updatedItems);
-                                      }}><Trash2 /></IconButton>
-                                    }
-                                    <IconButton className='text-blue-500 underline' onClick={() => addItemToProduct(index)}>
-                                      <Plus />
-                                    </IconButton>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                          ))
-                        }
-                      </React.Fragment>
-                    </tbody>
-                  </table>
-                </div>
-              })
-            }
+                      : <tr>
+                        <td className='pr-2 pb-4 w-[700px] h-[100px]'>
+                          <div className="flex flex-col h-full items-start justify-start">
+                            <input
+                              hidden
+                              {...register(`products.${index}.type`)}
+                              placeholder='Name'
+                              value={product?.type}
+                              className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            />
+                            <input
+                              {...register(`products.${index}.name`)}
+                              placeholder='Name'
+                              className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            />
+                            <textarea
+                              {...register(`products.${index}.description`)}
+                              placeholder='Description'
+                              className="w-full border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                            ></textarea>
+                          </div>
+                        </td>
+                        <td className='pr-2 pb-4 h-[100px]'>
+                          <div className="flex flex-col h-full items-start justify-start">
+                            <input
+                              {...register(`products.${index}.quantity`)}
+                              onBlur={onBlur}
+                              placeholder='Quantity'
+                              className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2"
+                            />
+                            <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
+                              <CameraIcon className='text-green-800' />
+                            </div>
+                          </div>
+                        </td>
+                        <td className='pr-2 pb-4 h-[100px]'>
+                          <div className="flex flex-col h-full items-start justify-start">
+                            <input
+                              {...register(`products.${index}.material`)}
+                              onBlur={onBlur}
+                              placeholder='Material'
+                              className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            />
+                            <input
+                              {...register(`products.${index}.labour`)}
+                              onBlur={onBlur}
+                              placeholder='Labour'
+                              className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                            />
+                          </div>
+                        </td>
+                        <td className='pr-2 pb-4 h-[100px]'>
+                          <div className="flex flex-col h-full items-start justify-start">
+                            <input
+                              {...register(`products.${index}.markuppercentage`)}
+                              onBlur={onBlur}
+                              placeholder='Markup (%)'
+                              className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                            />
+                            <input
+                              readOnly
+                              {...register(`products.${index}.markupamount`)}
+                              placeholder='Amount'
+                              className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                            />
+                          </div>
+                        </td>
+                        <td className='pr-2 pb-4 h-[100px]'>
+                          <div className="flex flex-col h-full items-start justify-start">
+                            <input
+                              {...register(`products.${index}.total`)}
+                              readOnly
+                              placeholder='Total'
+                              className="focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                            />
+                            <div className="flex justify-end w-full">
+                              <Button className='text-red-500 underline' onClick={() => removeProduct(index)}>Delete</Button>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                  })
+                }
+              </tbody>
+            </table>
+
+
 
             {/* Add Line Items Buttons */}
             <div className="flex space-x-4 mb-4">
               <CustomButton
-                onClick={addProduct}
+                onClick={() => appendProduct(defaultProductLineItem)}
                 variant="primary" title="Add Line Item" frontIcon={<PlusIcon className='text-white' />} >
               </CustomButton>
               <CustomButton

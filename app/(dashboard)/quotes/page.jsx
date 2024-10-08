@@ -115,7 +115,7 @@ export default function Page() {
   return (
     <div className="flex flex-col gap-8 px-4 py-6">
       <PageHeading title={"Quotes"}>
-        <Link href={"/quotes/new"} className='bg-green-700 px-4 py-2 rounded-md text-white font-semibold'>New Quote</Link>
+        <Link href={"/quotes/templates"} className='bg-green-700 px-4 py-2 rounded-md text-white font-semibold'>New Quote</Link>
       </PageHeading>
 
       <div className="flex flex-wrap gap-4 bg-gray-50 text-sm text-tprimary">
