@@ -584,7 +584,7 @@ export default function Page() {
 
                   {
                     clientView && <div>
-                      <p className='text-sm '>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</Link></p>
+                      <p className='text-sm text-gray-600 dark:text-dark-text'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800 dark:text-dark-second-text'>PDF Style.</Link></p>
                       <div className="flex items-center flex-wrap">
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
@@ -600,37 +600,61 @@ export default function Page() {
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_unitprices")}
+                            {...register("clientview_materials")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_unitprices"
+                            id="clientview_materials"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_unitprices">
-                            Unit prices
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_materials">
+                            Material
                           </label>
                         </div>
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_line_item_total")}
+                            {...register("clientview_markuppercentage")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_line_item_total"
+                            id="clientview_markuppercentage"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_line_item_total">
-                            Line item totals
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_markuppercentage">
+                            Markup Percentage
                           </label>
                         </div>
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_account_balance")}
+                            {...register("clientview_markupamount")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_account_balance"
+                            id="clientview_markupamount"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_account_balance">
-                            Account balance
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_markupamount">
+                            Markup
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_labour")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_labour"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_labour">
+                            Labour
+                          </label>
+                        </div>
+
+                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
+                          <input
+                            {...register("clientview_total")}
+                            type="checkbox"
+                            className="w-5 h-5"
+                            id="clientview_total"
+                          />
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_total">
+                            Total
                           </label>
                         </div>
                       </div>
