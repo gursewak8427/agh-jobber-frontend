@@ -166,7 +166,7 @@ export default function Page() {
       }
     }
 
-    _totatcost -= parseFloat(_discount);
+    _totatcost -= parseFloat(_discount)?.toFixed(2);
 
     let gst = 5;
     let gstAmount = parseFloat(_totatcost * (gst / 100)).toFixed()
@@ -293,7 +293,7 @@ export default function Page() {
 
 
   return (
-    <div className='max-w-[1200px] mx-auto space-y-4'>
+    <div className='dark:text-white max-w-[1200px] mx-auto space-y-4'>
       <div className='text-sm text-tprimary dark:text-dark-text'>
         Back to : <Link href={"/quotes"} className='text-green-700 dark:text-dark-second-text'>Quotes</Link>
       </div>
@@ -413,7 +413,7 @@ export default function Page() {
 
           <div className="lg:col-span-3 py-4 text-tprimary space-y-4">
 
-            <div className="font-black text-lg">Products</div>
+            <div className="font-black text-lg dark:text-white">Products</div>
 
             {
               productsList.map((product, index) => {
@@ -427,7 +427,7 @@ export default function Page() {
                       <input
                         {...register(`products.${index}.title`)}
                         placeholder='Enter Product Title'
-                        className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400"
+                        className="w-full dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400"
                       />
                     </div>
                     <div className="flex items-center gap-2">
@@ -470,12 +470,12 @@ export default function Page() {
                                   <input
                                     {...register(`products.${index}.items.${itemIndex}.name`)}
                                     placeholder='Name'
-                                    className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                                    className="w-full  dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                                   />
                                   <textarea
                                     {...register(`products.${index}.items.${itemIndex}.description`)}
                                     placeholder='Description'
-                                    className="w-full dark:bg-dark-secondary border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                                    className="w-full  dark:text-white dark:bg-dark-secondary border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
                                   ></textarea>
                                 </div>
                               </td>
@@ -569,7 +569,7 @@ export default function Page() {
               </CustomButton>
             </div>
 
-            <div className="flex mt-4">
+            <div className="flex mt-4 text-gray-600 dark:text-white">
               <div className="p-4 rounded-lg w-1/2">
                 <div className="flex flex-col gap-2 items-center">
                   <div className="flex gap-2 items-center w-full">
@@ -584,7 +584,7 @@ export default function Page() {
 
                   {
                     clientView && <div>
-                      <p className='text-sm text-gray-600'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</Link></p>
+                      <p className='text-sm '>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</Link></p>
                       <div className="flex items-center flex-wrap">
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
