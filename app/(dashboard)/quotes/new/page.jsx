@@ -18,7 +18,13 @@ import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 
-const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
+const defaultProductLineItem = {
+  title: "",
+  markuppercentage: 0,
+  total: 0,
+  items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
+}
+
 const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 const defaultProductTextItem = { type: "text", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 
@@ -53,6 +59,7 @@ export default function Page() {
     control,
     formState: { errors },
     setValue,
+    getValues
   } = useForm({
     defaultValues: {
       products: [defaultProductLineItem],
@@ -67,6 +74,24 @@ export default function Page() {
     control,
     name: "products",
   });
+
+
+
+  // Function to append a new product
+  const addProduct = () => {
+    appendProduct({
+      title: "",
+      markuppercentage: 0,
+      total: 0,
+      items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
+    });
+  };
+
+  // Function to append a new item to a specific product
+  const addItemToProduct = (productIndex) => {
+    const newItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 };
+    setValue(`products.${productIndex}.items`, [...getValues(`products.${productIndex}.items`), newItem]);
+  };
 
   const watchProducts = watch("products");
   const subtotal = watch("subtotal");
@@ -97,29 +122,36 @@ export default function Page() {
   }, [requireddeposite, requiredtype])
 
   // Calculation logic for each product line
-  // useEffect(() => {
-
-  // }, [watchProducts, discount, setValue]);
+  useEffect(() => {
+    onBlur()
+  }, [JSON.stringify(watchProducts)]);
 
   const onBlur = () => {
     let newSubtotal = 0;
 
     watchProducts.forEach((product, index) => {
-      if (product.type !== "text") {
-        const material = parseFloat(product.material) || 0;
-        const labour = parseFloat(product.labour) || 0;
-        const markupPercentage = parseFloat(product.markuppercentage) || 0;
+      console.log({ product });
+      let totalcost = 0;
+      product?.items?.forEach((item, itemIndex) => {
 
-        const markupAmount = (material + labour) * (markupPercentage / 100);
-        const totalAmount = (material + labour + markupAmount) * (product?.quantity || 1);
+        if (product.type !== "text") {
+          const material = parseFloat(item.material) || 0;
+          const labour = parseFloat(item.labour) || 0;
+          const markupPercentage = parseFloat(item.markuppercentage) || 0;
 
-        setValue(`products.${index}.markupamount`, markupAmount.toFixed(2));
-        setValue(`products.${index}.total`, totalAmount.toFixed(2));
+          const markupAmount = (material + labour) * (markupPercentage / 100);
+          const totalAmount = (material + labour + markupAmount) * (item?.quantity || 1);
 
-        newSubtotal += totalAmount;
-      }
+          setValue(`products.${index}.items.${itemIndex}.markupamount`, markupAmount.toFixed(2));
+          setValue(`products.${index}.items.${itemIndex}.total`, totalAmount.toFixed(2));
+
+          newSubtotal += totalAmount;
+          totalcost += totalAmount;
+        }
+      })
+
+      setValue(`products.${index}.total`, totalcost.toFixed(2));
     });
-
 
     let _totatcost = parseFloat(newSubtotal);
 
@@ -379,151 +411,150 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Line Item Details */}
-          <div className="lg:col-span-3 py-4 text-tprimary space-y-4 dark:text-dark-text">
-            <table className='w-full'>
-              <thead>
-                <tr>
-                  <th><p className="mb-4 text-md font-semibold text-left">Product / Service</p></th>
-                  <th><p className="mb-4 text-md font-semibold text-left">Qty.</p></th>
-                  <th><p className="mb-4 text-md font-semibold text-left">Material & Labour</p></th>
-                  <th><p className="mb-4 text-md font-semibold text-left">Markup</p></th>
-                  <th><p className="mb-4 text-md font-semibold text-left">Total</p></th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  productsList?.map((product, index) => {
-                    if (product?.type == "text") {
-                      return <tr>
-                        <td className='pr-2 pb-4 w-[700px] h-[100px]'>
-                          <div className="flex flex-col h-full items-start justify-start">
-                            <input
-                              hidden
-                              {...register(`products.${index}.type`)}
-                              placeholder='Name'
-                              value={product?.type}
-                              className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                            />
-                            <input
-                              {...register(`products.${index}.name`)}
-                              placeholder='Name'
-                              className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                            />
-                            <textarea
-                              {...register(`products.${index}.description`)}
-                              placeholder='Description'
-                              className="w-full dark:bg-dark-secondary border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
-                            ></textarea>
-                          </div>
-                        </td>
-                        <td className='pr-2 pb-4 h-[100px]'>
-                          <div className="flex flex-col h-full items-start justify-start">
-                            <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
-                              <CameraIcon className='text-green-800' />
-                            </div>
-                            <div className="flex justify-end items-center p-2 pr-4">
-                              <Button className='text-red-500 underline' onClick={() => removeProduct(index)}>Delete</Button>
-                            </div>
-                          </div>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+          <div className="lg:col-span-3 py-4 text-tprimary space-y-4">
+
+            <div className="font-black text-lg">Products</div>
+
+            {
+              productsList.map((product, index) => {
+
+                const _items = watch(`products.${index}.items`);
+
+                return <div className='space-y-7 p-4 py-4 border rounded-lg'>
+                  <div className="flex justify-between gap-2 items-center">
+                    <div className="flex flex-col w-full relative">
+                      <label htmlFor="" className='text-sm font-bold absolute left-2 dark:bg-dark-secondary bg-white dark:text-white px-2 transform -translate-y-1/2'>Title</label>
+                      <input
+                        {...register(`products.${index}.title`)}
+                        placeholder='Enter Product Title'
+                        className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex flex-col w-full relative">
+                        <label htmlFor="" className='text-sm font-bold absolute left-2 dark:bg-dark-secondary bg-white dark:text-white px-2 transform -translate-y-1/2'>Total</label>
+                        <input
+                          {...register(`products.${index}.total`)}
+                          placeholder='Total'
+                          className="w-full dark:bg-dark-secondary focus:outline-none border rounded px-3 py-2 pt-4 border-gray-300 focus:border-gray-400 dark:text-white"
+                          readOnly
+                        />
+                      </div>
+                    </div>
+                    <IconButton className='text-red-500 underline' onClick={() => removeProduct(index)}>
+                      <Trash2 />
+                    </IconButton>
+                  </div>
+                  <table className='w-full'>
+                    <thead>
+                      <tr>
+                        <th><p className="mb-4 text-md font-semibold text-left dark:text-white">Product / Service</p></th>
+                        <th><p className="mb-4 text-md font-semibold text-left dark:text-white">Qty.</p></th>
+                        <th><p className="mb-4 text-md font-semibold text-left dark:text-white">Material & Labour</p></th>
+                        <th><p className="mb-4 text-md font-semibold text-left dark:text-white">Markup</p></th>
+                        <th><p className="mb-4 text-md font-semibold text-left dark:text-white">Total</p></th>
                       </tr>
-                    }
-                    return <tr>
-                      <td className='pr-2 pb-4 w-[700px] h-[100px]'>
-                        <div className="flex flex-col h-full items-start justify-start">
-                          <input
-                            hidden
-                            {...register(`products.${index}.type`)}
-                            placeholder='Name'
-                            value={product?.type}
-                            className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                          />
-                          <input
-                            {...register(`products.${index}.name`)}
-                            placeholder='Name'
-                            className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                          />
-                          <textarea
-                            {...register(`products.${index}.description`)}
-                            placeholder='Description'
-                            className="w-full dark:bg-dark-secondary border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
-                          ></textarea>
-                        </div>
-                      </td>
-                      <td className='pr-2 pb-4 h-[100px]'>
-                        <div className="flex flex-col h-full items-start justify-start">
-                          <input
-                            {...register(`products.${index}.quantity`)}
-                            onBlur={onBlur}
-                            placeholder='Quantity'
-                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2"
-                          />
-                          <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
-                            <CameraIcon className='text-green-800' />
-                          </div>
-                        </div>
-                      </td>
-                      <td className='pr-2 pb-4 h-[100px]'>
-                        <div className="flex flex-col h-full items-start justify-start">
-                          <input
-                            {...register(`products.${index}.material`)}
-                            onBlur={onBlur}
-                            placeholder='Material'
-                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                          />
-                          <input
-                            {...register(`products.${index}.labour`)}
-                            onBlur={onBlur}
-                            placeholder='Labour'
-                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
-                          />
-                        </div>
-                      </td>
-                      <td className='pr-2 pb-4 h-[100px]'>
-                        <div className="flex flex-col h-full items-start justify-start">
-                          <input
-                            {...register(`products.${index}.markuppercentage`)}
-                            onBlur={onBlur}
-                            placeholder='Markup (%)'
-                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                          />
-                          <input
-                            readOnly
-                            {...register(`products.${index}.markupamount`)}
-                            placeholder='Amount'
-                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
-                          />
-                        </div>
-                      </td>
-                      <td className='pr-2 pb-4 h-[100px]'>
-                        <div className="flex flex-col h-full items-start justify-start">
-                          <input
-                            {...register(`products.${index}.total`)}
-                            readOnly
-                            placeholder='Total'
-                            className="focus:outline-none dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
-                          />
-                          <div className="flex justify-end w-full">
-                            <Button className='text-red-500 underline' onClick={() => removeProduct(index)}>Delete</Button>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  })
-                }
-              </tbody>
-            </table>
-
-
+                    </thead>
+                    <tbody>
+                      <React.Fragment key={index}>
+                        {
+                          _items.map((item, itemIndex) => (
+                            <tr key={`${index}-${itemIndex}`}>
+                              <td className='pr-2 pb-4 w-[700px] h-[100px]'>
+                                <div className="flex flex-col h-full items-start justify-start">
+                                  <input
+                                    hidden
+                                    {...register(`products.${index}.items.${itemIndex}.type`)}
+                                    value={item.type}
+                                  />
+                                  <input
+                                    {...register(`products.${index}.items.${itemIndex}.name`)}
+                                    placeholder='Name'
+                                    className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                                  />
+                                  <textarea
+                                    {...register(`products.${index}.items.${itemIndex}.description`)}
+                                    placeholder='Description'
+                                    className="w-full dark:bg-dark-secondary border-t-0 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
+                                  ></textarea>
+                                </div>
+                              </td>
+                              <td className='pr-2 pb-4 h-[100px]'>
+                                <div className="flex flex-col h-full items-start justify-start">
+                                  <input
+                                    {...register(`products.${index}.items.${itemIndex}.quantity`)}
+                                    placeholder='Quantity'
+                                    className="dark:bg-dark-secondary dark:text-white focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2"
+                                  />
+                                  <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
+                                    <CameraIcon className='text-green-800' />
+                                  </div>
+                                </div>
+                              </td>
+                              <td className='pr-2 pb-4 h-[100px]'>
+                                <div className="flex flex-col h-full items-start justify-start">
+                                  <input
+                                    {...register(`products.${index}.items.${itemIndex}.material`)}
+                                    placeholder='Material'
+                                    className="dark:bg-dark-secondary dark:text-white focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                                  />
+                                  <input
+                                    {...register(`products.${index}.items.${itemIndex}.labour`)}
+                                    placeholder='Labour'
+                                    className="dark:bg-dark-secondary dark:text-white focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                                  />
+                                </div>
+                              </td>
+                              <td className='pr-2 pb-4 h-[100px]'>
+                                <div className="flex flex-col h-full items-start justify-start">
+                                  <input
+                                    {...register(`products.${index}.items.${itemIndex}.markuppercentage`)}
+                                    placeholder='Markup (%)'
+                                    className="dark:bg-dark-secondary dark:text-white focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                                  />
+                                  <input
+                                    readOnly
+                                    {...register(`products.${index}.items.${itemIndex}.markupamount`)}
+                                    placeholder='Amount'
+                                    className="dark:bg-dark-secondary dark:text-white focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                                  />
+                                </div>
+                              </td>
+                              <td className='pr-2 pb-4 h-[100px]'>
+                                <div className="flex flex-col h-full items-start justify-start">
+                                  <input
+                                    readOnly
+                                    {...register(`products.${index}.items.${itemIndex}.total`)}
+                                    placeholder='Total'
+                                    className="dark:bg-dark-secondary dark:text-white focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"
+                                  />
+                                  <div className="flex justify-end items-center w-full mt-2">
+                                    {
+                                      _items?.length > 1 && <IconButton className='text-red-500 underline' onClick={() => {
+                                        const updatedItems = watch(`products.${index}.items`).filter((_, i) => i !== itemIndex);
+                                        setValue(`products.${index}.items`, updatedItems);
+                                      }}><Trash2 /></IconButton>
+                                    }
+                                    <IconButton className='text-blue-500 underline' onClick={() => addItemToProduct(index)}>
+                                      <Plus />
+                                    </IconButton>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        }
+                      </React.Fragment>
+                    </tbody>
+                  </table>
+                </div>
+              })
+            }
 
             {/* Add Line Items Buttons */}
             <div className="flex space-x-4 mb-4">
               <CustomButton
-                onClick={() => appendProduct(defaultProductLineItem)}
+                onClick={addProduct}
                 variant="primary" title="Add Line Item" frontIcon={<PlusIcon className='text-white' />} >
               </CustomButton>
               <CustomButton
@@ -553,7 +584,7 @@ export default function Page() {
 
                   {
                     clientView && <div>
-                      <p className='text-sm text-gray-600 dark:text-dark-text'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800 dark:text-dark-second-text'>PDF Style.</Link></p>
+                      <p className='text-sm text-gray-600'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</Link></p>
                       <div className="flex items-center flex-wrap">
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
@@ -569,61 +600,37 @@ export default function Page() {
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_materials")}
+                            {...register("clientview_unitprices")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_materials"
+                            id="clientview_unitprices"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_materials">
-                            Material
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_unitprices">
+                            Unit prices
                           </label>
                         </div>
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_markuppercentage")}
+                            {...register("clientview_line_item_total")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_markuppercentage"
+                            id="clientview_line_item_total"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_markuppercentage">
-                            Markup Percentage
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_line_item_total">
+                            Line item totals
                           </label>
                         </div>
 
                         <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                           <input
-                            {...register("clientview_markupamount")}
+                            {...register("clientview_account_balance")}
                             type="checkbox"
                             className="w-5 h-5"
-                            id="clientview_markupamount"
+                            id="clientview_account_balance"
                           />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_markupamount">
-                            Markup
-                          </label>
-                        </div>
-
-                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
-                          <input
-                            {...register("clientview_labour")}
-                            type="checkbox"
-                            className="w-5 h-5"
-                            id="clientview_labour"
-                          />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_labour">
-                            Labour
-                          </label>
-                        </div>
-
-                        <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
-                          <input
-                            {...register("clientview_total")}
-                            type="checkbox"
-                            className="w-5 h-5"
-                            id="clientview_total"
-                          />
-                          <label className="cursor-pointer text-sm" htmlFor="clientview_total">
-                            Total
+                          <label className="cursor-pointer text-sm" htmlFor="clientview_account_balance">
+                            Account balance
                           </label>
                         </div>
                       </div>
@@ -633,24 +640,24 @@ export default function Page() {
               </div>
               <div className="p-4 rounded-lg w-1/2">
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
-                  <div className="font-medium min-w-[200px]">Subtotal</div>
-                  <p className='text-gray-700 dark:text-dark-text'>${subtotal || `0.00`}</p>
+                  <div className="dark:text-white font-medium min-w-[200px]">Subtotal</div>
+                  <p className='dark:text-white text-gray-700'>${subtotal || `0.00`}</p>
                 </div>
 
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
-                  <div className="font-medium min-w-[200px]">Discount</div>
+                  <div className="dark:text-white font-medium min-w-[200px]">Discount</div>
                   {
                     isDiscount ?
-                      <div className="flex items-center gap-2 justify-between w-full">
+                      <div className="dark:text-white flex items-center gap-2 justify-between w-full">
                         <div className="flex items-center">
                           <input type="text" {...register("discount")} onBlur={onBlur}
-                            className="w-16 h-10 dark:bg-dark-secondary text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
-                          <select name="discounttype" id="discounttype" {...register("discounttype")} onBlur={onBlur} className="w-16 dark:bg-dark-secondary h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
+                            className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 dark:bg-dark-secondary focus:border-gray-400 rounded-lg rounded-r-none" />
+                          <select name="discounttype" id="discounttype" {...register("discounttype")} onBlur={onBlur} className="w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 dark:bg-dark-secondary focus:border-gray-400 rounded-lg rounded-l-none" >
                             <option value="amount">$</option>
                             <option value="percentage">%</option>
                           </select>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 ">
                           <span className="font-normal flex items-center"><Minus className='font-normal w-4 h-5' /> ${discountAmount || 0}</span>
                           <Trash2 onClick={() => setDiscount(false)} className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
                         </div>
@@ -660,27 +667,27 @@ export default function Page() {
                 </div>
 
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
-                  <div className="font-medium min-w-[200px]">GST (5.0)%</div>
+                  <div className="dark:text-white font-medium min-w-[200px]">GST (5.0)%</div>
                   <div className="flex items-center gap-2">
-                    <p className='text-gray-700 dark:text-dark-text'>${gst || `0.00`}</p>
+                    <p className='text-gray-700 dark:text-white'>${gst || `0.00`}</p>
                     <Trash2 className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
                   </div>
                 </div>
 
                 <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
-                  <div className="font-semibold min-w-[200px]">Total</div>
-                  <p className='text-gray-700 font-semibold dark:text-dark-text'>${totalcost || `0.00`}</p>
+                  <div className="dark:text-white font-semibold min-w-[200px]">Total</div>
+                  <p className='text-gray-700 font-semibold dark:text-white '>${totalcost || `0.00`}</p>
                 </div>
 
                 <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
-                  <div className="font-medium min-w-[200px]">Required Deposit</div>
+                  <div className="dark:text-white font-medium min-w-[200px]">Required Deposit</div>
 
                   {
-                    isRequiredDeposit ? <div className="flex items-center gap-2 justify-between w-full">
+                    isRequiredDeposit ? <div className="dark:text-white flex items-center gap-2 justify-between w-full">
                       <div className="flex items-center">
                         <input type="text" {...register("requireddeposite")} onBlur={onBlur}
-                          className="w-16 dark:bg-dark-secondary h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
-                        <select name="requiredtype" id="requiredtype" {...register("requiredtype")} onBlur={onBlur} className="w-16 dark:bg-dark-secondary h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
+                          className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
+                        <select name="requiredtype" id="requiredtype" {...register("requiredtype")} onBlur={onBlur} className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400  rounded-lg rounded-l-none" >
                           <option value="amount">$</option>
                           <option value="percentage">%</option>
                         </select>
@@ -697,21 +704,21 @@ export default function Page() {
             </div>
 
             <div className="mt-4">
-              <h1 className='font-bold mb-2'>Client message</h1>
-              <textarea name="" id="" rows={3}  {...register("clientmessage")} className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+              <h1 className='font-bold mb-2 dark:text-white'>Client message</h1>
+              <textarea name="" id="" rows={3}  {...register("clientmessage")} className="dark:bg-dark-secondary   dark:text-white w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
             </div>
 
             <div className="mt-4">
-              <h1 className='font-bold mb-2'>Contract / Disclaimer</h1>
-              <textarea {...register("disclaimer")} name="" id="" rows={3} className="w-full dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+              <h1 className='font-bold mb-2 dark:text-white'>Contract / Disclaimer</h1>
+              <textarea {...register("disclaimer")} name="" id="" rows={3} className="dark:bg-dark-secondary   dark:text-white w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
                 This quote is valid for the next 15 days, after which values may be subject to change.
               </textarea>
             </div>
 
             <div className="border border-gray-300 p-4 rounded-lg">
-              <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
+              <h1 className='font-bold mb-2 dark:text-white'>Internal notes & attachments</h1>
               <div className="mt-4">
-                <textarea {...register("internalnote")} placeholder='Note details' name="internalnote" id="internalnote" rows={3} className="w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg dark:bg-dark-primary"></textarea>
+                <textarea {...register("internalnote")} placeholder='Note details' name="internalnote" id="internalnote" rows={3} className="dark:bg-dark-secondary   dark:text-white w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
               </div>
 
               <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
@@ -722,14 +729,14 @@ export default function Page() {
               <Divider className='my-2' />
 
               <div className="mt-4 space-y-2">
-                <p className='font-normal text-sm text-tprimary dark:text-dark-text'>Link not to related</p>
+                <p className='font-normal text-sm text-tprimary dark:text-white'>Link not to related</p>
                 <div className="flex gap-2 text-sm items-center capitalize">
-                  <div className="flex gap-2 items-center">
-                    <input {...register("isrelatedjobs")} type="checkbox" className='w-5 h-5' name="isrelatedjobs" id="isrelatedjobs" />
+                  <div className="flex gap-2 items-center dark:text-white">
+                    <input {...register("isrelatedjobs")} type="checkbox" className='w-5 h-5' name="" id="jobs" />
                     <label htmlFor="jobs">jobs</label>
                   </div>
-                  <div className="flex gap-2 items-center">
-                    <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="isrelatedinvoices" id="isrelatedinvoices" />
+                  <div className="flex gap-2 items-center dark:text-white">
+                    <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="" id="invoices" />
                     <label htmlFor="invoices">invoices</label>
                   </div>
                 </div>
@@ -741,37 +748,37 @@ export default function Page() {
               {
                 !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
                   <div className="flex gap-2 items-center">
-                    <CustomButton type={"submit"} loading={loadingObj?.draftquote} title="Save Quote"></CustomButton>
-                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
+                    <CustomButton type={"submit"} title="Save Quote"></CustomButton>
+                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"submit"} variant="primary" title="Save and"></CustomButton>}>
                       {/* Menu Items */}
                       <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
                         Save and...
                       </Typography>
 
-                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+                      <MenuItem className="text-tprimary text-sm">
                         <ListItemIcon>
-                          <MessageSquareText className="text-orange-700 dark:text-orange-500" size={16} />
+                          <MessageSquareText className="text-orange-700" size={16} />
                         </ListItemIcon>
                         Send as text mesage
                       </MenuItem>
 
-                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+                      <MenuItem className="text-tprimary text-sm">
                         <ListItemIcon>
-                          <Mail className="text-gray-700 dark:text-gray-400" size={16} />
+                          <Mail className="text-gray-700" size={16} />
                         </ListItemIcon>
                         Send as email
                       </MenuItem>
 
-                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+                      <MenuItem className="text-tprimary text-sm">
                         <ListItemIcon>
-                          <Hammer className="text-green-700 dark:text-green-500" size={16} />
+                          <Hammer className="text-green-700" size={16} />
                         </ListItemIcon>
                         Convert to Job
                       </MenuItem>
 
-                      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+                      <MenuItem className="text-tprimary text-sm">
                         <ListItemIcon>
-                          <MessageCircle className="text-orange-700 dark:text-orange-500" size={16} />
+                          <MessageCircle className="text-orange-700" size={16} />
                         </ListItemIcon>
                         Mark as awaiting Response
                       </MenuItem>
@@ -782,6 +789,7 @@ export default function Page() {
 
             </div>
           </div>
+
         </form>
       </div>
 
