@@ -186,3 +186,8 @@ export function nFormatter(num, digits) {
     const item = lookup.findLast(item => num >= item.value);
     return item ? (num / item.value).toFixed(digits).replace(regexp, "").concat(item.symbol) : "0";
 }
+
+
+export const templateProductsToQuote = (quoteproducts) => {
+    return quoteproducts?.map(s => s?.products)?.flat()
+}

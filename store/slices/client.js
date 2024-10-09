@@ -487,8 +487,8 @@ const initialState = {
     jobs: [],
     invoice: {},
     invoices: [],
-    templates:[],
-    quoteproducts:[],
+    templates: [],
+    quoteproducts: [],
     pagination: {
         count: 0,
         next: '',

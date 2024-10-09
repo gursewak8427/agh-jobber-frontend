@@ -13,7 +13,7 @@ import AddCustomFields from '@/app/_components/CustomFields';
 import { createQuote, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
-import { getAddress, getClientName, getPrimary } from '@/utils';
+import { getAddress, getClientName, getPrimary, templateProductsToQuote } from '@/utils';
 import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
@@ -25,7 +25,15 @@ const defaultProductLineItem = {
   items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
 }
 
-const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
+
+const defaultProductOptional = {
+  type: "optional",
+  name: "",
+  markuppercentage: 0,
+  total: 0,
+  items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
+}
+
 const defaultProductTextItem = { type: "text", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 
 export default function Page() {
@@ -193,13 +201,13 @@ export default function Page() {
     dispatch(fetchTemplateProductForQuote(template_ids));
   }, [template_ids])
 
-  //TODO : check this is not working
-  // if there is data in return from template ids
+  // Set Template Products as default values.
   useEffect(() => {
-    console.log('products', quoteproducts[0]?.products);
-
+    // console.log(quoteproducts, "quoteproducts");
+    // console.log(templateProductsToQuote(quoteproducts), "templateProductsToQuote");
+    
     if (quoteproducts && quoteproducts.length > 0) {
-      setValue('products', quoteproducts[0]?.products);
+      setValue('products', templateProductsToQuote(quoteproducts));
     }
   }, [quoteproducts, setValue]);
 
