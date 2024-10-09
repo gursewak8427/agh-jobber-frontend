@@ -305,11 +305,11 @@ export default function Page() {
     }
 
     console.log({ jsonData });
-    // dispatch(createQuote(jsonData)).then(({ payload }) => {
-    //   if (payload?.id) {
-    //     router.push(`/quotes/view/${payload?.id}`)
-    //   }
-    // });
+    dispatch(createQuote(jsonData)).then(({ payload }) => {
+      if (payload?.id) {
+        router.push(`/quotes/view/${payload?.id}`)
+      }
+    });
   };
 
 
