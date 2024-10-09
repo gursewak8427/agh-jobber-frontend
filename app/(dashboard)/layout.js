@@ -43,8 +43,8 @@ const MainLayout = ({ children }) => {
   }, [successList, errorList])
   useEffect(() => {
     dispatch(fetchBusniessProfile());
-    if(localStorage.getItem('mode')){
-      dispatch(darkmodeState(localStorage.getItem('mode')))
+    if(JSON.parse(localStorage.getItem('mode'))){
+      dispatch(darkmodeState(JSON.parse(localStorage.getItem('mode'))))
     }
   }, [])
   useEffect(() => {

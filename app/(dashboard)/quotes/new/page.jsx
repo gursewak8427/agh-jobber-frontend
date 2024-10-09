@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, removeLoading, setLoading } from '@/store/slices/client';
+import { createQuote, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -19,7 +19,7 @@ import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 
 const defaultProductLineItem = {
-  title: "",
+  name: "",
   markuppercentage: 0,
   total: 0,
   items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
@@ -31,6 +31,7 @@ const defaultProductTextItem = { type: "text", name: "", description: "", quanti
 export default function Page() {
   const searchParams = useSearchParams();
   const client_id = searchParams.get("client_id");
+  const template_ids = searchParams.get("template");
 
   const [open, setOpen] = useState(false);
 
@@ -48,7 +49,7 @@ export default function Page() {
   const [selectedProperty, setSelectedProperty] = useState(null);
 
   // Custom fields, change with quote custom fields
-  const { clientslist, client, team, quotecount, quotecustomfields, loadingObj } = useSelector(state => state.clients);
+  const { clientslist, client, team, quotecount, quotecustomfields, loadingObj, quoteproducts } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -80,7 +81,7 @@ export default function Page() {
   // Function to append a new product
   const addProduct = () => {
     appendProduct({
-      title: "",
+      name: "",
       markuppercentage: 0,
       total: 0,
       items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
@@ -188,6 +189,17 @@ export default function Page() {
     dispatch(fetchTeam());
   }, [])
 
+  useEffect(() => {
+    dispatch(fetchTemplateProductForQuote(template_ids));
+  }, [template_ids])
+
+  //TODO : check this is not working
+  // if there is data in return from template ids
+  // useEffect(() => {
+  //   if (quoteproducts && quoteproducts.length > 0) {
+  //     setValue('products', quoteproducts);
+  //   }
+  // }, [quoteproducts, setValue]);
 
   useEffect(() => {
     if (!client_id) return;
@@ -282,12 +294,12 @@ export default function Page() {
       "internalnote": data?.internalnote,
     }
 
-    // console.log({ jsonData });
-    dispatch(createQuote(jsonData)).then(({ payload }) => {
-      if (payload?.id) {
-        router.push(`/quotes/view/${payload?.id}`)
-      }
-    });
+    console.log({ jsonData });
+    // dispatch(createQuote(jsonData)).then(({ payload }) => {
+    //   if (payload?.id) {
+    //     router.push(`/quotes/view/${payload?.id}`)
+    //   }
+    // });
   };
 
 
@@ -425,7 +437,7 @@ export default function Page() {
                     <div className="flex flex-col w-full relative">
                       <label htmlFor="" className='text-sm font-bold absolute left-2 dark:bg-dark-secondary bg-white dark:text-white px-2 transform -translate-y-1/2'>Title</label>
                       <input
-                        {...register(`products.${index}.title`)}
+                        {...register(`products.${index}.name`)}
                         placeholder='Enter Product Title'
                         className="w-full dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400"
                       />
@@ -772,8 +784,8 @@ export default function Page() {
               {
                 !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
                   <div className="flex gap-2 items-center">
-                    <CustomButton type={"submit"} title="Save Quote"></CustomButton>
-                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"submit"} variant="primary" title="Save and"></CustomButton>}>
+                    <CustomButton type={"submit"} loading={loadingObj.draftquote} title="Save Quote"></CustomButton>
+                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
                       {/* Menu Items */}
                       <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
                         Save and...
@@ -819,10 +831,19 @@ export default function Page() {
 
 
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
-      <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={id => {
-        router.push(`/quotes/new?client_id=${id}`)
-        setSelectClientModal(false)
-      }} clients={clientslist} />
+      <SelectClient
+        open={selectClientModal}
+        onClose={() => setSelectClientModal(false)}
+        onSelect={id => {
+          if (template_ids) {
+            router.push(`/quotes/new?client_id=${id}&template=${template_ids}`);
+          } else {
+            router.push(`/quotes/new?client_id=${id}`);
+          }
+          setSelectClientModal(false)
+        }}
+        clients={clientslist}
+      />
 
       <SelectProperty onCreateNew={() => {
         setPropertyModal("NEW")

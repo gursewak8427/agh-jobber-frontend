@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, removeLoading, setLoading } from '@/store/slices/client';
+import { createQuote, createTemplate, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, removeLoading, setLoading } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -19,7 +19,7 @@ import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 
 const defaultProductLineItem = {
-  title: "",
+  name: "",
   markuppercentage: 0,
   total: 0,
   items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
@@ -30,12 +30,9 @@ const defaultProductTextItem = { type: "text", name: "", description: "", quanti
 
 export default function Page() {
   const searchParams = useSearchParams();
-  const client_id = searchParams.get("client_id");
-
-  const [selectedProperty, setSelectedProperty] = useState(null);
 
   // Custom fields, change with quote custom fields
-  const { clientslist, client, team, quotecount, quotecustomfields, loadingObj } = useSelector(state => state.clients);
+  const { loadingObj } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -67,7 +64,7 @@ export default function Page() {
   // Function to append a new product
   const addProduct = () => {
     appendProduct({
-      title: "",
+      name: "",
       markuppercentage: 0,
       total: 0,
       items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
@@ -136,12 +133,12 @@ export default function Page() {
       "subtotal": subtotal,
     }
 
-    // // console.log({ jsonData });
-    // dispatch(createQuote(jsonData)).then(({ payload }) => {
-    //   if (payload?.id) {
-    //     router.push(`/quotes/view/${payload?.id}`)
-    //   }
-    // });
+    console.log({ jsonData });
+    dispatch(createTemplate(jsonData)).then(({ payload }) => {
+      if (payload?.id) {
+        router.push(`/quotes/templates`)
+      }
+    });
   };
 
 
@@ -180,7 +177,7 @@ export default function Page() {
                     <div className="flex flex-col w-full relative">
                       <label htmlFor="" className='text-sm font-bold absolute left-2 dark:bg-dark-secondary bg-white dark:text-white px-2 transform -translate-y-1/2'>Title</label>
                       <input
-                        {...register(`products.${index}.title`)}
+                        {...register(`products.${index}.name`)}
                         placeholder='Enter Product Title'
                         className="w-full dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400"
                       />
@@ -341,8 +338,8 @@ export default function Page() {
               {
                 <>
                   <div className="flex gap-2 items-center">
-                    <CustomButton type={"submit"} title="Save Template"></CustomButton>
-                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"submit"} variant="primary" title="Save and"></CustomButton>}>
+                    <CustomButton type={"submit"} loading={loadingObj.savetemplate} title="Save Template"></CustomButton>
+                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
                       {/* Menu Items */}
                       <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
                         Save and...

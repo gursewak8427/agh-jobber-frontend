@@ -438,6 +438,32 @@ export const sendInvoiceMessage = createAsyncThunk("sendInvoiceMessage", async (
     }
 });
 
+export const fetchTemplate = createAsyncThunk("fetchTemplate", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const fetchTemplateProductForQuote = createAsyncThunk("fetchTemplateProductForQuote", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/templateproductquote/?template=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const createTemplate = createAsyncThunk("createTemplate", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
 
 // Initial State
 const initialState = {
@@ -461,6 +487,8 @@ const initialState = {
     jobs: [],
     invoice: {},
     invoices: [],
+    templates:[],
+    quoteproducts:[],
     pagination: {
         count: 0,
         next: '',
@@ -1044,6 +1072,42 @@ const clientSlice = createSlice({
             .addCase(sentInvoiceEmail.rejected, (state, action) => {
                 state.errorList = action.payload.error || 'Failed to send message!!!';
                 delete state.loadingObj['invoiceemail'];
+            });
+        builder
+            .addCase(createTemplate.pending, (state, action) => {
+                state.loadingObj['savetemplate'] = true;
+            })
+            .addCase(createTemplate.fulfilled, (state, action) => {
+                state.successList = 'New Template Created Successfully!';
+                delete state.loadingObj['savetemplate'];
+            })
+            .addCase(createTemplate.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to create template!!!';
+                delete state.loadingObj['savetemplate'];
+            });
+        builder
+            .addCase(fetchTemplate.pending, (state, action) => {
+                state.loadingFull = true;
+            })
+            .addCase(fetchTemplate.fulfilled, (state, action) => {
+                state.templates = action.payload;
+                state.loadingFull = false;
+            })
+            .addCase(fetchTemplate.rejected, (state, action) => {
+                state.loadingFull = false;
+                state.errorList = action.payload.error || 'Failed to fetch templates!!!';
+            });
+        builder
+            .addCase(fetchTemplateProductForQuote.pending, (state, action) => {
+                state.loadingFull = true;
+            })
+            .addCase(fetchTemplateProductForQuote.fulfilled, (state, action) => {
+                state.quoteproducts = action.payload;
+                state.loadingFull = false;
+            })
+            .addCase(fetchTemplateProductForQuote.rejected, (state, action) => {
+                state.loadingFull = false;
+                state.errorList = action.payload.error || 'Failed to fetch templates!!!';
             });
     },
 });
