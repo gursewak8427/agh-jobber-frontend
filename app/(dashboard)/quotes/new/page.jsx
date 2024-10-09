@@ -195,11 +195,13 @@ export default function Page() {
 
   //TODO : check this is not working
   // if there is data in return from template ids
-  // useEffect(() => {
-  //   if (quoteproducts && quoteproducts.length > 0) {
-  //     setValue('products', quoteproducts);
-  //   }
-  // }, [quoteproducts, setValue]);
+  useEffect(() => {
+    console.log('products', quoteproducts[0]?.products);
+
+    if (quoteproducts && quoteproducts.length > 0) {
+      setValue('products', quoteproducts[0]?.products);
+    }
+  }, [quoteproducts, setValue]);
 
   useEffect(() => {
     if (!client_id) return;
