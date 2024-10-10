@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, createTemplate, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, removeLoading, setLoading } from '@/store/slices/client';
+import { createQuote, createTemplate, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchSingleTemplate, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -44,9 +44,10 @@ const defaultProductTextItem = {
 
 export default function Page() {
   const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   // Custom fields, change with quote custom fields
-  const { loadingObj } = useSelector(state => state.clients);
+  const { loadingObj, quoteproducts } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -137,6 +138,21 @@ export default function Page() {
     dispatch(fetchTeam());
   }, [])
 
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchSingleTemplate(id));
+    }
+  }, [id])
+
+  useEffect(() => {
+    if (quoteproducts && quoteproducts?.length != 0) {
+      setValue(`products`, quoteproducts?.products)
+      setValue(`title`, quoteproducts?.title)
+      setValue(`description`, quoteproducts?.description)
+    }
+  }, [quoteproducts])
+
+
   const onSubmit = async (data) => {
 
     let jsonData = {
@@ -148,11 +164,17 @@ export default function Page() {
     }
 
     console.log({ jsonData });
-    dispatch(createTemplate(jsonData)).then(({ payload }) => {
-      if (payload?.id) {
-        router.push(`/quotes/templates`)
-      }
-    });
+
+    if (id) {
+      // Dispatch for update
+    } else {
+      dispatch(createTemplate(jsonData)).then(({ payload }) => {
+        if (payload?.id) {
+          router.push(`/quotes/templates`)
+        }
+      });
+
+    }
   };
 
   console.log({ errors });
