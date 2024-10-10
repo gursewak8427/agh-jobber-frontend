@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { nFormatter } from '@/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTemplate } from '@/store/slices/client';
+import { Delete, Edit, Trash2 } from 'lucide-react';
 
 function page() {
   const router = useRouter();
@@ -13,8 +14,10 @@ function page() {
   const { templates } = useSelector(state => state.clients);
 
 
+  const isSelectedCheck = id => selectedtempletes.some(item => item.id === id);
+
   const handleselected = (template) => {
-    const isSelected = selectedtempletes.some(item => item.id === template.id);
+    const isSelected = isSelectedCheck(template.id);
 
     if (isSelected) {
       // If the card is already selected, deselect it
@@ -25,13 +28,14 @@ function page() {
     }
   }
 
+
   useEffect(() => {
     dispatch(fetchTemplate())
   }, [])
 
   const handleQuoteCreate = () => {
     const templateIds = selectedtempletes.map(template => template.id);
-    const queryString = templateIds.join(','); 
+    const queryString = templateIds.join(',');
     router.push(`/quotes/new?template=${queryString}`);
   }
 
@@ -53,10 +57,20 @@ function page() {
           {templates.map((template, index) => (
             <div
               key={index}
-              className={`dark:text-white text-gray-600 flex flex-col md:flex-row basis-full md:basis-[calc(50%-1rem)] p-4 rounded-lg shadow-lg border-2 cursor-pointer ${selectedtempletes.some(item => item.id === template.id) ? 'bg-primary-soft border-primary' : 'border border-gray-300'} relative`}
+              className={`dark:text-white text-gray-600 flex flex-col md:flex-row basis-full md:basis-[calc(50%-1rem)] p-4 rounded-lg shadow-lg border-2 cursor-pointer ${isSelectedCheck(template.id) ? 'bg-gray-300 border-black border-2 dark:border-white dark:bg-gray-700' : 'border border-gray-300'} relative`}
               onClick={() => handleselected(template)}
             >
-              <h1 className="font-bold absolute top-2 right-2 text-sm px-2 py-1 rounded-lg">${nFormatter(template.subtotal, 1)}</h1>
+              <div className="absolute top-2 right-2 flex items-center justify-center gap-2">
+                <h1 className="text-lg font-semibold">{
+                  !template.default && <div className="flex items-center gap-3">
+                    <Edit className='w-4 h-4' onClick={() => {
+                      router.push(`/quotes/templates/new?id=${template?.id}`)
+                    }} />
+                    <Trash2 className='text-red-600 w-4 h-4' />
+                  </div>
+                }</h1>
+                <h1 className="font-bold text-sm px-2 py-1 rounded-lg">${nFormatter(template.subtotal, 1)}</h1>
+              </div>
               <img
                 src={`${template.file ?? 'https://prosbrobucketv3.s3.ca-west-1.amazonaws.com/media/quotetemplatefile/home.jpg'}`}
                 alt={template.title}

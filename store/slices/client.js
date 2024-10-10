@@ -447,6 +447,16 @@ export const fetchTemplate = createAsyncThunk("fetchTemplate", async (data, { re
     }
 });
 
+
+export const fetchSingleTemplate = createAsyncThunk("fetchSingleTemplate", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/?id=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 export const fetchTemplateProductForQuote = createAsyncThunk("fetchTemplateProductForQuote", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/templateproductquote/?template=${data}`);
@@ -1106,6 +1116,19 @@ const clientSlice = createSlice({
                 state.loadingFull = false;
             })
             .addCase(fetchTemplateProductForQuote.rejected, (state, action) => {
+                state.loadingFull = false;
+                state.errorList = action.payload.error || 'Failed to fetch templates!!!';
+            });
+
+        builder
+            .addCase(fetchSingleTemplate.pending, (state, action) => {
+                state.loadingFull = true;
+            })
+            .addCase(fetchSingleTemplate.fulfilled, (state, action) => {
+                state.quoteproducts = action.payload;
+                state.loadingFull = false;
+            })
+            .addCase(fetchSingleTemplate.rejected, (state, action) => {
                 state.loadingFull = false;
                 state.errorList = action.payload.error || 'Failed to fetch templates!!!';
             });
