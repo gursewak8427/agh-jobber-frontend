@@ -147,7 +147,6 @@ export default function Page() {
           <p className="text-sm text-gray-500 dark:text-dark-text">Past 30 days</p>
           <div className="flex items-center space-x-2 mt-4">
             <span className="text-3xl font-semibold">0%</span>
-            <span className="text-sm text-gray-400 dark:text-dark-text">0%</span>
           </div>
         </div>
 
@@ -160,7 +159,6 @@ export default function Page() {
           <p className="text-sm text-gray-500 dark:text-dark-text">Past 30 days</p>
           <div className="flex items-center space-x-2 mt-4">
             <span className="text-3xl font-semibold">0</span>
-            <span className="text-sm text-gray-400 dark:text-dark-text">0%</span>
           </div>
           <p className="text-sm text-gray-500 dark:text-dark-text">$0</p>
         </div>
@@ -174,7 +172,6 @@ export default function Page() {
           <p className="text-sm text-gray-500 dark:text-dark-text">Past 30 days</p>
           <div className="flex items-center space-x-2 mt-4">
             <span className="text-3xl font-semibold">0</span>
-            <span className="text-sm text-gray-400 dark:text-dark-text">0%</span>
           </div>
           <p className="text-sm text-gray-500 dark:text-dark-text">$0</p>
         </div>
