@@ -43,6 +43,7 @@ const defaultProductTextItem = {
 }
 
 export default function Page() {
+  const [menu, setMenu] = useState(null)
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
@@ -58,7 +59,8 @@ export default function Page() {
     control,
     formState: { errors },
     setValue,
-    getValues
+    getValues,
+    reset,  
   } = useForm({
     defaultValues: {
       products: [defaultProductLineItem],
@@ -145,8 +147,12 @@ export default function Page() {
   }, [id])
 
   useEffect(() => {
+    console.log(quoteproducts, "=-=quoteproducts");
+
     if (quoteproducts && quoteproducts?.length != 0) {
-      setValue(`products`, quoteproducts?.products)
+      reset({
+        products: quoteproducts?.products,
+      });
       setValue(`title`, quoteproducts?.title)
       setValue(`description`, quoteproducts?.description)
     }
@@ -178,6 +184,16 @@ export default function Page() {
   };
 
   console.log({ errors });
+
+  const createAnother = () => {
+    alert("save another clicked")
+    setMenu(null) // to close menu
+  }
+
+  const createQuote = () => {
+    alert("create quote clicked")
+    setMenu(null) // to close menu
+  }
 
 
 
@@ -410,20 +426,20 @@ export default function Page() {
                 <>
                   <div className="flex gap-2 items-center">
                     <CustomButton type={"submit"} loading={loadingObj.savetemplate} title="Save Template"></CustomButton>
-                    <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
+                    <CustomMenu open={menu == "save-and"} icon={<CustomButton onClick={() => setMenu("save-and")} backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
                       {/* Menu Items */}
                       <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
                         Save and...
                       </Typography>
 
-                      <MenuItem className="text-tprimary dark:text-white text-sm">
+                      <MenuItem onClick={createAnother} className="text-tprimary dark:text-white text-sm">
                         <ListItemIcon>
                           <MessageSquareText className="text-orange-700 dark:text-orange-500" size={16} />
                         </ListItemIcon>
                         Create Another
                       </MenuItem>
 
-                      <MenuItem className="text-tprimary dark:text-white text-sm">
+                      <MenuItem onClick={createQuote} className="text-tprimary dark:text-white text-sm">
                         <ListItemIcon>
                           <Hammer className="text-green-700 dark:text-green-400" size={16} />
                         </ListItemIcon>

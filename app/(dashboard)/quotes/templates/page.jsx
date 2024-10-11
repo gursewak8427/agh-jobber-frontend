@@ -6,6 +6,7 @@ import { nFormatter } from '@/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTemplate } from '@/store/slices/client';
 import { Delete, Edit, Trash2 } from 'lucide-react';
+import { Button, IconButton } from '@mui/material';
 
 function page() {
   const router = useRouter();
@@ -57,19 +58,25 @@ function page() {
           {templates.map((template, index) => (
             <div
               key={index}
-              className={`dark:text-white text-gray-600 flex flex-col md:flex-row basis-full md:basis-[calc(50%-1rem)] p-4 rounded-lg shadow-lg border-2 cursor-pointer ${isSelectedCheck(template.id) ? 'bg-gray-300 border-black border-2 dark:border-white dark:bg-gray-700' : 'border border-gray-300'} relative`}
+              className={`group hover:bg-gray-200 hover:dark:bg-gray-800 dark:text-white text-gray-600 flex flex-col md:flex-row basis-full md:basis-[calc(50%-1rem)] p-4 rounded-lg shadow-lg cursor-pointer ${isSelectedCheck(template.id) ? 'bg-gray-300 border-black border-2 dark:border-white dark:bg-gray-700' : 'border border-gray-600'} relative`}
               onClick={() => handleselected(template)}
             >
               <div className="absolute top-2 right-2 flex items-center justify-center gap-2">
+                <h1 className="font-bold px-2 py-1 rounded-lg">${nFormatter(template.subtotal, 1)}</h1>
                 <h1 className="text-lg font-semibold">{
-                  !template.default && <div className="flex items-center gap-3">
-                    <Edit className='w-4 h-4' onClick={() => {
+                  !template.default ? <div className="gap-3 flex items-center justify-center">
+                    <IconButton onClick={() => {
                       router.push(`/quotes/templates/new?id=${template?.id}`)
-                    }} />
-                    <Trash2 className='text-red-600 w-4 h-4' />
-                  </div>
+                    }}>
+                      <Edit className='w-5 h-5' />
+                    </IconButton>
+                    <IconButton onClick={() => {
+                      alert("Deleting...")
+                    }}>
+                      <Trash2 className='text-red-600 w-5 h-5' />
+                    </IconButton>
+                  </div> : <p className='tracking-wider text-xs text-blue-400 italic'>PROSBRO STORE</p>
                 }</h1>
-                <h1 className="font-bold text-sm px-2 py-1 rounded-lg">${nFormatter(template.subtotal, 1)}</h1>
               </div>
               <img
                 src={`${template.file ?? 'https://prosbrobucketv3.s3.ca-west-1.amazonaws.com/media/quotetemplatefile/home.jpg'}`}
