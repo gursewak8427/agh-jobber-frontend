@@ -60,7 +60,7 @@ export default function Page() {
     formState: { errors },
     setValue,
     getValues,
-    reset,  
+    reset,
   } = useForm({
     defaultValues: {
       products: [defaultProductLineItem],
@@ -235,6 +235,8 @@ export default function Page() {
 
                 const _items = watch(`products.${index}.items`);
 
+                console.log({ errors })
+
                 return <div className='space-y-7 p-4 py-4 border rounded-lg'>
                   <div className="flex justify-between gap-2 items-center">
                     <input
@@ -245,11 +247,11 @@ export default function Page() {
                     <div className="flex flex-col w-full relative">
                       <label htmlFor="" className='text-sm font-bold absolute left-2 dark:bg-dark-secondary bg-white dark:text-white px-2 transform -translate-y-1/2'>Title <span className='text-gray-500 italic'>{product.type != "default" && `(${product.type})`}</span></label>
                       <input
-                        {...register(`products.${index}.name`)}
+                        {...register(`products.${index}.name`, { required: true })}
                         placeholder='Enter Product Title'
-                        className="w-full dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400"
+                        className={`w-full dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400 ${errors?.products?.[index]?.name && "dark:border-red-500"}`}
                       />
-                    </div>
+                      </div>
                     {
                       product?.type != "text" && <div className="flex items-center gap-2">
                         <div className="flex flex-col w-full relative">
