@@ -18,12 +18,15 @@ import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 
+const lineItem = { name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
+const txtItem = { name: "", description: "", }
+
 const defaultProductLineItem = {
   type: "default",
   name: "",
   markuppercentage: 0,
   total: 0,
-  items: [{ name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
+  items: [lineItem]
 }
 
 
@@ -32,14 +35,14 @@ const defaultProductOptional = {
   name: "",
   markuppercentage: 0,
   total: 0,
-  items: [{ name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
+  items: [lineItem]
 }
 
 
 const defaultProductTextItem = {
   type: "text",
   name: "",
-  items: [{ name: "", description: "", }]
+  items: [txtItem]
 }
 
 const defaultFormValues = {
@@ -110,9 +113,16 @@ export default function Page() {
 
   };
 
+
+
   // Function to append a new item to a specific product
   const addItemToProduct = (productIndex) => {
-    const newItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 };
+    let newItem;
+    let type = getValues(`products.${productIndex}.type`)
+    if (type == "default") newItem = lineItem;
+    if (type == "optional") newItem = lineItem;
+    if (type == "text") newItem = txtItem;
+
     setValue(`products.${productIndex}.items`, [...getValues(`products.${productIndex}.items`), newItem]);
   };
 

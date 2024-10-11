@@ -17,13 +17,15 @@ import { getAddress, getClientName, getPrimary, templateProductsToQuote } from '
 import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
+const lineItem = { name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
+const txtItem = { name: "", description: "", }
 
 const defaultProductLineItem = {
   type: "default",
   name: "",
   markuppercentage: 0,
   total: 0,
-  items: [{ name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
+  items: [lineItem]
 }
 
 
@@ -32,14 +34,14 @@ const defaultProductOptional = {
   name: "",
   markuppercentage: 0,
   total: 0,
-  items: [{ name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
+  items: [lineItem]
 }
 
 
 const defaultProductTextItem = {
   type: "text",
   name: "",
-  items: [{ name: "", description: "", }]
+  items: [txtItem]
 }
 
 const defaultFormValues = {
@@ -113,7 +115,12 @@ export default function Page() {
 
   // Function to append a new item to a specific product
   const addItemToProduct = (productIndex) => {
-    const newItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 };
+    let newItem;
+    let type = getValues(`products.${productIndex}.type`)
+    if (type == "default") newItem = lineItem;
+    if (type == "optional") newItem = lineItem;
+    if (type == "text") newItem = txtItem;
+
     setValue(`products.${productIndex}.items`, [...getValues(`products.${productIndex}.items`), newItem]);
   };
 
@@ -207,7 +214,6 @@ export default function Page() {
 
   useEffect(() => {
     dispatch(fetchallClients());
-    dispatch(fetchQuotecount());
     dispatch(fetchQuoteCustomFields());
     dispatch(fetchTeam());
     if (id) {
@@ -227,6 +233,8 @@ export default function Page() {
         clientview_labour: quote?.labour || false,
         clientview_total: quote?.total || false,
       })
+
+      setSalesPerson(quote?.salesperson)
     }
   }, [id, quote])
 
@@ -281,23 +289,6 @@ export default function Page() {
 
   const onSubmit = async (data) => {
 
-    const changeAdditionalquotedetails = quotecustomfields
-      .map((item, index) => {
-
-        const change = data?.QuoteCustomFields?.[`${item.id}key`] || null;
-        if (!change) return null;
-
-        const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
-        if (hasChanged) {
-          return { custom_field_id: item.id, ...change };
-        }
-        return null;
-      })
-      .filter(Boolean);
-
-    let _data = { ...data };
-    delete _data?.quoteno
-
     let jsonData = {
       "clientquotestyle": {
         ...(clientView && {
@@ -313,7 +304,6 @@ export default function Page() {
         ...product,
       })),
       "title": data?.title,
-      "quoteno": isQuoteNo ? data?.quoteno : quotecount,
       "rateopportunity": rating,
       "subtotal": subtotal,
       "discount": data?.discountAmount,
@@ -330,26 +320,12 @@ export default function Page() {
       "isrelatedjobs": data?.isrelatedjobs,
       "isrelatedinvoices": data?.isrelatedinvoices,
       "salesperson_id": selectedSalesPerson?.id,
-      // ==============
-
-      // "status": "Draft",
-      // "contractor": 2,//aa tusi nhi bhejna ok remove krdo
-      "property_id": selectedProperty?.id,
-      "client_id": client_id,
-
-      // "clientpdfstyle": null,  
-      "custom_field": changeAdditionalquotedetails,
       "isrelatedjobs": data?.isrelatedjobs,
       "isrelatedinvoices": data?.isrelatedinvoices,
       "internalnote": data?.internalnote,
     }
 
     console.log({ jsonData });
-    dispatch(createQuote(jsonData)).then(({ payload }) => {
-      if (payload?.id) {
-        router.push(`/quotes/view/${payload?.id}`)
-      }
-    });
   };
 
 
@@ -363,7 +339,7 @@ export default function Page() {
         {/* Header */}
         <div className="flex justify-start items-center mb-6">
           <div className="text-4xl font-semibold text-tprimary dark:text-dark-text">Quote for</div>
-          <Button onClick={() => setSelectClientModal(true)} className='ml-2 capitalize flex items-center gap-2 border-b border-dashed'>
+          <div className='ml-2 capitalize flex items-center gap-2 border-b border-dashed'>
             {
               !client_id ? <>
                 <div className="text-4xl font-semibold text-tprimary dark:text-dark-second-text">Client Name</div>
@@ -373,7 +349,7 @@ export default function Page() {
               </> : <div className="text-4xl font-semibold text-tprimary dark:text-dark-second-text">{getClientName(client)}</div>
             }
 
-          </Button>
+          </div>
         </div>
 
         {/* Job Title */}
@@ -397,9 +373,6 @@ export default function Page() {
                       <>
                         <h1 className='font-bold mb-2'>Property address</h1>
                         <p className='max-w-[150px]'>{getAddress(selectedProperty)}</p>
-                        <Button className='text-green-700 p-0 dark:text-dark-second-text' onClick={() => {
-                          setPropertyModal("SELECT")
-                        }}>change</Button>
                       </>
                     }
                   </div>
@@ -415,16 +388,8 @@ export default function Page() {
             <div className="p-4 rounded-lg w-1/2">
               <h1 className='font-bold mb-2'>Quote details</h1>
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium min-w-[200px]">Quote number {!isQuoteNo && <>#{quotecount}</>}</div>
-                {
-                  isQuoteNo ? <div className="flex gap-2 items-center">
-                    <input type="text" {...register("quoteno")} onBlur={onBlur} defaultValue={quotecount}
-                      className="w-16 h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg dark:bg-dark-secondary" />
-                    <CustomButton onClick={() => { setValue("quoteno", quotecount); setQuoteNo(false) }} title={"Cancel"} />
-                  </div> :
-                    <Button onClick={() => setQuoteNo(true)} className='px-0 text-green-700 underline font-semibold'>change</Button>
-                }
-
+                <div className="font-medium min-w-[200px]">Quote number</div>
+                <div>#{quote?.quoteno}</div>
               </div>
 
               <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
@@ -436,7 +401,7 @@ export default function Page() {
                 />
               </div>
 
-              <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
+              <div className="mb-4 flex items-center space-x-3 border-b-0 border-b-gray-400 pb-2">
                 <div className="font-medium min-w-[200px]">Salesperson</div>
                 {
                   selectedSalesPerson ? <div className="flex items-center bg-secondary p-2 rounded-full dark:bg-dark-primary">
@@ -462,18 +427,19 @@ export default function Page() {
               </div>
 
 
-              <div className="space-y-2">
+              {/* #HOLD */}
+              {/* <div className="space-y-2">
                 {
                   quotecustomfields?.map((field, index) => <CustomSingleField register={register} prefix="QuoteCustomFields" field={field} index={index} customfields={quotecustomfields} />)
                 }
               </div>
               <div className="my-4">
                 <CustomButton title="Add Custom Field" onClick={() => setOpen("quote")} />
-              </div>
+              </div> */}
             </div>
           </div>
 
-          <div className="lg:col-span-3 py-4 text-tprimary space-y-4">
+          <div className="bg-white p-2 lg:col-span-3 py-4 text-tprimary space-y-4">
 
             <div className="font-black text-lg dark:text-white">Products</div>
 
@@ -519,10 +485,10 @@ export default function Page() {
                       <Trash2 />
                     </IconButton>
                   </div>
-                  <table className='w-full'>
-                    <thead>
+                  <table className='w-full relative'>
+                    <thead className='sticky top-[80px] bg-white dark:bg-dark-secondary z-49'>
                       <tr>
-                        <th>
+                        <th className='pt-4 pl-2'>
                           <div className="mb-4 flex items-center w-full justify-between">
                             <p className="text-md font-semibold text-left dark:text-white">Product / Service</p>
                             {
@@ -535,13 +501,13 @@ export default function Page() {
                         {
                           product?.type != "text" &&
                           <>
-                            <th><p className="mb-4 text-md font-semibold text-left dark:text-white">Qty.</p></th>
-                            <th><p className="mb-4 text-md font-semibold text-left dark:text-white">Material & Labour</p></th>
-                            <th><p className="mb-4 text-md font-semibold text-left dark:text-white">Markup</p></th>
-                            <th><div className="flex items-center w-full justify-between">
+                            <th className='pt-4'><p className="mb-4 text-md font-semibold text-left dark:text-white">Qty.</p></th>
+                            <th className='pt-4'><p className="mb-4 text-md font-semibold text-left dark:text-white">Material & Labour</p></th>
+                            <th className='pt-4'><p className="mb-4 text-md font-semibold text-left dark:text-white">Markup</p></th>
+                            <th className=''><div className="flex items-center w-full justify-between">
                               <p className="text-md font-semibold text-left dark:text-white">Total</p>
                               {
-                                product?.type != "text" && <IconButton className='text-blue-500 underline' onClick={() => addItemToProduct(index)}>
+                                product?.type != "text" && <IconButton className='text-blue-500 underline z-10' onClick={() => addItemToProduct(index)}>
                                   <Plus />
                                 </IconButton>
                               }
