@@ -66,7 +66,7 @@ function page() {
                 <h1 className="text-lg font-semibold">{
                   !template.default ? <div className="gap-3 flex items-center justify-center">
                     <IconButton onClick={() => {
-                      router.push(`/quotes/templates/new?id=${template?.id}`)
+                      router.push(`/quotes/templates/edit?id=${template?.id}`)
                     }}>
                       <Edit className='w-5 h-5' />
                     </IconButton>

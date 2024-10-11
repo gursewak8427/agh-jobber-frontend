@@ -1,15 +1,21 @@
 "use client"
 import React, { useEffect } from 'react';
-import { IconButton, Typography, MenuItem, ListItemIcon } from '@mui/material';
+import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon } from '@mui/material';
 import { useState } from 'react';
-import { CameraIcon, ChevronDown, Hammer, MessageSquareText, Plus, PlusIcon, Trash2, } from 'lucide-react';
+import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, Delete, Divide, Eye, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, Plus, PlusIcon, Trash2, X } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
+import SelectClient from '@/app/_components/client/SelectClient';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { createTemplate } from '@/store/slices/client';
+import AddCustomFields from '@/app/_components/CustomFields';
+import { createQuote, createTemplate, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchSingleTemplate, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
+import CustomSingleField from '@/app/_components/CustomSingleField';
+import { getAddress, getClientName, getPrimary } from '@/utils';
+import SelectProperty from '@/app/_components/property/SelectProperty';
+import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 
 const defaultProductLineItem = {
@@ -38,9 +44,11 @@ const defaultProductTextItem = {
 
 export default function Page() {
   const [menu, setMenu] = useState(null)
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   // Custom fields, change with quote custom fields
-  const { loadingObj } = useSelector(state => state.clients);
+  const { loadingObj, quoteproducts } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -52,7 +60,7 @@ export default function Page() {
     formState: { errors },
     setValue,
     getValues,
-    reset,
+    reset,  
   } = useForm({
     defaultValues: {
       products: [defaultProductLineItem],
@@ -125,6 +133,32 @@ export default function Page() {
   }
 
 
+  useEffect(() => {
+    dispatch(fetchallClients());
+    dispatch(fetchQuotecount());
+    dispatch(fetchQuoteCustomFields());
+    dispatch(fetchTeam());
+  }, [])
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchSingleTemplate(id));
+    }
+  }, [id])
+
+  useEffect(() => {
+    console.log(quoteproducts, "=-=quoteproducts");
+
+    if (quoteproducts && quoteproducts?.length != 0) {
+      reset({
+        products: quoteproducts?.products,
+      });
+      setValue(`title`, quoteproducts?.title)
+      setValue(`description`, quoteproducts?.description)
+    }
+  }, [quoteproducts])
+
+
   const onSubmit = async (data) => {
 
     let jsonData = {
@@ -137,21 +171,26 @@ export default function Page() {
 
     console.log({ jsonData });
 
-    dispatch(createTemplate(jsonData)).then(({ payload }) => {
-      if (payload?.id) {
-        router.push(`/quotes/templates`)
-      }
-    });
+    if (id) {
+      // Dispatch for update
+    } else {
+      dispatch(createTemplate(jsonData)).then(({ payload }) => {
+        if (payload?.id) {
+          router.push(`/quotes/templates`)
+        }
+      });
+
+    }
   };
 
+  console.log({ errors });
 
-  const createAnother = async (data) => {
-    console.log(data);
-    reset();
-    setMenu(null)
+  const createAnother = () => {
+    alert("save another clicked")
+    setMenu(null) // to close menu
   }
 
-  const createQuote = async () => {
+  const createQuote = () => {
     alert("create quote clicked")
     setMenu(null) // to close menu
   }
@@ -393,14 +432,14 @@ export default function Page() {
                         Save and...
                       </Typography>
 
-                      <MenuItem onClick={handleSubmit(createAnother)} className="text-tprimary dark:text-white text-sm">
+                      <MenuItem onClick={createAnother} className="text-tprimary dark:text-white text-sm">
                         <ListItemIcon>
                           <MessageSquareText className="text-orange-700 dark:text-orange-500" size={16} />
                         </ListItemIcon>
                         Create Another
                       </MenuItem>
 
-                      <MenuItem onClick={handleSubmit(createQuote)} className="text-tprimary dark:text-white text-sm">
+                      <MenuItem onClick={createQuote} className="text-tprimary dark:text-white text-sm">
                         <ListItemIcon>
                           <Hammer className="text-green-700 dark:text-green-400" size={16} />
                         </ListItemIcon>
