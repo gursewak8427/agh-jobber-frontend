@@ -71,19 +71,27 @@ export default function Page() {
 
 
   // Function to append a new product
-  const addProduct = () => {
-    appendProduct({
-      name: "",
-      markuppercentage: 0,
-      total: 0,
-      items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
-    });
+  const addProduct = (type) => {
+    switch (type) {
+      case "optional":
+        appendProduct(defaultProductOptional);
+        break;
+      case "default":
+        appendProduct(defaultProductLineItem);
+        break;
+      case "text":
+        appendProduct(defaultProductTextItem);
+        break;
+
+      default:
+        break;
+    }
+
   };
 
   // Function to append a new item to a specific product
   const addItemToProduct = (productIndex) => {
-    const newItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 };
-    setValue(`products.${productIndex}.items`, [...getValues(`products.${productIndex}.items`), newItem]);
+    setValue(`products.${productIndex}.items`, [...getValues(`products.${productIndex}.items`), defaultProductLineItem]);
   };
 
   const watchProducts = watch("products");
@@ -196,6 +204,8 @@ export default function Page() {
 
                 const _items = watch(`products.${index}.items`);
 
+                console.log({ errors })
+
                 return <div className='space-y-7 p-4 py-4 border rounded-lg'>
                   <div className="flex justify-between gap-2 items-center">
                     <input
@@ -204,11 +214,11 @@ export default function Page() {
                       value={product.type}
                     />
                     <div className="flex flex-col w-full relative">
-                      <label htmlFor="" className='text-sm font-bold absolute left-2 dark:bg-dark-secondary bg-white dark:text-white px-2 transform -translate-y-1/2'>Title <span className='text-gray-500 italic'>{product.type != "default" && `(${product.type})`}</span></label>
+                      <label htmlFor="" className='text-sm font-bold absolute left-2 dark:bg-dark-secondary bg-white dark:text-white px-2 transform -translate-y-1/2'>Title <span className='text-gray-500 italic'>{product.type != "default" ? `(${product?.type})` : ""}</span></label>
                       <input
-                        {...register(`products.${index}.name`)}
+                        {...register(`products.${index}.name`, { required: true })}
                         placeholder='Enter Product Title'
-                        className="w-full dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400"
+                        className={`w-full dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400 ${errors?.products?.[index]?.name && "dark:border-red-500"}`}
                       />
                     </div>
                     {
@@ -356,17 +366,17 @@ export default function Page() {
             {/* Add Line Items Buttons */}
             <div className="flex space-x-4 mb-4">
               <CustomButton
-                onClick={addProduct}
+                onClick={() => addProduct("default")}
                 variant="primary" title="Add Line Item" frontIcon={<PlusIcon className='text-white' />} >
               </CustomButton>
               <CustomButton
-                onClick={() => appendProduct(defaultProductOptional)}
+                onClick={() => addProduct("optional")}
                 title="Add Optional Line Item"
                 frontIcon={<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-testid="checkbox" className='w-6 h-6 inline-block fill-green-800'><path d="M8.72 11.211a1 1 0 1 0-1.415 1.414l2.68 3.086a1 1 0 0 0 1.414 0l5.274-4.992a1 1 0 1 0-1.414-1.414l-4.567 4.285-1.973-2.379Z"></path><path d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5Zm14 2v14H5V5h14Z"></path></svg>}
               >
               </CustomButton>
               <CustomButton
-                onClick={() => appendProduct(defaultProductTextItem)}
+                onClick={() => addProduct("text")}
                 title="Add Text">
               </CustomButton>
             </div>
