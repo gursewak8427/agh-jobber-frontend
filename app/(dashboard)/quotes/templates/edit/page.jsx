@@ -1,15 +1,21 @@
 "use client"
 import React, { useEffect } from 'react';
-import { IconButton, Typography, MenuItem, ListItemIcon } from '@mui/material';
+import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon } from '@mui/material';
 import { useState } from 'react';
-import { CameraIcon, ChevronDown, Hammer, MessageSquareText, Plus, PlusIcon, Trash2, } from 'lucide-react';
+import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, Delete, Divide, Eye, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, Plus, PlusIcon, Trash2, X } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
+import SelectClient from '@/app/_components/client/SelectClient';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { createTemplate } from '@/store/slices/client';
+import AddCustomFields from '@/app/_components/CustomFields';
+import { createQuote, createTemplate, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchSingleTemplate, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
+import CustomSingleField from '@/app/_components/CustomSingleField';
+import { getAddress, getClientName, getPrimary } from '@/utils';
+import SelectProperty from '@/app/_components/property/SelectProperty';
+import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 
 const defaultProductLineItem = {
@@ -38,9 +44,11 @@ const defaultProductTextItem = {
 
 export default function Page() {
   const [menu, setMenu] = useState(null)
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   // Custom fields, change with quote custom fields
-  const { loadingObj } = useSelector(state => state.clients);
+  const { loadingObj, quoteproducts } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -52,7 +60,7 @@ export default function Page() {
     formState: { errors },
     setValue,
     getValues,
-    reset,
+    reset,  
   } = useForm({
     defaultValues: {
       products: [defaultProductLineItem],
@@ -71,27 +79,19 @@ export default function Page() {
 
 
   // Function to append a new product
-  const addProduct = (type) => {
-    switch (type) {
-      case "optional":
-        appendProduct(defaultProductOptional);
-        break;
-      case "default":
-        appendProduct(defaultProductLineItem);
-        break;
-      case "text":
-        appendProduct(defaultProductTextItem);
-        break;
-
-      default:
-        break;
-    }
-
+  const addProduct = () => {
+    appendProduct({
+      name: "",
+      markuppercentage: 0,
+      total: 0,
+      items: [{ type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }]
+    });
   };
 
   // Function to append a new item to a specific product
   const addItemToProduct = (productIndex) => {
-    setValue(`products.${productIndex}.items`, [...getValues(`products.${productIndex}.items`), defaultProductLineItem]);
+    const newItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 };
+    setValue(`products.${productIndex}.items`, [...getValues(`products.${productIndex}.items`), newItem]);
   };
 
   const watchProducts = watch("products");
@@ -133,6 +133,32 @@ export default function Page() {
   }
 
 
+  useEffect(() => {
+    dispatch(fetchallClients());
+    dispatch(fetchQuotecount());
+    dispatch(fetchQuoteCustomFields());
+    dispatch(fetchTeam());
+  }, [])
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchSingleTemplate(id));
+    }
+  }, [id])
+
+  useEffect(() => {
+    console.log(quoteproducts, "=-=quoteproducts");
+
+    if (quoteproducts && quoteproducts?.length != 0) {
+      reset({
+        products: quoteproducts?.products,
+      });
+      setValue(`title`, quoteproducts?.title)
+      setValue(`description`, quoteproducts?.description)
+    }
+  }, [quoteproducts])
+
+
   const onSubmit = async (data) => {
 
     let jsonData = {
@@ -145,21 +171,26 @@ export default function Page() {
 
     console.log({ jsonData });
 
-    dispatch(createTemplate(jsonData)).then(({ payload }) => {
-      if (payload?.id) {
-        router.push(`/quotes/templates`)
-      }
-    });
+    if (id) {
+      // Dispatch for update
+    } else {
+      dispatch(createTemplate(jsonData)).then(({ payload }) => {
+        if (payload?.id) {
+          router.push(`/quotes/templates`)
+        }
+      });
+
+    }
   };
 
+  console.log({ errors });
 
-  const createAnother = async (data) => {
-    console.log(data);
-    reset();
-    setMenu(null)
+  const createAnother = () => {
+    alert("save another clicked")
+    setMenu(null) // to close menu
   }
 
-  const createQuote = async () => {
+  const createQuote = () => {
     alert("create quote clicked")
     setMenu(null) // to close menu
   }
@@ -204,8 +235,6 @@ export default function Page() {
 
                 const _items = watch(`products.${index}.items`);
 
-                console.log({ errors })
-
                 return <div className='space-y-7 p-4 py-4 border rounded-lg'>
                   <div className="flex justify-between gap-2 items-center">
                     <input
@@ -214,11 +243,11 @@ export default function Page() {
                       value={product.type}
                     />
                     <div className="flex flex-col w-full relative">
-                      <label htmlFor="" className='text-sm font-bold absolute left-2 dark:bg-dark-secondary bg-white dark:text-white px-2 transform -translate-y-1/2'>Title <span className='text-gray-500 italic'>{product.type != "default" ? `(${product?.type})` : ""}</span></label>
+                      <label htmlFor="" className='text-sm font-bold absolute left-2 dark:bg-dark-secondary bg-white dark:text-white px-2 transform -translate-y-1/2'>Title <span className='text-gray-500 italic'>{product.type != "default" && `(${product.type})`}</span></label>
                       <input
-                        {...register(`products.${index}.name`, { required: true })}
+                        {...register(`products.${index}.name`)}
                         placeholder='Enter Product Title'
-                        className={`w-full dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400 ${errors?.products?.[index]?.name && "dark:border-red-500"}`}
+                        className="w-full dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2  pt-4 border-gray-300 focus:border-gray-400"
                       />
                     </div>
                     {
@@ -366,17 +395,17 @@ export default function Page() {
             {/* Add Line Items Buttons */}
             <div className="flex space-x-4 mb-4">
               <CustomButton
-                onClick={() => addProduct("default")}
+                onClick={addProduct}
                 variant="primary" title="Add Line Item" frontIcon={<PlusIcon className='text-white' />} >
               </CustomButton>
               <CustomButton
-                onClick={() => addProduct("optional")}
+                onClick={() => appendProduct(defaultProductOptional)}
                 title="Add Optional Line Item"
                 frontIcon={<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-testid="checkbox" className='w-6 h-6 inline-block fill-green-800'><path d="M8.72 11.211a1 1 0 1 0-1.415 1.414l2.68 3.086a1 1 0 0 0 1.414 0l5.274-4.992a1 1 0 1 0-1.414-1.414l-4.567 4.285-1.973-2.379Z"></path><path d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5Zm14 2v14H5V5h14Z"></path></svg>}
               >
               </CustomButton>
               <CustomButton
-                onClick={() => addProduct("text")}
+                onClick={() => appendProduct(defaultProductTextItem)}
                 title="Add Text">
               </CustomButton>
             </div>
@@ -403,14 +432,14 @@ export default function Page() {
                         Save and...
                       </Typography>
 
-                      <MenuItem onClick={handleSubmit(createAnother)} className="text-tprimary dark:text-white text-sm">
+                      <MenuItem onClick={createAnother} className="text-tprimary dark:text-white text-sm">
                         <ListItemIcon>
                           <MessageSquareText className="text-orange-700 dark:text-orange-500" size={16} />
                         </ListItemIcon>
                         Create Another
                       </MenuItem>
 
-                      <MenuItem onClick={handleSubmit(createQuote)} className="text-tprimary dark:text-white text-sm">
+                      <MenuItem onClick={createQuote} className="text-tprimary dark:text-white text-sm">
                         <ListItemIcon>
                           <Hammer className="text-green-700 dark:text-green-400" size={16} />
                         </ListItemIcon>
