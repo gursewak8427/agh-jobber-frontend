@@ -28,6 +28,7 @@ export default function Page() {
   const [sendemail, setsendemail] = useState(false)
   const [menu, setmenu] = useState(false)
   const { id } = useParams()
+  const router = useRouter()
   const dispatch = useAppDispatch()
   const { quote, profile } = useAppSelector(store => store.clients)
 
@@ -167,7 +168,7 @@ export default function Page() {
         </div>
         <div className="flex items-center gap-2">
           <CustomButton onClick={() => setsendtextmsg(true)} title={"Send text message"} variant={"primary"} />
-          <CustomButton title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
+          <CustomButton onClick={() => router.push(`/quotes/edit?id=${quote?.id}&client_id=${quote?.client?.id}`)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
           <CustomMenu open={menu} icon={<CustomButton onClick={() => setmenu(true)} title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
             <MoreActionsMenuItems />
           </CustomMenu>
