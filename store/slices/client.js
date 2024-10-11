@@ -493,6 +493,24 @@ export const deleteTemplate = createAsyncThunk("deleteTemplate", async (data, { 
     }
 });
 
+export const deleteTemplateProductItem = createAsyncThunk("deleteTemplateProductItem", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/templateproductitem/?id=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const deleteTemplateProduct = createAsyncThunk("deleteTemplateProduct", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/templateproduct/?id=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 export const createTemplateWith = createAsyncThunk("createTemplateWith", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/`, data);
@@ -1160,6 +1178,26 @@ const clientSlice = createSlice({
             })
             .addCase(deleteTemplate.rejected, (state, action) => {
                 state.errorList = action.payload.error || 'Failed to delete template!!!';
+            });
+        builder
+            .addCase(deleteTemplateProductItem.pending, (state, action) => {
+                state.loadingpromise = 'Deleting Item please wait!';
+            })
+            .addCase(deleteTemplateProductItem.fulfilled, (state, action) => {
+                state.successList = 'Item deleted Successfully!';
+            })
+            .addCase(deleteTemplateProductItem.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to delete item!!!';
+            });
+        builder
+            .addCase(deleteTemplateProduct.pending, (state, action) => {
+                state.loadingpromise = 'Deleting Product please wait!';
+            })
+            .addCase(deleteTemplateProduct.fulfilled, (state, action) => {
+                state.successList = 'Product deleted Successfully!';
+            })
+            .addCase(deleteTemplateProduct.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to delete Product!!!';
             });
         builder
             .addCase(fetchTemplate.pending, (state, action) => {

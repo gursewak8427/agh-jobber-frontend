@@ -140,6 +140,7 @@ export default function Page() {
         ...product,
       })),
       "title": data?.title,
+      "description": data?.description,
       "subtotal": subtotal,
     }
 
@@ -160,6 +161,7 @@ export default function Page() {
         ...product,
       })),
       "title": data?.title,
+      "description": data?.description,
       "subtotal": subtotal,
     }
 
@@ -179,6 +181,7 @@ export default function Page() {
         ...product,
       })),
       "title": data?.title,
+      "description": data?.description,
       "subtotal": subtotal,
     }
 
@@ -419,7 +422,7 @@ export default function Page() {
             </div>
 
             <div className="mt-4 space-y-2 flex justify-between">
-              <CustomButton title="Cancel"></CustomButton>
+              <CustomButton title="Cancel" onClick={()=>{router.back()}}></CustomButton>
               {
                 <>
                   <div className="flex gap-2 items-center">

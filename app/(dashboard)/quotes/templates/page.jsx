@@ -39,6 +39,9 @@ function page() {
 
   const handleQuoteCreate = () => {
     const templateIds = selectedtempletes.map(template => template.id);
+    if(!templateIds.length)
+      router.push(`/quotes/new`);
+    
     const queryString = templateIds.join(',');
     router.push(`/quotes/new?template=${queryString}`);
   }

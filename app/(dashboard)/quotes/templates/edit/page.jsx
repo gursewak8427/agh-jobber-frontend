@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, createTemplate, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchSingleTemplate, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading, updateTemplate } from '@/store/slices/client';
+import { createQuote, createTemplate, deleteTemplateProduct, deleteTemplateProductItem, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchSingleTemplate, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading, updateTemplate } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -168,6 +168,18 @@ export default function Page() {
     });
   };
 
+  const handleproductdelete =(id)=>{
+    const data = watchProducts[id]
+    if (data && 'id' in data) {
+      dispatch(deleteTemplateProduct(data.id))
+    }
+    
+  }
+
+  const handleproductitemdelete =(id)=>{
+    if(id)
+      dispatch(deleteTemplateProductItem(id))
+  }
 
 
   return (
@@ -236,7 +248,7 @@ export default function Page() {
                         </div>
                       </div>
                     }
-                    <IconButton className='text-red-500 underline' onClick={() => removeProduct(index)}>
+                    <IconButton className='text-red-500 underline' onClick={() => { removeProduct(index); handleproductdelete(index) }}>
                       <Trash2 />
                     </IconButton>
                   </div>
@@ -347,6 +359,7 @@ export default function Page() {
                                           _items?.length > 1 && <IconButton className='text-red-500 underline' onClick={() => {
                                             const updatedItems = watch(`products.${index}.items`).filter((_, i) => i !== itemIndex);
                                             setValue(`products.${index}.items`, updatedItems);
+                                            handleproductitemdelete(item?.id)
                                           }}><Trash2 /></IconButton>
                                         }
                                       </div>
