@@ -4,7 +4,7 @@ import CustomButton from '@/components/CustomButton';
 import { useRouter } from 'next/navigation';
 import { nFormatter } from '@/utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTemplate } from '@/store/slices/client';
+import { deleteTemplate, fetchTemplate } from '@/store/slices/client';
 import { Delete, Edit, Trash2 } from 'lucide-react';
 import { Button, IconButton } from '@mui/material';
 
@@ -29,6 +29,9 @@ function page() {
     }
   }
 
+  const handleDelete = (id) =>{
+    dispatch(deleteTemplate(id));
+  }
 
   useEffect(() => {
     dispatch(fetchTemplate())
@@ -71,7 +74,7 @@ function page() {
                       <Edit className='w-5 h-5' />
                     </IconButton>
                     <IconButton onClick={() => {
-                      alert("Deleting...")
+                      handleDelete(template.id)
                     }}>
                       <Trash2 className='text-red-600 w-5 h-5' />
                     </IconButton>

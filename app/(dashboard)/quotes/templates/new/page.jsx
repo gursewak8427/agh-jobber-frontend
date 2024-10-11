@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { createTemplate } from '@/store/slices/client';
+import { createTemplate, createTemplateWith } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomMenu from '@/components/CustomMenu';
 
@@ -154,14 +154,41 @@ export default function Page() {
 
 
   const createAnother = async (data) => {
-    console.log(data);
-    reset();
     setMenu(null)
+    let jsonData = {
+      "product": data?.products?.map(product => ({
+        ...product,
+      })),
+      "title": data?.title,
+      "subtotal": subtotal,
+    }
+
+    console.log({ jsonData });
+
+    dispatch(createTemplateWith(jsonData)).then(({ payload }) => {
+      if (payload?.id) {
+        reset();
+      }
+    });
   }
 
-  const createQuote = async () => {
-    alert("create quote clicked")
-    setMenu(null) // to close menu
+  const createQuote = async (data) => {
+    setMenu(null)
+    let jsonData = {
+      "product": data?.products?.map(product => ({
+        ...product,
+      })),
+      "title": data?.title,
+      "subtotal": subtotal,
+    }
+
+    console.log({ jsonData });
+
+    dispatch(createTemplateWith(jsonData)).then(({ payload }) => {
+      if (payload?.id) {
+        router.push(`/quotes/new?template=${payload.id}`)
+      }
+    });
   }
 
 
@@ -397,7 +424,7 @@ export default function Page() {
                 <>
                   <div className="flex gap-2 items-center">
                     <CustomButton type={"submit"} loading={loadingObj.savetemplate} title="Save Template"></CustomButton>
-                    <CustomMenu open={menu == "save-and"} icon={<CustomButton onClick={() => setMenu("save-and")} backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
+                    <CustomMenu open={menu == "save-and"} icon={<CustomButton loading={loadingObj.savetemplatewith} onClick={() => setMenu("save-and")} backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
                       {/* Menu Items */}
                       <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
                         Save and...
@@ -420,10 +447,8 @@ export default function Page() {
                   </div>
                 </>
               }
-
             </div>
           </div>
-
         </form>
       </div>
     </div>
