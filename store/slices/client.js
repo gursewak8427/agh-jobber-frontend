@@ -475,6 +475,24 @@ export const createTemplate = createAsyncThunk("createTemplate", async (data, { 
     }
 });
 
+export const deleteTemplate = createAsyncThunk("deleteTemplate", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/?id=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const createTemplateWith = createAsyncThunk("createTemplateWith", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 // Initial State
 const initialState = {
     profile: {},
@@ -1094,6 +1112,29 @@ const clientSlice = createSlice({
             .addCase(createTemplate.rejected, (state, action) => {
                 state.errorList = action.payload.error || 'Failed to create template!!!';
                 delete state.loadingObj['savetemplate'];
+            });
+        builder
+            .addCase(createTemplateWith.pending, (state, action) => {
+                state.loadingObj['savetemplatewith'] = true;
+            })
+            .addCase(createTemplateWith.fulfilled, (state, action) => {
+                state.successList = 'New Template Created Successfully!';
+                delete state.loadingObj['savetemplatewith'];
+            })
+            .addCase(createTemplateWith.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to create template!!!';
+                delete state.loadingObj['savetemplatewith'];
+            });
+        builder
+            .addCase(deleteTemplate.pending, (state, action) => {
+                
+            })
+            .addCase(deleteTemplate.fulfilled, (state, action) => {
+                state.successList = 'Template deleted Successfully!';
+                state.templates = action.payload;
+            })
+            .addCase(deleteTemplate.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to delete template!!!';
             });
         builder
             .addCase(fetchTemplate.pending, (state, action) => {
