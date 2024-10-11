@@ -475,6 +475,15 @@ export const createTemplate = createAsyncThunk("createTemplate", async (data, { 
     }
 });
 
+export const updateTemplate = createAsyncThunk("updateTemplate", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 export const deleteTemplate = createAsyncThunk("deleteTemplate", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/?id=${data}`);
@@ -526,6 +535,7 @@ const initialState = {
     loadingList: false,
     errorList: null,
     successList: null,
+    loadingpromise:null,
 
     loadingForm: false,
     errorForm: null,
@@ -546,6 +556,9 @@ const clientSlice = createSlice({
         },
         clearsuccessList: (state, action) => {
             state.successList = null
+        },
+        clearloadingpromise: (state, action) => {
+            state.loadingpromise = null
         },
         clearerrorList: (state, action) => {
             state.errorList = null
@@ -1114,6 +1127,18 @@ const clientSlice = createSlice({
                 delete state.loadingObj['savetemplate'];
             });
         builder
+            .addCase(updateTemplate.pending, (state, action) => {
+                state.loadingObj['updatetemplate'] = true;
+            })
+            .addCase(updateTemplate.fulfilled, (state, action) => {
+                state.successList = 'Template updated successfully!';
+                delete state.loadingObj['updatetemplate'];
+            })
+            .addCase(updateTemplate.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to update template!!!';
+                delete state.loadingObj['updatetemplate'];
+            });
+        builder
             .addCase(createTemplateWith.pending, (state, action) => {
                 state.loadingObj['savetemplatewith'] = true;
             })
@@ -1127,7 +1152,7 @@ const clientSlice = createSlice({
             });
         builder
             .addCase(deleteTemplate.pending, (state, action) => {
-                
+                state.loadingpromise = 'Deleting templete please wait!';
             })
             .addCase(deleteTemplate.fulfilled, (state, action) => {
                 state.successList = 'Template deleted Successfully!';
@@ -1176,5 +1201,5 @@ const clientSlice = createSlice({
     },
 });
 
-export const { setLoading, removeLoading, clearsuccessList, clearerrorList, darkmodeState } = clientSlice.actions;
+export const { setLoading, removeLoading, clearsuccessList, clearerrorList, darkmodeState,clearloadingpromise } = clientSlice.actions;
 export default clientSlice.reducer;

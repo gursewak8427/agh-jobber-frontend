@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, createTemplate, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchSingleTemplate, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading } from '@/store/slices/client';
+import { createQuote, createTemplate, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchSingleTemplate, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading, updateTemplate } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -60,14 +60,10 @@ export default function Page() {
     formState: { errors },
     setValue,
     getValues,
-    reset,  
+    reset,
   } = useForm({
     defaultValues: {
       products: [defaultProductLineItem],
-      discount: 0,
-      requireddeposite: 0,
-      clientview_quantities: true,
-      clientview_total: true
     },
   });
 
@@ -132,14 +128,6 @@ export default function Page() {
     setValue(`subtotal`, parseFloat(newSubtotal)?.toFixed(2));
   }
 
-
-  useEffect(() => {
-    dispatch(fetchallClients());
-    dispatch(fetchQuotecount());
-    dispatch(fetchQuoteCustomFields());
-    dispatch(fetchTeam());
-  }, [])
-
   useEffect(() => {
     if (id) {
       dispatch(fetchSingleTemplate(id));
@@ -166,34 +154,19 @@ export default function Page() {
         ...product,
       })),
       "title": data?.title,
+      "description": data?.description,
       "subtotal": subtotal,
+      'id': quoteproducts.id
     }
 
     console.log({ jsonData });
 
-    if (id) {
-      // Dispatch for update
-    } else {
-      dispatch(createTemplate(jsonData)).then(({ payload }) => {
-        if (payload?.id) {
-          router.push(`/quotes/templates`)
-        }
-      });
-
-    }
+    dispatch(updateTemplate(jsonData)).then(({ payload }) => {
+      if (payload?.id) {
+        // router.push(`/quotes/templates`)
+      }
+    });
   };
-
-  console.log({ errors });
-
-  const createAnother = () => {
-    alert("save another clicked")
-    setMenu(null) // to close menu
-  }
-
-  const createQuote = () => {
-    alert("create quote clicked")
-    setMenu(null) // to close menu
-  }
 
 
 
@@ -421,35 +394,8 @@ export default function Page() {
             </div>
 
             <div className="mt-4 space-y-2 flex justify-between">
-              <CustomButton title="Cancel"></CustomButton>
-              {
-                <>
-                  <div className="flex gap-2 items-center">
-                    <CustomButton type={"submit"} loading={loadingObj.savetemplate} title="Save Template"></CustomButton>
-                    <CustomMenu open={menu == "save-and"} icon={<CustomButton onClick={() => setMenu("save-and")} backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
-                      {/* Menu Items */}
-                      <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
-                        Save and...
-                      </Typography>
-
-                      <MenuItem onClick={createAnother} className="text-tprimary dark:text-white text-sm">
-                        <ListItemIcon>
-                          <MessageSquareText className="text-orange-700 dark:text-orange-500" size={16} />
-                        </ListItemIcon>
-                        Create Another
-                      </MenuItem>
-
-                      <MenuItem onClick={createQuote} className="text-tprimary dark:text-white text-sm">
-                        <ListItemIcon>
-                          <Hammer className="text-green-700 dark:text-green-400" size={16} />
-                        </ListItemIcon>
-                        Create Quote
-                      </MenuItem>
-                    </CustomMenu>
-                  </div>
-                </>
-              }
-
+              <CustomButton title="Back" onClick={() => { router.back() }}></CustomButton>
+              <CustomButton type={"submit"} loading={loadingObj.updatetemplate} title="Update Template"></CustomButton>
             </div>
           </div>
 
