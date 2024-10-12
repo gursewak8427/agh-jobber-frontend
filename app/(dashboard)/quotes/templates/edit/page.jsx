@@ -306,7 +306,7 @@ export default function Page() {
                     <tbody>
                       <React.Fragment key={index}>
                         {
-                          _items.map((item, itemIndex) => (
+                          _items?.map((item, itemIndex) => (
                             <tr key={`${index}-${itemIndex}`}>
                               <td className='pr-2 pb-4 w-[700px] h-[100px]'>
                                 <div className="flex flex-col h-full items-start justify-start">
