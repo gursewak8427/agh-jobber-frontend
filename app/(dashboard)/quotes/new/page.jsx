@@ -141,7 +141,8 @@ export default function Page() {
   }, [])
 
   useEffect(() => {
-    dispatch(fetchTemplateProductForQuote(template_ids));
+    if (template_ids)
+      dispatch(fetchTemplateProductForQuote(template_ids));
   }, [template_ids])
 
   // Set Template Products as default values.
@@ -207,14 +208,12 @@ export default function Page() {
 
     let jsonData = {
       "clientquotestyle": {
-        ...(clientView && {
-          quantities: data?.clientview_quantities,
-          materials: data?.clientview_materials,
-          markuppercentage: data?.clientview_markuppercentage,
-          markupamount: data?.clientview_markupamount,
-          labour: data?.clientview_labour,
-          total: data?.clientview_total,
-        })
+        quantities: data?.clientview_quantities ?? false,
+        materials: data?.clientview_materials ?? false,
+        markuppercentage: data?.clientview_markuppercentage ?? false,
+        markupamount: data?.clientview_markupamount ?? false,
+        labour: data?.clientview_labour ?? false,
+        total: data?.clientview_total ?? false,
       },
       "product": data?.products?.map(product => ({
         ...product,
@@ -246,10 +245,9 @@ export default function Page() {
 
       // "clientpdfstyle": null,  
       "custom_field": changeAdditionalquotedetails,
-      "isrelatedjobs": data?.isrelatedjobs,
-      "isrelatedinvoices": data?.isrelatedinvoices,
-      "internalnote": data?.internalnote,
     }
+
+    console.log(jsonData);
 
     dispatch(createQuote(jsonData)).then(({ payload }) => {
       if (payload?.id) {

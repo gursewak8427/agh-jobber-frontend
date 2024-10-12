@@ -166,6 +166,15 @@ export const createQuote = createAsyncThunk("createQuote", async (data, { reject
     }
 });
 
+export const updateQuote = createAsyncThunk("updateQuote", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/quote/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 export const fetchQuotes = createAsyncThunk("fetchQuotes", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quote/`);
@@ -746,6 +755,19 @@ const clientSlice = createSlice({
             .addCase(createQuote.rejected, (state, action) => {
                 delete state.loadingObj['draftquote'];
                 state.errorList = action.payload.error || 'Failed to create quote';
+            });
+        builder
+            .addCase(updateQuote.pending, (state, action) => {
+                state.loadingObj['updatequote'] = true;
+            })
+            .addCase(updateQuote.fulfilled, (state, action) => {
+                state.quote = action.payload;
+                delete state.loadingObj['updatequote'];
+                state.successList = 'Quote updated Successfully!'
+            })
+            .addCase(updateQuote.rejected, (state, action) => {
+                delete state.loadingObj['updatequote'];
+                state.errorList = action.payload.error || 'Failed to update quote';
             });
         builder
             .addCase(fetchQuotes.pending, (state, action) => {

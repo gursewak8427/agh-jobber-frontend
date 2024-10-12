@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading } from '@/store/slices/client';
+import { createQuote, fetchallClients, fetchClient, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading, updateQuote } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary, templateProductsToQuote } from '@/utils';
@@ -186,24 +186,6 @@ export default function Page() {
 
   console.log(quote, "=--=quote")
 
-  useEffect(() => {
-    if (template_ids)
-      dispatch(fetchTemplateProductForQuote(template_ids));
-  }, [template_ids])
-
-  // Set Template Products as default values.
-  useEffect(() => {
-    // console.log(templateProductsToQuote(quoteproducts), "templateProductsToQuote");
-
-    if (quoteproducts && quoteproducts.length > 0) {
-      reset({
-        ...defaultFormValues,
-        products: templateProductsToQuote(quoteproducts) || [defaultProductLineItem],
-      });
-    } else {
-      reset({ ...defaultFormValues })
-    }
-  }, [quoteproducts, setValue]);
 
   useEffect(() => {
     if (!client_id) return;
@@ -266,12 +248,15 @@ export default function Page() {
       "isrelatedjobs": data?.isrelatedjobs,
       "isrelatedinvoices": data?.isrelatedinvoices,
       "salesperson_id": selectedSalesPerson?.id,
-      "isrelatedjobs": data?.isrelatedjobs,
-      "isrelatedinvoices": data?.isrelatedinvoices,
-      "internalnote": data?.internalnote,
+      "id": quote.id
     }
 
     console.log({ jsonData });
+    // dispatch(updateQuote(jsonData)).then(({ payload }) => {
+    //   if (payload?.id) {
+    //     router.push(`/quotes/view/${payload?.id}`)
+    //   }
+    // });
   };
 
 
@@ -560,86 +545,14 @@ export default function Page() {
                 </textarea>
               </div>
 
-              <div className="border border-gray-300 p-4 rounded-lg">
-                <h1 className='font-bold mb-2 dark:text-white'>Internal notes & attachments</h1>
-                <div className="mt-4">
-                  <textarea {...register("internalnote")} placeholder='Note details' name="internalnote" id="internalnote" rows={3} className="dark:bg-dark-secondary   dark:text-white w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
-                </div>
-
-                <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
-                  <label htmlFor="" className='text-gray-500'>Drag your files here or <span className='ml-2 text-green-700 font-semibold border-2 rounded-xl p-2'>Select a file</span></label>
-                  <input hidden type="file" name="" id="" />
-                </div>
-
-                <Divider className='my-2' />
-
-                <div className="mt-4 space-y-2">
-                  <p className='font-normal text-sm text-tprimary dark:text-white'>Link not to related</p>
-                  <div className="flex gap-2 text-sm items-center capitalize">
-                    <div className="flex gap-2 items-center dark:text-white">
-                      <input {...register("isrelatedjobs")} type="checkbox" className='w-5 h-5' name="" id="jobs" />
-                      <label htmlFor="jobs">jobs</label>
-                    </div>
-                    <div className="flex gap-2 items-center dark:text-white">
-                      <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="" id="invoices" />
-                      <label htmlFor="invoices">invoices</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               <div className="mt-4 space-y-2 flex justify-between">
-                <CustomButton title="Cancel"></CustomButton>
-                {
-                  !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
-                    <div className="flex gap-2 items-center">
-                      <CustomButton type={"submit"} loading={loadingObj.draftquote} title="Save Quote"></CustomButton>
-                      <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
-                        {/* Menu Items */}
-                        <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
-                          Save and...
-                        </Typography>
-
-                        <MenuItem className="text-tprimary text-sm">
-                          <ListItemIcon>
-                            <MessageSquareText className="text-orange-700" size={16} />
-                          </ListItemIcon>
-                          Send as text mesage
-                        </MenuItem>
-
-                        <MenuItem className="text-tprimary text-sm">
-                          <ListItemIcon>
-                            <Mail className="text-gray-700" size={16} />
-                          </ListItemIcon>
-                          Send as email
-                        </MenuItem>
-
-                        <MenuItem className="text-tprimary text-sm">
-                          <ListItemIcon>
-                            <Hammer className="text-green-700" size={16} />
-                          </ListItemIcon>
-                          Convert to Job
-                        </MenuItem>
-
-                        <MenuItem className="text-tprimary text-sm">
-                          <ListItemIcon>
-                            <MessageCircle className="text-orange-700" size={16} />
-                          </ListItemIcon>
-                          Mark as awaiting Response
-                        </MenuItem>
-                      </CustomMenu>
-                    </div>
-                  </>
-                }
-
+                <CustomButton title="Cancel" onClick={() => { router.back() }}></CustomButton>
+                <CustomButton type={"submit"} loading={loadingObj.updatequote} title="Update Quote"></CustomButton>
               </div>
             </div>
-
           </form>
         </FormProvider>
       </div>
-
-
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
       <SelectClient
         open={selectClientModal}
