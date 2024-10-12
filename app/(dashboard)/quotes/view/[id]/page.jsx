@@ -1,6 +1,6 @@
 "use client"
 import React, { Fragment, useEffect } from 'react';
-import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon } from '@mui/material';
+import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon, CircularProgress } from '@mui/material';
 import { useState } from 'react';
 import { Archive, BoxSelect, BoxSelectIcon, CameraIcon, Check, ChevronDown, Copy, Delete, Divide, Eye, FileSignature, FileText, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, MoreHorizontal, PencilIcon, PencilLine, Plus, PlusIcon, Printer, Trash2 } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
@@ -23,6 +23,7 @@ import TextMessageModal from '@/app/_components/quote/TextMessageModal';
 import SendEmailModal from '@/app/_components/quote/SendEmailModal';
 import ProductsList from '@/app/_components/products/ProductsList';
 import ProductsView from '@/app/_components/products/ProductsView';
+import QuoteViewSkelton from '@/app/_components/QuoteViewSkelton';
 
 
 export default function Page() {
@@ -32,7 +33,7 @@ export default function Page() {
   const { id } = useParams()
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const { quote, profile } = useAppSelector(store => store.clients)
+  const { loadingFull, quote, profile } = useAppSelector(store => store.clients)
 
   const getStatusBox = status => {
     switch (status) {
@@ -162,6 +163,7 @@ export default function Page() {
 
   console.log({ quote })
 
+
   return (
     <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary dark:text-dark-text'>
       <PageHeading>
@@ -169,181 +171,189 @@ export default function Page() {
           Back to : <Link href={"/quotes"} className='text-green-700 dark:text-dark-second-text'>Quotes</Link>
         </div>
         <div className="flex items-center gap-2">
-          <CustomButton onClick={() => setsendtextmsg(true)} title={"Send text message"} variant={"primary"} />
-          <CustomButton onClick={() => router.push(`/quotes/edit?id=${quote?.id}&client_id=${quote?.client?.id}`)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
+          <CustomButton disabled={loadingFull} onClick={() => setsendtextmsg(true)} title={"Send text message"} variant={"primary"} />
+          <CustomButton disabled={loadingFull} onClick={() => router.push(`/quotes/edit?id=${quote?.id}&client_id=${quote?.client?.id}`)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
           <CustomMenu open={menu} icon={<CustomButton onClick={() => setmenu(true)} title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
             <MoreActionsMenuItems />
           </CustomMenu>
         </div>
       </PageHeading>
       <div className="p-8 border border-gray-200 rounded-xl border-t-8 border-t-pink-950 space-y-5">
-        {/* Header */}
-        <p className="font-bold">
-          {quote?.title}
-        </p>
 
-        <div className="flex justify-between items-center">
-          <div>
-            {getStatusBox(quote?.status)}
-          </div>
-          <div className='font-bold'>Quote #{quote.quoteno}</div>
-        </div>
-        <div className="flex justify-start items-center mb-6 w-full gap-3">
-          <div className="text-4xl font-semibold ">{getClientName(quote?.client)}</div>
-        </div>
+        {
+          loadingFull ? <QuoteViewSkelton /> :
+            <>
+              {/* Header */}
+              <p className="font-bold">
+                {quote?.title}
+              </p>
 
-        <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300 pb-4">
-          <div className="w-1/2 flex flex-col space-y-4">
-            <div className="flex">
-              <div className="w-1/2">
-                <h1 className='font-bold mb-2'>Property address</h1>
-                <p className='max-w-[150px] text-sm'>
-                  {getAddress(quote?.property)}
-                </p>
-                {/* <Button className='text-green-700 p-0' onClick={() => {
+              <div className="flex justify-between items-center">
+                <div>
+                  {getStatusBox(quote?.status)}
+                </div>
+                <div className='font-bold'>Quote #{quote.quoteno}</div>
+              </div>
+              <div className="flex justify-start items-center mb-6 w-full gap-3">
+                <div className="text-4xl font-semibold ">{getClientName(quote?.client)}</div>
+              </div>
+
+              <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300 pb-4">
+                <div className="w-1/2 flex flex-col space-y-4">
+                  <div className="flex">
+                    <div className="w-1/2">
+                      <h1 className='font-bold mb-2'>Property address</h1>
+                      <p className='max-w-[150px] text-sm'>
+                        {getAddress(quote?.property)}
+                      </p>
+                      {/* <Button className='text-green-700 p-0' onClick={() => {
                   setPropertyModal("SELECT")
                 }}>change</Button> */}
+                    </div>
+                    <div className="w-1/2">
+                      <h1 className='font-bold mb-2'>Contact details</h1>
+                      <p className='max-w-[140px]'>{getPrimary(quote?.client?.mobile)?.number}</p>
+                      <p className='max-w-[140px]'>{getPrimary(quote?.client?.email)?.email}</p>
+                    </div>
+                  </div>
+                </div>
+                {/* Quote Details */}
+                <div className="p-4 rounded-lg w-1/2">
+                  <table className='w-full'>
+                    <tbody>
+                      <tr>
+                        <td className='py-2'>
+                          Rating
+                        </td>
+                        <td className='py-2'>
+                          <Rating
+                            readOnly
+                            name="rating"
+                            value={quote?.rateopportunity}
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className='py-2'>
+                          Created
+                        </td>
+                        <td className='py-2'>
+                          {new Date(quote?.createdAt)?.toLocaleDateString()}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className='py-2'>
+                          Salesperson
+                        </td>
+                        <td className='py-2'>
+                          {
+                            quote?.salesperson &&
+                            <div className="flex gap-2 items-center">
+                              <Avatar className='w-10 h-10 text-sm bg-primary-dark text-tprimary'>{quote?.salesperson?.name?.[0]}</Avatar>
+                              <span>{quote?.salesperson?.name}</span>
+                            </div>
+                          }
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div className="w-1/2">
-                <h1 className='font-bold mb-2'>Contact details</h1>
-                <p className='max-w-[140px]'>{getPrimary(quote?.client?.mobile)?.number}</p>
-                <p className='max-w-[140px]'>{getPrimary(quote?.client?.email)?.email}</p>
-              </div>
-            </div>
-          </div>
-          {/* Quote Details */}
-          <div className="p-4 rounded-lg w-1/2">
-            <table className='w-full'>
-              <tbody>
-                <tr>
-                  <td className='py-2'>
-                    Rating
-                  </td>
-                  <td className='py-2'>
-                    <Rating
-                      readOnly
-                      name="rating"
-                      value={quote?.rateopportunity}
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td className='py-2'>
-                    Created
-                  </td>
-                  <td className='py-2'>
-                    {new Date(quote?.createdAt)?.toLocaleDateString()}
-                  </td>
-                </tr>
-                <tr>
-                  <td className='py-2'>
-                    Salesperson
-                  </td>
-                  <td className='py-2'>
+
+              {/* Line Item Details */}
+              <div className="lg:col-span-3 py-4 text-tprimary space-y-4 dark:text-dark-text">
+                <ProductsView product={quote?.product} />
+                <div className="flex mt-4">
+                  <div className="p-4 rounded-lg w-1/2"></div>
+                  <div className="p-4 rounded-lg w-1/2">
+                    <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
+                      <div className="font-medium text-sm min-w-[200px]">Subtotal</div>
+                      <p className='text-sm text-gray-700 dark:text-dark-text'>${quote?.subtotal}</p>
+                    </div>
+
                     {
-                      quote?.salesperson &&
-                      <div className="flex gap-2 items-center">
-                        <Avatar className='w-10 h-10 text-sm bg-primary-dark text-tprimary'>{quote?.salesperson?.name?.[0]}</Avatar>
-                        <span>{quote?.salesperson?.name}</span>
+                      quote?.discount > 0 &&
+                      <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
+                        <div className="font-medium text-sm min-w-[200px]">Discount</div>
+                        <span className='text-sm '>-(${parseFloat(quote?.discount * quote?.subtotal / 100 || 0)?.toFixed(1)})<small className='ml-1 text-gray-700 dark:text-dark-text'><i>({quote?.discount}{quote?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
                       </div>
                     }
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
 
-        {/* Line Item Details */}
-        <div className="lg:col-span-3 py-4 text-tprimary space-y-4 dark:text-dark-text">
-          <ProductsView product={quote?.product} />
-          <div className="flex mt-4">
-            <div className="p-4 rounded-lg w-1/2"></div>
-            <div className="p-4 rounded-lg w-1/2">
-              <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium text-sm min-w-[200px]">Subtotal</div>
-                <p className='text-sm text-gray-700 dark:text-dark-text'>${quote?.subtotal}</p>
-              </div>
+                    <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
+                      <div className="font-medium text-sm min-w-[200px]">GST (5.0)%</div>
+                      <p className='text-sm text-gray-700 dark:text-dark-text'>${quote?.tax}</p>
+                    </div>
 
-              {
-                quote?.discount > 0 &&
-                <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
-                  <div className="font-medium text-sm min-w-[200px]">Discount</div>
-                  <span className='text-sm '>-(${parseFloat(quote?.discount * quote?.subtotal / 100 || 0)?.toFixed(1)})<small className='ml-1 text-gray-700 dark:text-dark-text'><i>({quote?.discount}{quote?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
+                    <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
+                      <div className="font-semibold min-w-[200px]">Total</div>
+                      <p className='text-gray-700 font-semibold dark:text-dark-text'>${quote?.costs}</p>
+                    </div>
+
+                    {
+                      quote?.requireddeposit > 0 &&
+                      <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
+                        <div className="font-medium text-sm min-w-[200px]">Required Deposit</div>
+                        <span className='text-sm '>-(${parseFloat(quote?.requireddeposite || 0)?.toFixed(1)})<small className='ml-1 text-gray-700'><i>({quote?.depositetype == "percentage" ? "%" : "$"})</i></small></span>
+                      </div>
+                    }
+                  </div>
                 </div>
-              }
 
-              <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium text-sm min-w-[200px]">GST (5.0)%</div>
-                <p className='text-sm text-gray-700 dark:text-dark-text'>${quote?.tax}</p>
-              </div>
+                <div className="space-y-8">
+                  <div className="">
+                    <h1 className='font-bold mb-2'>Client message</h1>
+                    <p className="text-sm">{quote?.clientmessage || "--"}</p>
+                  </div>
 
-              <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
-                <div className="font-semibold min-w-[200px]">Total</div>
-                <p className='text-gray-700 font-semibold dark:text-dark-text'>${quote?.costs}</p>
-              </div>
-
-              {
-                quote?.requireddeposit > 0 &&
-                <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
-                  <div className="font-medium text-sm min-w-[200px]">Required Deposit</div>
-                  <span className='text-sm '>-(${parseFloat(quote?.requireddeposite || 0)?.toFixed(1)})<small className='ml-1 text-gray-700'><i>({quote?.depositetype == "percentage" ? "%" : "$"})</i></small></span>
+                  <div className="">
+                    <h1 className='font-bold mb-2'>Contract / Disclaimer</h1>
+                    <p className="text-sm">{quote?.disclaimer}</p>
+                  </div>
                 </div>
-              }
-            </div>
-          </div>
-
-          <div className="space-y-8">
-            <div className="">
-              <h1 className='font-bold mb-2'>Client message</h1>
-              <p className="text-sm">{quote?.clientmessage || "--"}</p>
-            </div>
-
-            <div className="">
-              <h1 className='font-bold mb-2'>Contract / Disclaimer</h1>
-              <p className="text-sm">{quote?.disclaimer}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+              </div>
 
 
-      <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg dark:bg-dark-secondary">
-        <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
-        <div className="mt-4">
-          <textarea placeholder='Note details' name="" id="" rows={3} className="w-full dark:bg-dark-primary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">{quote?.internalnote || "--"}</textarea>
-        </div>
+              <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg dark:bg-dark-secondary">
+                <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
+                <div className="mt-4">
+                  <textarea placeholder='Note details' name="" id="" rows={3} className="w-full dark:bg-dark-primary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">{quote?.internalnote || "--"}</textarea>
+                </div>
 
-        <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
-          <label htmlFor="" className='text-gray-500'>Drag your files here or <span className='ml-2 text-green-700 font-semibold border-2 rounded-xl p-2'>Select a file</span></label>
-          <input hidden type="file" name="" id="" />
-        </div>
+                <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
+                  <label htmlFor="" className='text-gray-500'>Drag your files here or <span className='ml-2 text-green-700 font-semibold border-2 rounded-xl p-2'>Select a file</span></label>
+                  <input hidden type="file" name="" id="" />
+                </div>
 
-        <Divider className='my-2' />
+                <Divider className='my-2' />
 
-        <div className="mt-4 space-y-2">
-          <p className='font-normal text-sm text-tprimary'>Link not to related</p>
-          <div className="flex gap-2 text-sm items-center capitalize">
-            <div className="flex gap-2 items-center">
-              <input readOnly checked={quote?.isrelatedinvoices} type="checkbox" className='w-5 h-5' name="" id="jobs" />
-              <label htmlFor="jobs">jobs</label>
-            </div>
-            <div className="flex gap-2 items-center">
-              <input readOnly checked={quote?.isrelatedjobs} type="checkbox" className='w-5 h-5' name="" id="invoices" />
-              <label htmlFor="invoices">invoices</label>
-            </div>
-          </div>
-        </div>
+                <div className="mt-4 space-y-2">
+                  <p className='font-normal text-sm text-tprimary'>Link not to related</p>
+                  <div className="flex gap-2 text-sm items-center capitalize">
+                    <div className="flex gap-2 items-center">
+                      <input readOnly checked={quote?.isrelatedinvoices} type="checkbox" className='w-5 h-5' name="" id="jobs" />
+                      <label htmlFor="jobs">jobs</label>
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <input readOnly checked={quote?.isrelatedjobs} type="checkbox" className='w-5 h-5' name="" id="invoices" />
+                      <label htmlFor="invoices">invoices</label>
+                    </div>
+                  </div>
+                </div>
 
-        {/* <div className="flex gap-2 items-center justify-end">
+                {/* <div className="flex gap-2 items-center justify-end">
           <CustomButton title="Cancel"></CustomButton>
           <CustomButton variant={"primary"} title="Save"></CustomButton>
         </div> */}
+              </div>
+
+
+              <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} client={quote?.client} quote={quote} profile={profile} />
+              <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} client={quote?.client} quote={quote} />
+            </>
+        }
       </div>
 
 
-      <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} client={quote?.client} quote={quote} profile={profile} />
-      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} client={quote?.client} quote={quote} />
     </div>
   );
 }
