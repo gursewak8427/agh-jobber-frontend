@@ -125,8 +125,11 @@ export default function Page() {
           const labour = parseFloat(item.labour) || 0;
           const markupPercentage = parseFloat(item.markuppercentage) || 0;
 
-          const markupAmount = (material + labour) * (markupPercentage / 100);
-          const totalAmount = (material + labour + markupAmount) * (item?.quantity || 1);
+          const totalWithoutMarkup = (material + labour) * (item?.quantity || 1)
+          const markupAmount = totalWithoutMarkup * (markupPercentage / 100);
+          const totalAmount = (totalWithoutMarkup + markupAmount);
+
+          console.log({ totalWithoutMarkup, markupAmount, totalAmount }, "===-calc")
 
           setValue(`products.${index}.items.${itemIndex}.markupamount`, markupAmount.toFixed(2));
           setValue(`products.${index}.items.${itemIndex}.total`, totalAmount.toFixed(2));
@@ -432,7 +435,7 @@ export default function Page() {
             </div>
 
             <div className="mt-4 space-y-2 flex justify-between">
-              <CustomButton title="Cancel" onClick={()=>{router.back()}}></CustomButton>
+              <CustomButton title="Cancel" onClick={() => { router.back() }}></CustomButton>
               {
                 <>
                   <div className="flex gap-2 items-center">
