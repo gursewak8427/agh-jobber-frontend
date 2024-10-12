@@ -2,15 +2,15 @@
 import React, { Fragment, useEffect } from 'react';
 import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, MenuItem, ListItemIcon, Tabs, Tab, Box, CircularProgress } from '@mui/material';
 import { useState } from 'react';
-import { Archive, Bell, BoxSelect, BoxSelectIcon, CameraIcon, Check, ChevronDown, Copy, Delete, Divide, DollarSign, Download, Eye, FileIcon, FileSignature, FileSignatureIcon, FileText, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, MoreHorizontal, PencilIcon, PencilLine, Plus, PlusIcon, Printer, SignatureIcon, Star, Trash2 } from 'lucide-react';
+import { Archive, Bell, BoxSelect, BoxSelectIcon, CameraIcon, Check, ChevronDown, Copy, Delete, Divide, DollarSign, Download, Eye, FileIcon, FileSignature, FileSignatureIcon, FileText, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, MoreHorizontal, PencilIcon, PencilLine, Plus, PlusIcon, Printer, Save, SignatureIcon, Star, Trash2 } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createJobService, createQuote, fetchallClients, fetchClient, fetchJob, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, markJoblatevisit } from '@/store/slices/client';
+import { createJobService, createQuote, fetchallClients, fetchClient, fetchJob, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, markJoblatevisit, updateJob } from '@/store/slices/client';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -25,12 +25,16 @@ import NewTimeEntry from '@/app/_components/job/NewTimeEntry';
 import NewExpense from '@/app/_components/job/NewExpense';
 import NewVisit from '@/app/_components/job/NewVisit';
 import NewInvoiceReminder from '@/app/_components/job/NewInvoiceReminder';
+import ProductsList, { updateProductsFn } from '@/app/_components/products/ProductsList';
+import { toast } from 'react-toastify';
+import ProductsView from '@/app/_components/products/ProductsView';
 
 
 const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 
 export default function Page() {
   const [sendtextmsg, setsendtextmsg] = useState(false)
+  const [isServiceEdit, setIsServiceEdit] = useState(false)
   const [sendemail, setsendemail] = useState(false)
 
   const [newtimeentry, setnewtimeentry] = useState(false)
@@ -43,6 +47,12 @@ export default function Page() {
   const dispatch = useAppDispatch()
   const { job, profile, loadingObj } = useAppSelector(store => store.clients)
 
+  const methods = useForm({
+    defaultValues: {
+      products: [],
+    },
+  });
+
   const {
     register,
     handleSubmit,
@@ -50,11 +60,7 @@ export default function Page() {
     control,
     formState: { errors },
     setValue,
-  } = useForm({
-    defaultValues: {
-      products: [],
-    },
-  });
+  } = methods;
 
   const { fields: productsList, append: appendProduct, remove: removeProduct } = useFieldArray({
     control,
@@ -179,27 +185,6 @@ export default function Page() {
 
   const watchProducts = watch("products");
 
-
-  const onBlur = () => {
-    let newSubtotal = 0;
-
-    watchProducts.forEach((product, index) => {
-      if (product.type !== "text") {
-        const material = parseFloat(product.material) || 0;
-        const labour = parseFloat(product.labour) || 0;
-        const markupPercentage = parseFloat(product.markuppercentage) || 0;
-
-        const markupAmount = (material + labour) * (markupPercentage / 100);
-        const totalAmount = (material + labour + markupAmount) * (product?.quantity || 1);
-
-        setValue(`products.${index}.markupamount`, markupAmount.toFixed(2));
-        setValue(`products.${index}.total`, totalAmount.toFixed(2));
-
-        newSubtotal += totalAmount;
-      }
-    });
-  }
-
   const handlelatevisit = (id) => {
     dispatch(markJoblatevisit({ job: id }))
   }
@@ -311,30 +296,52 @@ export default function Page() {
 
   console.log({ job });
 
-  const [addNewLineItem, setAddNewLineItem] = useState(false)
+  useEffect(() => {
+    onBlur()
+  }, [JSON.stringify(watchProducts)]);
 
-  const saveService = () => {
-    console.log({ watchProducts })
-
-    let product = watchProducts?.[0]
-    if (!product) return;
-
-    let jsonData = {
-      "name": product?.name,
-      "description": product?.description,
-      "type": "default",
-      "quantity": product?.quantity,
-      "material": product?.material,
-      "markuppercentage": product?.markuppercentage,
-      "markupamount": product?.markupamount,
-      "labour": product?.labour,
-      "total": product?.total,
-      "job": job?.id
-    }
-
-    dispatch(createJobService(jsonData)).then(() => setAddNewLineItem(false))
+  const onBlur = () => {
+    let newSubtotal = updateProductsFn({ watchProducts, setValue });
   }
 
+  useEffect(() => {
+    setValue(`products`, job?.service)
+  }, [job])
+
+  const [addNewLineItem, setAddNewLineItem] = useState(false)
+
+  // Add new service
+  // const saveService = () => {
+  //   console.log({ watchProducts })
+
+  //   let product = watchProducts?.[0]
+  //   if (!product) return;
+
+  //   let jsonData = {
+  //     "name": product?.name,
+  //     "description": product?.description,
+  //     "type": "default",
+  //     "quantity": product?.quantity,
+  //     "material": product?.material,
+  //     "markuppercentage": product?.markuppercentage,
+  //     "markupamount": product?.markupamount,
+  //     "labour": product?.labour,
+  //     "total": product?.total,
+  //     "job": job?.id
+  //   }
+
+  //   dispatch(createJobService(jsonData)).then(() => setAddNewLineItem(false))
+  // }
+
+  const saveProducts = () => {
+    let jsonData = {
+      'service': watchProducts,
+      "id": job?.id
+    }
+    console.log({ jsonData })
+
+    dispatch(updateJob(jsonData))
+  }
 
   return (
     <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary dark:text-dark-text'>
@@ -492,7 +499,8 @@ export default function Page() {
 
 
           <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 bg-white p-4 rounded-lg dark:bg-dark-primary">
-            <div className="pb-3 flex gap-4 items-center justify-between w-full">
+            {/* #OLD */}
+            {/* <div className="pb-3 flex gap-4 items-center justify-between w-full">
               <h1 className='text-2xl font-bold text-tprimary dark:text-dark-text'>Line Items</h1>
               <CustomButton title={"New Line Item"} onClick={() => setAddNewLineItem(true)} />
             </div>
@@ -636,24 +644,6 @@ export default function Page() {
                     </tr>
                   </>
                 }
-
-                {/* <tr className='border-b'>
-                  <td className='pr-2 py-4 w-[700px]'>
-                    <div className="flex flex-col h-full items-start justify-start">
-                      <div className="text-sm">Free Assessment</div>
-                      <div className="text-sm text-gray-400">Our experts will come to assess your needs and discuss solutions</div>
-                    </div>
-                  </td>
-                  <td className='pr-2 py-4 text-center'>1</td>
-                  <td className='pr-2 py-4 text-center'>$0</td>
-                  <td className='pr-2 py-4 text-center'>$0</td>
-                  <td className='pr-2 py-4 text-center'>
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <span className=''>$25<small className='ml-1 text-gray-700'><i>(10%)</i></small></span>
-                    </div>
-                  </td>
-                  <td className='pr-2 py-4 text-right'>$0</td>
-                </tr> */}
                 <tr>
                   <td colSpan={2} className='p-4 pl-0'>
                   </td>
@@ -667,7 +657,26 @@ export default function Page() {
                   <td className='pr-2 py-4 text-right'>${job?.totalprice}</td>
                 </tr>
               </tbody>
-            </table>
+            </table> */}
+            {
+              !isServiceEdit ?
+                <>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl">Products</h3>
+                    <CustomButton onClick={() => setIsServiceEdit(true)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
+                  </div>
+                  <ProductsView product={job?.service} />
+                </> :
+                <FormProvider {...methods}>
+                  <form>
+                    <ProductsList />
+                    <div className="flex justify-end items-center gap-2">
+                      <CustomButton onClick={() => setIsServiceEdit(false)} type={"button"} title={"Cancel"} />
+                      <CustomButton loading={loadingObj?.jobupdate} onClick={saveProducts} type={"submit"} title={"Save"} variant={"primary"} frontIcon={<Save />} />
+                    </div>
+                  </form>
+                </FormProvider>
+            }
           </div>
 
           <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 bg-white p-4 rounded-lg dark:bg-dark-primary">

@@ -17,7 +17,7 @@ import { getAddress, getClientName, getPrimary, templateProductsToQuote } from '
 import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
-import ProductsList, { defaultProductLineItem } from '@/app/_components/products/ProductsList';
+import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_components/products/ProductsList';
 
 const defaultFormValues = {
   products: [defaultProductLineItem],
@@ -105,31 +105,7 @@ export default function Page() {
   }, [JSON.stringify(watchProducts)]);
 
   const onBlur = () => {
-    let newSubtotal = 0;
-
-    watchProducts?.forEach((product, index) => {
-      console.log({ product });
-      let totalcost = 0;
-      product?.items?.forEach((item, itemIndex) => {
-
-        if (product.type !== "text") {
-          const material = parseFloat(item.material) || 0;
-          const labour = parseFloat(item.labour) || 0;
-          const markupPercentage = parseFloat(item.markuppercentage) || 0;
-
-          const markupAmount = (material + labour) * (markupPercentage / 100);
-          const totalAmount = (material + labour + markupAmount) * (item?.quantity || 1);
-
-          setValue(`products.${index}.items.${itemIndex}.markupamount`, markupAmount.toFixed(2));
-          setValue(`products.${index}.items.${itemIndex}.total`, totalAmount.toFixed(2));
-
-          newSubtotal += totalAmount;
-          totalcost += totalAmount;
-        }
-      })
-
-      setValue(`products.${index}.total`, totalcost.toFixed(2));
-    });
+    let newSubtotal = updateProductsFn({ watchProducts, setValue });
 
     let _totatcost = parseFloat(newSubtotal);
 

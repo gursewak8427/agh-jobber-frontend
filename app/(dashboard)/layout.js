@@ -8,7 +8,7 @@ import { Loading } from "../_components/loading";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from "react-redux";
-import { clearerrorList, clearsuccessList, darkmodeState, fetchBusniessProfile,clearloadingpromise } from "@/store/slices/client";
+import { clearerrorList, clearsuccessList, darkmodeState, fetchBusniessProfile, clearloadingpromise } from "@/store/slices/client";
 import theme from "@/theme";
 
 const MainLayout = ({ children }) => {
