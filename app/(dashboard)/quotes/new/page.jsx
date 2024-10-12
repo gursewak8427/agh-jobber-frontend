@@ -222,7 +222,7 @@ export default function Page() {
       "quoteno": isQuoteNo ? data?.quoteno : quotecount,
       "rateopportunity": rating,
       "subtotal": subtotal,
-      "discount": data?.discountAmount,
+      "discount": data?.discount,
       "discounttype": data?.discounttype,
       "tax": gst,
       "costs": totalcost,

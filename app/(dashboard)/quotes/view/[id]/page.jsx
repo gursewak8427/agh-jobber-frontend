@@ -318,7 +318,7 @@ export default function Page() {
                 quote?.discount > 0 &&
                 <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium text-sm min-w-[200px]">Discount</div>
-                  <span className='text-sm '>-(${parseFloat(quote?.discount || 0)?.toFixed(1)})<small className='ml-1 text-gray-700 dark:text-dark-text'><i>({quote?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
+                  <span className='text-sm '>-(${parseFloat(quote?.discount * quote?.subtotal / 100 || 0)?.toFixed(1)})<small className='ml-1 text-gray-700 dark:text-dark-text'><i>({quote?.discount}{quote?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
                 </div>
               }
 

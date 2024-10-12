@@ -31,6 +31,7 @@ export default function Page() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const client_id = searchParams.get("client_id");
+  const property_id = searchParams.get("property_id");
   const template_ids = searchParams.get("template");
 
   const [open, setOpen] = useState(false);
@@ -154,7 +155,7 @@ export default function Page() {
     setValue(`totalcost`, parseFloat(_totatcost)?.toFixed(2));
 
     console.log({ _discount, discounttype })
-    setValue(`discountAmount`, _discount)
+    setValue(`discountAmount`, parseFloat(_discount)?.toFixed(2))
   }
 
 
@@ -172,14 +173,30 @@ export default function Page() {
       reset({
         ...quote,
         products: quote?.product,
-        clientview_quantities: quote?.quantities || false,
-        clientview_materials: quote?.materials || false,
-        clientview_markuppercentage: quote?.markuppercentage || false,
-        clientview_markupamount: quote?.markupamount || false,
-        clientview_labour: quote?.labour || false,
-        clientview_total: quote?.total || false,
+        clientview_quantities: quote?.clientquotestyle?.quantities || false,
+        clientview_materials: quote?.clientquotestyle?.materials || false,
+        clientview_markuppercentage: quote?.clientquotestyle?.markuppercentage || false,
+        clientview_markupamount: quote?.clientquotestyle?.markupamount || false,
+        clientview_labour: quote?.clientquotestyle?.labour || false,
+        clientview_total: quote?.clientquotestyle?.total || false,
+        discount: quote?.discount,
+        discounttype: quote?.discounttype,
+        requireddeposite: quote?.requireddeposite,
+        requiredtype: quote?.depositetype,
+        requiredAmount: quote?.depositetype == "amount" ? quote?.requireddeposite : parseFloat(quote?.costs * quote?.requireddeposite / 100)?.toFixed(2),
+        discountAmount: quote?.discounttype == "amount" ? quote?.discount : parseFloat(quote?.subtotal * quote?.discount / 100)?.toFixed(2),
       })
 
+      setRating(quote?.rateopportunity)
+
+      if (Boolean(quote?.discount)) {
+        setDiscount(true)
+      }
+      if (Boolean(quote?.requireddeposite)) {
+        setRequiredDeposit(true)
+      }
+
+      setSelectedProperty(quote?.property)
       setSalesPerson(quote?.salesperson)
     }
   }, [id, quote])
@@ -193,33 +210,17 @@ export default function Page() {
     dispatch(fetchClient(client_id));
   }, [client_id])
 
-  useEffect(() => {
-    if (!client_id) return;
-
-
-    console.log({ client }, '===client')
-
-    if (client?.property?.length > 1) {
-      setSelectedProperty(null)
-      setPropertyModal("SELECT")
-    } else {
-      if (client?.property?.length == 0) {
-        setSelectedProperty(null)
-        setPropertyModal("NEW")
-      } else {
-        setSelectedProperty(client?.property?.[0])
-      }
-    }
-  }, [client])
-
   const closeMenu = () => setMenu("")
-
 
   const onSubmit = async (data) => {
 
     let jsonData = {
+      "id": quote.id,
+      // client_id: client_id,
+      // property_id: selectedProperty?.id,
       "clientquotestyle": {
         ...(clientView && {
+          id: quote?.clientquotestyle?.id,
           quantities: data?.clientview_quantities,
           materials: data?.clientview_materials,
           markuppercentage: data?.clientview_markuppercentage,
@@ -234,13 +235,13 @@ export default function Page() {
       "title": data?.title,
       "rateopportunity": rating,
       "subtotal": subtotal,
-      "discount": data?.discountAmount,
+      "discount": data?.discount, // need to calculate discount amount each time.
       "discounttype": data?.discounttype,
       "tax": gst,
       "costs": totalcost,
       // "estimatemargin": 0.0,
       "requireddeposite": data?.requireddeposite,
-      "depositetype": "amount",
+      "depositetype": data?.requiredtype,
       "clientmessage": data?.clientmessage,
 
       "disclaimer": data?.disclaimer,
@@ -248,15 +249,14 @@ export default function Page() {
       "isrelatedjobs": data?.isrelatedjobs,
       "isrelatedinvoices": data?.isrelatedinvoices,
       "salesperson_id": selectedSalesPerson?.id,
-      "id": quote.id
     }
 
     console.log({ jsonData });
-    // dispatch(updateQuote(jsonData)).then(({ payload }) => {
-    //   if (payload?.id) {
-    //     router.push(`/quotes/view/${payload?.id}`)
-    //   }
-    // });
+    dispatch(updateQuote(jsonData)).then(({ payload }) => {
+      if (payload?.id) {
+        router.push(`/quotes/view/${payload?.id}`)
+      }
+    });
   };
 
 
@@ -488,7 +488,7 @@ export default function Page() {
                             </select>
                           </div>
                           <div className="flex items-center gap-1 ">
-                            <span className="font-normal flex items-center"><Minus className='font-normal w-4 h-5' /> ${discountAmount || 0}</span>
+                            <span className="font-normal flex items-center"><Minus className='' /> ${discountAmount || 0}</span>
                             <Trash2 onClick={() => setDiscount(false)} className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
                           </div>
                         </div> :
@@ -523,7 +523,7 @@ export default function Page() {
                           </select>
                         </div>
                         <div className="flex items-center gap-1">
-                          <span className="font-normal flex items-center">${requiredAmount || 0}</span>
+                          <span className="font-normal flex items-center"><Minus />${requiredAmount || 0}</span>
                           <Trash2 onClick={() => setRequiredDeposit(false)} className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
                         </div>
                       </div> :
