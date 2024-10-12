@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createInvoice, createQuote, fetchallClients, fetchClient, fetchInvoicecount, fetchInvoiceCustomFields, fetchTeam } from '@/store/slices/client';
+import { createInvoice, createQuote, fetchallClients, fetchClient, fetchInvoice, fetchInvoicecount, fetchInvoiceCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -23,6 +23,7 @@ import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_c
 export default function Page() {
   const searchParams = useSearchParams();
   const client_id = searchParams.get("client_id");
+  const id = searchParams.get("id");
 
   const [menu, setMenu] = useState("")
   const [selectedSalesPerson, setSalesPerson] = useState(null)
@@ -40,7 +41,7 @@ export default function Page() {
 
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  const { loadingObj, client, team, invoicecount, invoicecustomfields } = useSelector(state => state.clients);
+  const { loadingObj, client, team, invoicecount, invoicecustomfields, invoice } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -137,7 +138,27 @@ export default function Page() {
     dispatch(fetchallClients());
     dispatch(fetchTeam());
     dispatch(fetchInvoiceCustomFields());
+    if (id) {
+      dispatch(fetchInvoice(id));
+    }
   }, [])
+
+  useEffect(() => {
+    if (id && invoice) {
+      reset({
+        ...invoice,
+        products: invoice?.service,
+        clientview_quantities: invoice?.quantities || false,
+        clientview_materials: invoice?.materials || false,
+        clientview_markuppercentage: invoice?.markuppercentage || false,
+        clientview_markupamount: invoice?.markupamount || false,
+        clientview_labour: invoice?.labour || false,
+        clientview_total: invoice?.total || false,
+      })
+
+      setSalesPerson(invoice?.salesperson)
+    }
+  }, [id, invoice])
 
 
   useEffect(() => {
@@ -229,12 +250,8 @@ export default function Page() {
       "property_id": selectedProperty?.id,
       "client_id": client_id,
     }
-    dispatch(createInvoice(jsonData)).then(({ payload }) => {
-      if (payload?.id) {
-        router.push(`/invoices/view/${payload?.id}`)
-      }
-    })
-    console.log({ jsonData });
+
+    // #TODO hit dispatch for update
   };
 
   return (

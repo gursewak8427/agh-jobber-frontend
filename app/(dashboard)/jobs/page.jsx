@@ -62,25 +62,25 @@ export default function Page() {
     },
   ];
 
-// Function to handle status rendering
-const getStatusBox = status => {
-  switch (status) {
-    case "Has a late visit": return <div className="text-sm flex items-center justify-start capitalize bg-red-400 bg-opacity-20 px-2 py-1 rounded-full w-40 mt-2">
-      <div className="w-3 h-3 bg-red-700 rounded-full mr-2"></div>
-      {status}
-    </div>
-    case "Upcoming": return <div className="text-sm flex items-center justify-start capitalize bg-green-400 bg-opacity-20 px-3 py-1 rounded-full w-40 mt-2">
-      <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
-      {status}
-    </div>
-    case "Archived": return <div className="text-sm flex items-center justify-start capitalize bg-gray-400 bg-opacity-20 px-2 py-1 rounded-full text-yellow-700 w-40 mt-2">
-      <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
-      {status}
-    </div>
-    default:
-      break;
+  // Function to handle status rendering
+  const getStatusBox = status => {
+    switch (status) {
+      case "Has a late visit": return <div className="text-sm flex items-center justify-start capitalize bg-red-400 bg-opacity-20 px-2 py-1 rounded-full w-40 mt-2">
+        <div className="w-3 h-3 bg-red-700 rounded-full mr-2"></div>
+        {status}
+      </div>
+      case "Upcoming": return <div className="text-sm flex items-center justify-start capitalize bg-green-400 bg-opacity-20 px-3 py-1 rounded-full w-40 mt-2">
+        <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+        {status}
+      </div>
+      case "Archived": return <div className="text-sm flex items-center justify-start capitalize bg-gray-400 bg-opacity-20 px-2 py-1 rounded-full text-yellow-700 w-40 mt-2">
+        <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
+        {status}
+      </div>
+      default:
+        break;
+    }
   }
-}
 
   useEffect(() => {
     dispatch(fetchJobs());

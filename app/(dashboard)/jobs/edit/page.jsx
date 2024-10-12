@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createJob, createJobEmployeeSheet, createJobExepense, createJobService, createJobVisit, createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
+import { createJob, createJobEmployeeSheet, createJobExepense, createJobService, createJobVisit, createQuote, fetchallClients, fetchClient, fetchJob, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { formatDate, generateVisits, generateVisitsFor17th, getAddress, getClientName, getPrimary } from '@/utils';
@@ -26,6 +26,7 @@ import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_c
 export default function Page() {
   const searchParams = useSearchParams();
   const client_id = searchParams.get("client_id");
+  const id = searchParams.get("id");
 
   const [menu, setMenu] = useState("")
   const [selectedSalesPerson, setSalesPerson] = useState(null)
@@ -44,7 +45,7 @@ export default function Page() {
 
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  const { clientslist, client, team, jobcount, jobcustomfields, loadingObj } = useSelector(state => state.clients);
+  const { clientslist, client, team, jobcount, jobcustomfields, loadingObj, job } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -174,8 +175,22 @@ export default function Page() {
     dispatch(fetchallClients());
     dispatch(fetchTeam());
     dispatch(fetchJobCustomFields());
+    if (id) {
+      dispatch(fetchJob(id));
+    }
   }, [])
 
+  // # For Update #TODO add other fields also
+  useEffect(() => {
+    if (id && job) {
+      reset({
+        ...job,
+        products: job?.service,
+      })
+
+      setSalesPerson(quote?.salesperson)
+    }
+  }, [id, job])
 
   useEffect(() => {
     if (!client_id) return;
@@ -301,13 +316,8 @@ export default function Page() {
     }
 
 
-    console.log({ jsonData });
 
-    dispatch(createJob(jsonData)).then(({ payload }) => {
-      if (payload?.id) {
-        router.push(`/jobs/view/${payload?.id}`)
-      }
-    });
+    // #TODO hit dispatch for update
   };
 
   //#TODO redux api to hit for creating four services of job must include job_id:job.id in each request

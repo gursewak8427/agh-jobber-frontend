@@ -145,7 +145,7 @@ export default function Page() {
         </div>
         <div className="flex items-center gap-2">
           <CustomButton frontIcon={<CreditCard className='text-white' />} title={"Collect Payments"} variant={"primary"} />
-          <CustomButton title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
+          <CustomButton onClick={() => router.push(`/invoices/edit?id=${quote?.id}&client_id=${quote?.client?.id}`)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
           <CustomMenu open={menu} icon={<CustomButton onClick={() => setmenu(true)} title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
             <MoreActionsMenuItems />
           </CustomMenu>
@@ -350,7 +350,7 @@ export default function Page() {
 
 
       <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} client={invoice.client} profile={profile} invoice={invoice} />
-      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} invoice={invoice} profile={profile}/>
+      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} invoice={invoice} profile={profile} />
     </div>
   );
 }

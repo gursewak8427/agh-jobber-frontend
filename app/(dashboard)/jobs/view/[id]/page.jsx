@@ -344,7 +344,9 @@ export default function Page() {
         </div>
         <div className="flex items-center gap-2">
           <CustomButton onClick={() => handlelatevisit(job.id)} loading={loadingObj.latevisit} title={"Show late visit"} variant={"primary"} />
-          <CustomButton title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
+
+          <CustomButton onClick={() => router.push(`/jobs/edit?id=${quote?.id}&client_id=${quote?.client?.id}`)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
+
           <CustomMenu open={menu == "more_actions"} icon={<CustomButton onClick={() => setmenu("more_actions")} title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
             <MoreActionsMenuItems />
           </CustomMenu>
@@ -889,7 +891,7 @@ export default function Page() {
 
 
       <TextMessageModal open={sendtextmsg} onClose={() => setsendtextmsg(false)} job={job} profile={profile} client={job.client} />
-      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} job={job} profile={profile}/>
+      <SendEmailModal open={sendemail} onClose={() => setsendemail(false)} job={job} profile={profile} />
 
       <NewTimeEntry job={job} open={newtimeentry} onClose={() => setnewtimeentry(false)} />
       <NewExpense job={job} open={newexpense} onClose={() => setnewexpense(false)} />
