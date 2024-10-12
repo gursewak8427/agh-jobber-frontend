@@ -288,7 +288,7 @@ export default function Page() {
                               <div className="text-sm text-gray-400">{service?.description}</div>
                             </div>
                           </td>
-                          <td className='pr-2 py-4 text-center'>{service?.quantity || 0}</td>
+                          <td className='pr-2 py-4 text-center'>{service?.quantity || 0} {service?.quantitytype}</td>
                           <td className='pr-2 py-4 text-center'>${service?.material || 0}</td>
                           <td className='pr-2 py-4 text-center'>${service?.labour || 0}</td>
                           <td className='pr-2 py-4 text-center'>

@@ -478,7 +478,7 @@ export default function Page() {
                       value={product.type}
                     />
                     <div className="sticky top-[150px] w-full">
-                      <div className="relative">
+                      <div className="relative w-full">
                         <div className="absolute top-0 left-5 bg-white dark:bg-dark-secondary dark:text-white  px-1 transform -translate-y-[50%] font-semibold text-sm text-tprimary text-opacity-60 flex gap-1 items-center" >
                           Title
                           <span className='text-gray-500 italic'>{product.type != "default" && `(${product.type})`}
@@ -547,14 +547,14 @@ export default function Page() {
                             <tr key={`${index}-${itemIndex}`}>
                               <td className='pr-2 pb-4 w-[700px] h-[100px]'>
                                 <div className="flex flex-col h-full items-start justify-start">
-                                  <div className="relative">
+                                  <div className="relative w-full">
                                     <div className="absolute top-0 left-5 bg-white dark:bg-dark-secondary dark:text-white  px-1 transform -translate-y-[50%] font-semibold text-xs text-tprimary text-opacity-60">Name</div>
                                     <input
                                       {...register(`products.${index}.items.${itemIndex}.name`)}
                                       className="w-full  dark:text-white dark:bg-dark-secondary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                                     />
                                   </div>
-                                  <div className="relative">
+                                  <div className="relative w-full">
                                     <div className="absolute top-0 left-5 bg-white dark:bg-dark-secondary dark:text-white  px-1 transform -translate-y-[50%] font-semibold text-xs text-tprimary text-opacity-60">Description</div>
                                     <textarea
                                       {...register(`products.${index}.items.${itemIndex}.description`)}
@@ -568,7 +568,7 @@ export default function Page() {
                                   <td className='pr-2 pb-4 h-[100px]'>
                                     <div className="flex flex-col h-full items-start justify-start">
                                       <div className="flex w-full items-center">
-                                        <div className="relative">
+                                        <div className="relative w-full">
                                           <div className="absolute top-0 left-5 bg-white dark:bg-dark-secondary dark:text-white  px-1 transform -translate-y-[50%] font-semibold text-xs text-tprimary text-opacity-60">Qty</div>
                                           <input
                                             {...register(`products.${index}.items.${itemIndex}.quantity`)}
@@ -594,7 +594,7 @@ export default function Page() {
                                   </td>
                                   <td className='pr-2 pb-4 h-[100px]'>
                                     <div className="flex flex-col h-full items-start justify-start">
-                                      <div className="relative">
+                                      <div className="relative w-full">
                                         <div className="absolute top-0 left-5 bg-white dark:bg-dark-secondary dark:text-white  px-1 transform -translate-y-[50%] font-semibold text-xs text-tprimary text-opacity-60">Material</div>
                                         <input
                                           {...register(`products.${index}.items.${itemIndex}.material`)}
@@ -602,7 +602,7 @@ export default function Page() {
                                           className="dark:bg-dark-secondary dark:text-white focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                                         />
                                       </div>
-                                      <div className="relative">
+                                      <div className="relative w-full">
                                         <div className="absolute top-0 left-5 bg-white dark:bg-dark-secondary dark:text-white  px-1 transform -translate-y-[50%] font-semibold text-xs text-tprimary text-opacity-60">Labour</div>
                                         <input
                                           {...register(`products.${index}.items.${itemIndex}.labour`)}
@@ -614,7 +614,7 @@ export default function Page() {
                                   </td>
                                   <td className='pr-2 pb-4 h-[100px]'>
                                     <div className="flex flex-col h-full items-start justify-start">
-                                      <div className="relative">
+                                      <div className="relative w-full">
                                         <div className="absolute top-0 left-5 bg-white dark:bg-dark-secondary dark:text-white  px-1 transform -translate-y-[50%] font-semibold text-xs text-tprimary text-opacity-60">Markup</div>
                                         <input
                                           {...register(`products.${index}.items.${itemIndex}.markuppercentage`)}
@@ -635,7 +635,7 @@ export default function Page() {
                                   </td>
                                   <td className='pr-2 pb-4 h-[100px]'>
                                     <div className="flex flex-col h-full items-start justify-start">
-                                      <div className="relative">
+                                      <div className="relative w-full">
                                         <div className="absolute top-0 left-5 bg-white dark:bg-dark-secondary dark:text-white  px-1 transform -translate-y-[50%] font-semibold text-xs text-tprimary text-opacity-60">Total</div>
                                         <input
                                           readOnly
