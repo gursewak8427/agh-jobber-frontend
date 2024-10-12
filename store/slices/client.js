@@ -221,6 +221,15 @@ export const createJob = createAsyncThunk("createJob", async (data, { rejectWith
     }
 });
 
+export const updateJob = createAsyncThunk("updateJob", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/job/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 export const fetchJobs = createAsyncThunk("fetchJobs", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/job/`);
@@ -262,6 +271,15 @@ export const fetchInvoice = createAsyncThunk("fetchInvoice", async (data, { reje
 export const createInvoice = createAsyncThunk("createInvoice", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/invoice/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const updateInvoice = createAsyncThunk("updateInvoice", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/invoice/`, data);
         return response.data;
     } catch (error) {
         return handleAsyncThunkError(error, rejectWithValue);
@@ -837,6 +855,19 @@ const clientSlice = createSlice({
                 state.errorList = action.payload.error || 'Failed to create job';
             });
         builder
+            .addCase(updateJob.pending, (state, action) => {
+                state.loadingObj['jobupdate'] = true
+            })
+            .addCase(updateJob.fulfilled, (state, action) => {
+                delete state.loadingObj['jobupdate'];
+                state.successList = "Job updated Succesfully!!"
+                state.job = action.payload;
+            })
+            .addCase(updateJob.rejected, (state, action) => {
+                delete state.loadingObj['jobupdate'];
+                state.errorList = action.payload.error || 'Failed to update job';
+            });
+        builder
             .addCase(fetchJobs.pending, (state, action) => {
                 state.loadingList = true;
             })
@@ -872,6 +903,19 @@ const clientSlice = createSlice({
             .addCase(createInvoice.rejected, (state, action) => {
                 delete state.loadingObj['createinvoice']
                 state.errorList = action.payload.error || 'Failed to create invoice';
+            });
+        builder
+            .addCase(updateInvoice.pending, (state, action) => {
+                state.loadingObj['updateinvoice'] = true
+            })
+            .addCase(updateInvoice.fulfilled, (state, action) => {
+                delete state.loadingObj['updateinvoice']
+                state.successList = "Invoice updated Successfully"
+                state.invoice = action.payload;
+            })
+            .addCase(updateInvoice.rejected, (state, action) => {
+                delete state.loadingObj['updateinvoice']
+                state.errorList = action.payload.error || 'Failed to update invoice';
             });
         builder
             .addCase(fetchInvoices.pending, (state, action) => {

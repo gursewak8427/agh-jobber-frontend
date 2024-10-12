@@ -318,6 +318,7 @@ export default function Page() {
 
 
     // #TODO hit dispatch for update
+    // updateJob with loadingObj.jobupdate use this if required but i don't think it will be required
   };
 
   //#TODO redux api to hit for creating four services of job must include job_id:job.id in each request
