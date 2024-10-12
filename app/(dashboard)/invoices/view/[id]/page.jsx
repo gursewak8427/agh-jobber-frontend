@@ -251,10 +251,12 @@ export default function Page() {
                 <p className='text-sm text-gray-700 dark:text-dark-text'>${invoice?.subtotal}</p>
               </div>
 
-              <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium text-sm min-w-[200px]">Discount</div>
-                <span className='text-sm '>-(${parseFloat(invoice?.discount || 0)?.toFixed(1)})<small className='ml-1 text-gray-700 dark:text-dark-text'><i>({invoice?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
-              </div>
+              {
+                invoice?.discount > 0 && <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
+                  <div className="font-medium text-sm min-w-[200px]">Discount</div>
+                  <span className='text-sm '>-(${parseFloat(invoice?.discount * invoice?.subtotal / 100 || 0)?.toFixed(1)})<small className='ml-1 text-gray-700 dark:text-dark-text'><i>({invoice?.discount}{invoice?.discounttype == "percentage" ? "%" : "$"})</i></small></span>
+                </div>
+              }
 
               <div className="mb-4 flex items-center justify-between space-x-3 border-b border-b-gray-400 pb-2">
                 <div className="font-medium text-sm min-w-[200px]">GST (5.0)%</div>

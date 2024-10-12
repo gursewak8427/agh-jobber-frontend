@@ -167,6 +167,10 @@ export default function Page() {
         clientview_markupamount: invoice?.clientquotestyle?.markupamount || false,
         clientview_labour: invoice?.clientquotestyle?.labour || false,
         clientview_total: invoice?.clientquotestyle?.total || false,
+
+        discount: invoice?.discount,
+        discounttype: invoice?.discounttype,
+        discountAmount: invoice?.discounttype == "amount" ? invoice?.discount : parseFloat(invoice?.subtotal * invoice?.discount / 100)?.toFixed(2),
       })
 
       if (Boolean(invoice?.discount)) {
@@ -489,28 +493,6 @@ export default function Page() {
                   <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
                     <div className="font-semibold min-w-[200px]">Total</div>
                     <p className='text-gray-700 font-semibold dark:text-dark-text'>${totalcost || `0.00`}</p>
-                  </div>
-
-                  <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
-                    <div className="font-medium min-w-[200px]">Required Deposit</div>
-
-                    {
-                      isRequiredDeposit ? <div className="flex items-center gap-2 justify-between w-full">
-                        <div className="flex items-center">
-                          <input type="text" {...register("requireddeposite")} onBlur={onBlur}
-                            className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
-                          <select name="requiredtype" id="requiredtype" {...register("requiredtype")} onBlur={onBlur} className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
-                            <option value="amount">$</option>
-                            <option value="percentage">%</option>
-                          </select>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span className="font-normal flex items-center">${requiredAmount || 0}</span>
-                          <Trash2 onClick={() => setRequiredDeposit(false)} className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
-                        </div>
-                      </div> :
-                        <p onClick={() => setRequiredDeposit(true)} className='text-green-700 underline font-semibold cursor-pointer'>Add required deposit</p>
-                    }
                   </div>
                 </div>
               </div>
