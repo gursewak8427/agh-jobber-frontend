@@ -203,12 +203,12 @@ export default function Page() {
       })),
       "subject": data?.subject,
       "issueddate": issueDateStatus ? data?.issueddate : new Date()?.toLocaleString(),
-      "paymentdue": data?.paymentdue,
+      "paymentdue": paymentDueStatus ? data?.paymentdue : "new_30",
       "paymentduedate": data?.paymentduedate,//duedate set based on paymentdue like net15 means issue date + 15 days if custom date then it will automatic work
       "salesperson_id": selectedSalesPerson?.id,
       "custom_field": changeAdditionaljobdetails,
       "subtotal": subtotal,
-      "discount": data?.discountAmount,
+      "discount": data?.discount,
       "discounttype": data?.discounttype,
       "tax": gst,
       "costs": totalcost,
@@ -329,7 +329,7 @@ export default function Page() {
                 <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px] text-sm">Salesperson</div>
                   {
-                    selectedSalesPerson ? <div className="flex items-center bg-gray-400 p-2 rounded-full dark:bg-dark-primary">
+                    selectedSalesPerson ? <div className="flex items-center bg-gray-200 p-2 rounded-full dark:bg-dark-primary">
                       <Avatar className="mr-2 bg-slate-600 text-sm">{selectedSalesPerson?.name[0]}</Avatar>
                       <div className="text-sm">{selectedSalesPerson?.name}</div>
                       <IconButton color="error" onClick={() => setSalesPerson(null)}>

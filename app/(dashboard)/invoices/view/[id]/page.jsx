@@ -22,10 +22,12 @@ import PageHeading from '@/components/PageHeading';
 import TextMessageModal from '@/app/_components/invoice/TextMessageModal';
 import SendEmailModal from '@/app/_components/invoice/SendEmailModal';
 import ShowCustomFields from '@/app/_components/ShowCustomFields';
+import ProductsView from '@/app/_components/products/ProductsView';
 
 
 
 export default function Page() {
+  const router = useRouter();
   const [sendtextmsg, setsendtextmsg] = useState(false)
   const [sendemail, setsendemail] = useState(false)
   const [menu, setmenu] = useState(false)
@@ -145,7 +147,7 @@ export default function Page() {
         </div>
         <div className="flex items-center gap-2">
           <CustomButton frontIcon={<CreditCard className='text-white' />} title={"Collect Payments"} variant={"primary"} />
-          <CustomButton onClick={() => router.push(`/invoices/edit?id=${quote?.id}&client_id=${quote?.client?.id}`)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
+          <CustomButton onClick={() => router.push(`/invoices/edit?id=${invoice?.id}&client_id=${invoice?.client?.id}`)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
           <CustomMenu open={menu} icon={<CustomButton onClick={() => setmenu(true)} title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
             <MoreActionsMenuItems />
           </CustomMenu>
@@ -237,43 +239,7 @@ export default function Page() {
         </div>
 
         <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 bg-white p-4 rounded-lg dark:bg-dark-primary">
-          <table className='w-full'>
-            <thead>
-              <tr className='border-b'>
-                <th style={{ width: "20px" }}><p className="mb-4 text-md font-semibold text-left">Product / Service</p></th>
-                <th><p className="mb-4 text-md font-semibold text-left">Qty.</p></th>
-                <th><p className="mb-4 text-md font-semibold text-left px-4">Material</p></th>
-                <th><p className="mb-4 text-md font-semibold text-left px-4">Labour</p></th>
-                <th><p className="mb-4 text-md font-semibold text-left px-4">Markup</p></th>
-                <th><p className="mb-4 text-md font-semibold text-right">Total</p></th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                invoice?.service?.map((service, index) => {
-                  return <tr className='border-b' key={index}>
-                    <td className='pr-2 py-4 w-[700px]'>
-                      <div className="flex flex-col h-full items-start justify-start">
-                        <div className="text-sm">{service?.name}</div>
-                        <div className="text-sm text-gray-400">{service?.description}</div>
-                      </div>
-                    </td>
-                    <td className='pr-2 py-4 text-center'>{service?.quantity}</td>
-                    <td className='pr-2 py-4 text-center'>${service?.material}</td>
-                    <td className='pr-2 py-4 text-center'>${service?.labour}</td>
-                    <td className='pr-2 py-4 text-center'>
-                      <div className="flex flex-col items-center justify-center gap-2">
-                        <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700 dark:text-gray-400'><i>(${service?.markuppercentage}%)</i></small></span>
-                      </div>
-                    </td>
-                    <td className='pr-2 py-4 text-right'>${service?.total}</td>
-                  </tr>
-                })
-              }
-
-            </tbody>
-          </table>
-
+          <ProductsView product={invoice?.service} />
 
           <div className="flex mt-4">
             <div className="p-4 pl-0 rounded-lg w-1/2">
@@ -323,23 +289,6 @@ export default function Page() {
         <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
           <label htmlFor="" className='text-gray-500'>Drag your files here or <span className='ml-2 text-green-700 font-semibold border-2 rounded-xl p-2'>Select a file</span></label>
           <input hidden type="file" name="" id="" />
-        </div>
-
-        <Divider className='my-2' />
-
-        <div className="mt-4 space-y-2">
-          <p className='font-normal text-sm text-tprimary dark:text-dark-text'>Link not to related</p>
-          <div className="flex gap-2 text-sm items-center capitalize">
-            <div className="flex gap-2 items-center">
-              <input readOnly type="checkbox" className='w-5 h-5' name="" id="jobs" />
-              <label htmlFor="jobs">jobs</label>
-            </div>
-            <div className="flex gap-2 items-center">
-              <input readOnly type="checkbox" className='w-5 h-5' name="" id="invoices" />
-              <label htmlFor="invoices">invoices</label>
-            </div>
-          </div>
-          <div className="text-red-500">Pending</div>
         </div>
 
         <div className="gap-2 items-center justify-end hidden">
