@@ -35,6 +35,39 @@ export const updateProductsFn = ({ setValue, watchProducts }) => {
     return newSubtotal;
 }
 
+export const updateProductsFnV2 = ({ setValue, watchProducts }) => {
+    let newSubtotalWithoutMarkup = 0;
+    let newSubtotal = 0;
+
+    watchProducts?.forEach((product, index) => {
+        console.log({ product });
+        let totalcost = 0;
+        product?.items?.forEach((item, itemIndex) => {
+
+            if (product.type !== "text") {
+                const material = parseFloat(item.material) || 0;
+                const labour = parseFloat(item.labour) || 0;
+                const markupPercentage = parseFloat(item.markuppercentage) || 0;
+
+                const totalWithoutMarkup = (material + labour) * (item?.quantity || 1)
+                const markupAmount = totalWithoutMarkup * (markupPercentage / 100);
+                const totalAmount = (totalWithoutMarkup + markupAmount);
+
+                setValue(`products.${index}.items.${itemIndex}.markupamount`, markupAmount.toFixed(2));
+                setValue(`products.${index}.items.${itemIndex}.total`, totalAmount.toFixed(2));
+
+                newSubtotal += totalAmount;
+                totalcost += totalAmount;
+                newSubtotalWithoutMarkup += totalWithoutMarkup;
+            }
+        })
+
+        setValue(`products.${index}.total`, totalcost.toFixed(2));
+    });
+
+    return [newSubtotalWithoutMarkup, newSubtotal];
+}
+
 export const lineItem = { name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 export const txtItem = { name: "", description: "", }
 

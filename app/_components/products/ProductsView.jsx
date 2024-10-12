@@ -26,7 +26,7 @@ const ProductsView = ({ product }) => {
                             <thead>
                                 <tr className='border-b'>
                                     <th style={{ width: "20px" }}><p className="mb-4 text-md font-semibold text-left">Product / Service</p></th>
-                                    <th><p className="mb-4 text-md font-semibold text-left">Qty.</p></th>
+                                    <th><p className="mb-4 text-md font-semibold min-w-[70px] text-center">Qty.</p></th>
                                     <th><p className="mb-4 text-md font-semibold text-left px-4">Material</p></th>
                                     <th><p className="mb-4 text-md font-semibold text-left px-4">Labour</p></th>
                                     <th><p className="mb-4 text-md font-semibold text-left px-4">Markup</p></th>
@@ -48,7 +48,8 @@ const ProductsView = ({ product }) => {
                                             <td className='pr-2 py-4 text-center'>${service?.labour || 0}</td>
                                             <td className='pr-2 py-4 text-center'>
                                                 <div className="flex flex-col items-center justify-center gap-2">
-                                                    <span className=''>${service?.markupamount}<small className='ml-1 text-gray-700 dark:text-gray-400'><i>(${service?.markuppercentage}%)</i></small></span>
+                                                    <span>${service?.markupamount}</span>
+                                                    <small className='ml-1 text-gray-700 dark:text-gray-400'><i>(${service?.markuppercentage}%)</i></small>
                                                 </div>
                                             </td>
                                             <td className='pr-2 py-4 text-right'>${service?.total}</td>

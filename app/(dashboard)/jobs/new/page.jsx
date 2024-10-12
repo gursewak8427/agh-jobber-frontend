@@ -20,7 +20,7 @@ import CustomMenu from '@/components/CustomMenu';
 import JobType from '@/components/JobType';
 import Heading from '@/components/Heading';
 import { toast } from 'react-toastify';
-import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_components/products/ProductsList';
+import ProductsList, { defaultProductLineItem, updateProductsFn, updateProductsFnV2 } from '@/app/_components/products/ProductsList';
 
 
 export default function Page() {
@@ -161,11 +161,10 @@ export default function Page() {
   }, [JSON.stringify(watchProducts)]);
 
   const onBlur = () => {
-    let newSubtotal = updateProductsFn({ watchProducts, setValue });
+    let [newSubtotalWihoutMarkup, newSubtotal] = updateProductsFnV2({ watchProducts, setValue });
 
-    let _totatcost = parseFloat(newSubtotal);
-
-    setValue(`totalcost`, parseFloat(_totatcost)?.toFixed());
+    setValue(`totalcost`, parseFloat(newSubtotalWihoutMarkup)?.toFixed());
+    setValue(`totalprice`, parseFloat(newSubtotal)?.toFixed());
   }
 
 
@@ -256,7 +255,7 @@ export default function Page() {
       "lastvisit": data?.lastvisit,
       "totalvisit": data?.totalvisit,
       "totalcost": data?.totalcost,
-      "totalprice": data?.totalcost,
+      "totalprice": data?.totalprice,
       "internalnote": data?.internalnote,
       "isrelatedinvoices": data?.isrelatedinvoices,
       "status": "Upcoming",

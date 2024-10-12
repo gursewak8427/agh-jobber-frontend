@@ -25,7 +25,7 @@ import NewTimeEntry from '@/app/_components/job/NewTimeEntry';
 import NewExpense from '@/app/_components/job/NewExpense';
 import NewVisit from '@/app/_components/job/NewVisit';
 import NewInvoiceReminder from '@/app/_components/job/NewInvoiceReminder';
-import ProductsList, { updateProductsFn } from '@/app/_components/products/ProductsList';
+import ProductsList, { updateProductsFn, updateProductsFnV2 } from '@/app/_components/products/ProductsList';
 import { toast } from 'react-toastify';
 import ProductsView from '@/app/_components/products/ProductsView';
 
@@ -301,7 +301,10 @@ export default function Page() {
   }, [JSON.stringify(watchProducts)]);
 
   const onBlur = () => {
-    let newSubtotal = updateProductsFn({ watchProducts, setValue });
+    let [newSubtotalWihoutMarkup, newSubtotal] = updateProductsFnV2({ watchProducts, setValue });
+
+    setValue(`totalcost`, parseFloat(newSubtotalWihoutMarkup)?.toFixed());
+    setValue(`totalprice`, parseFloat(newSubtotal)?.toFixed());
   }
 
   useEffect(() => {
@@ -333,15 +336,22 @@ export default function Page() {
   //   dispatch(createJobService(jsonData)).then(() => setAddNewLineItem(false))
   // }
 
-  const saveProducts = () => {
+  const saveProducts = (data) => {
     let jsonData = {
-      'service': watchProducts,
-      "id": job?.id
+      'service': data?.products?.map(product => ({
+        ...product,
+      })),
+      "id": job?.id,
+      "totalcost": data?.totalcost,
+      "totalprice": data?.totalprice,
     }
     console.log({ jsonData })
 
-    dispatch(updateJob(jsonData))
+    dispatch(updateJob(jsonData)).then(_ => {
+      setIsServiceEdit(false)
+    })
   }
+
 
   return (
     <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary dark:text-dark-text'>
@@ -448,14 +458,16 @@ export default function Page() {
 
         <div className="bg-primary p-2 rounded space-y-4 dark:bg-dark-secondary">
 
-          <CustomButton title={"Show Profitability"} backIcon={<ChevronDown />} />
+          {/* <CustomButton title={"Show Profitability"} backIcon={<ChevronDown />} /> */}
           {/* Line Item Details */}
 
           {/* Profitabilty */}
           <div className="flex items-center justify-between p-4">
             {/* Left Side: Profit margin percentage */}
             <div className="flex flex-col items-start">
-              <p className="text-lg font-semibold text-gray-700 dark:text-dark-text">100%</p>
+              <p className="text-lg font-semibold text-gray-700 dark:text-dark-text">{
+                job?.totalcost - job?.expense?.reduce((total, expense) => total + parseFloat(expense?.total), 0) * 100 / job?.totalcost
+              }%</p>
               <p className="text-sm text-gray-500 dark:text-dark-text">Profit margin</p>
             </div>
 
@@ -467,24 +479,55 @@ export default function Page() {
                   <p className="text-sm font-semibold text-gray-700 dark:text-dark-text">${job?.totalprice}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-blue-500 dark:text-blue-300">Line Item Cost</p>
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">$0.00</p>
+                  <p className="text-xs text-gray-500 dark:text-dark-text">Total cost</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-dark-text">${job?.totalcost}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-blue-500 dark:text-blue-300">Labour</p>
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">${job?.service?.reduce((total, job) => total + parseFloat(job?.labour), 0)}</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">
+                    ${job?.service?.reduce((total, service) => {
+                      return total + (service?.items?.reduce((itemTotal, item) => {
+                        const labourCost = parseFloat(item?.labour) || 0; // Ensure it's a number, fallback to 0 if not
+                        return itemTotal + labourCost;
+                      }, 0) || 0); // Fallback to 0 if no items
+                    }, 0)}
+                  </p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-blue-500 dark:text-blue-300">Material</p>
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">${job?.service?.reduce((total, job) => total + parseFloat(job?.material), 0)}</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">
+                    ${job?.service?.reduce((total, service) => {
+                      return total + (service?.items?.reduce((itemTotal, item) => {
+                        const materialCost = parseFloat(item?.material) || 0; // Ensure it's a number, fallback to 0 if not
+                        return itemTotal + materialCost;
+                      }, 0) || 0); // Fallback to 0 if no items
+                    }, 0)}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-blue-500 dark:text-blue-300">Markup</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">
+                    ${job?.service?.reduce((total, service) => {
+                      return total + (service?.items?.reduce((itemTotal, item) => {
+                        const markupCost = parseFloat(item?.markupamount) || 0; // Ensure it's a number, fallback to 0 if not
+                        return itemTotal + markupCost;
+                      }, 0) || 0); // Fallback to 0 if no items
+                    }, 0)}
+                  </p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-blue-500 dark:text-blue-300">Expenses</p>
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">$0.00</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">
+                    ${job?.expense?.reduce((total, expense) => total + parseFloat(expense?.total), 0)}
+                  </p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-green-500 dark:text-dark-second-text">Profit</p>
-                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">$0.00</p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-400">$
+                    {
+                      job?.totalcost - job?.expense?.reduce((total, expense) => total + parseFloat(expense?.total), 0)
+                    }
+                  </p>
                 </div>
               </div>
 
@@ -665,14 +708,14 @@ export default function Page() {
                     <h3 className="text-2xl">Products</h3>
                     <CustomButton onClick={() => setIsServiceEdit(true)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
                   </div>
-                  <ProductsView product={job?.service} />
+                  <ProductsView product={watchProducts} />
                 </> :
                 <FormProvider {...methods}>
-                  <form>
+                  <form onSubmit={handleSubmit(saveProducts)}>
                     <ProductsList />
                     <div className="flex justify-end items-center gap-2">
                       <CustomButton onClick={() => setIsServiceEdit(false)} type={"button"} title={"Cancel"} />
-                      <CustomButton loading={loadingObj?.jobupdate} onClick={saveProducts} type={"submit"} title={"Save"} variant={"primary"} frontIcon={<Save />} />
+                      <CustomButton loading={loadingObj?.jobupdate} type={"submit"} title={"Save"} variant={"primary"} frontIcon={<Save />} />
                     </div>
                   </form>
                 </FormProvider>
