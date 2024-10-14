@@ -94,7 +94,7 @@ export default function Page() {
         _requireddeposit = requireddeposite
       }
     }
-    console.log({ _requireddeposit })
+    // console.log({ _requireddeposit })
     setValue(`requiredAmount`, parseFloat(_requireddeposit)?.toFixed(2))
   }, [requireddeposite, requiredtype])
 
@@ -131,7 +131,7 @@ export default function Page() {
     setValue(`gst`, gstAmount);
     setValue(`totalcost`, parseFloat(_totatcost)?.toFixed());
 
-    console.log({ _discount, discounttype })
+    // console.log({ _discount, discounttype })
     setValue(`discountAmount`, _discount)
   }
 
@@ -172,6 +172,26 @@ export default function Page() {
   }, [client])
 
 
+  function addDays(date, days) {
+    console.log({ date, days })
+
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
+  const calculateDueDate = (issuedate, type) => {
+    console.log({ issuedate, type })
+
+    let days;
+
+    if (type == "net_15") days = 15;
+    if (type == "net_30") days = 30;
+    if (type == "net_45") days = 45;
+
+    return addDays(issuedate, days)?.toISOString().slice(0, 10);
+  }
+
 
   const onSubmit = async (data) => {
 
@@ -191,6 +211,8 @@ export default function Page() {
     let _data = { ...data };
     delete _data?.quoteno
 
+    let issueDate = issueDateStatus ? data?.issueddate : new Date()?.toISOString().slice(0, 10);
+
     let jsonData = {
       "clientinvoicestyle": {
         ...(clientView && {
@@ -207,9 +229,9 @@ export default function Page() {
         ...product,
       })),
       "subject": data?.subject,
-      "issueddate": issueDateStatus ? data?.issueddate : new Date()?.toLocaleString(),
-      "paymentdue": paymentDueStatus ? data?.paymentdue : "new_30",
-      "paymentduedate": data?.paymentduedate,//duedate set based on paymentdue like net15 means issue date + 15 days if custom date then it will automatic work
+      "issueddate": issueDate,
+      "paymentdue": paymentDueStatus ? data?.paymentdue : "net_30",
+      "paymentduedate": data?.paymentdue == "custom" ? data?.paymentduedate : data?.paymentdue == "upon_receipt" ? "upon_receipt" : calculateDueDate(issueDate, paymentDueStatus ? data?.paymentdue : "net_30"),//duedate set based on paymentdue like net15 means issue date + 15 days if custom date then it will automatic work
       "salesperson_id": selectedSalesPerson?.id,
       "custom_field": changeAdditionaljobdetails,
       "subtotal": subtotal,
@@ -234,6 +256,9 @@ export default function Page() {
       "property_id": selectedProperty?.id,
       "client_id": client_id,
     }
+
+    console.log({ jsonData })
+    return;
     dispatch(createInvoice(jsonData)).then(({ payload }) => {
       if (payload?.id) {
         router.push(`/invoices/view/${payload?.id}`)

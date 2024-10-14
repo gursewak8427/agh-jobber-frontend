@@ -195,8 +195,30 @@ export default function Page() {
     }
   }, [invoice])
 
+  function addDays(date, days) {
+    console.log({ date, days })
+
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
+  const calculateDueDate = (issuedate, type) => {
+    console.log({ issuedate, type })
+
+    let days;
+
+    if (type == "net_15") days = 15;
+    if (type == "net_30") days = 30;
+    if (type == "net_45") days = 45;
+
+    return addDays(issuedate, days)?.toISOString().slice(0, 10);
+  }
+
 
   const onSubmit = async (data) => {
+
+    let issueDate = issueDateStatus ? data?.issueddate : new Date()?.toISOString().slice(0, 10);
 
     let jsonData = {
       "id": invoice?.id,
@@ -217,9 +239,8 @@ export default function Page() {
       })),
       "subject": data?.subject,
       "issueddate": issueDateStatus ? data?.issueddate : new Date()?.toLocaleString(),
-      "paymentdue": paymentDueStatus ? data?.paymentdue : "new_30",
-      "paymentduedate": data?.paymentduedate,//duedate set based on paymentdue like net15 means issue date + 15 days if custom date then it will automatic work
-      "salesperson_id": selectedSalesPerson?.id,
+      paymentdue: "net_30",
+      "paymentduedate": data?.paymentdue == "custom" ? data?.paymentduedate : data?.paymentdue == "upon_receipt" ? "upon_receipt" : calculateDueDate(issueDate, paymentDueStatus ? data?.paymentdue : "net_30"),//duedate set based on paymentdue like net15 means issue date + 15 days if custom date then it will automatic work      "salesperson_id": selectedSalesPerson?.id,
       "subtotal": subtotal,
       "discount": data?.discount,
       "discounttype": data?.discounttype,

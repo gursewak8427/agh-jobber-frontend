@@ -8,7 +8,7 @@ export const updateProductsFn = ({ setValue, watchProducts }) => {
     let newSubtotal = 0;
 
     watchProducts?.forEach((product, index) => {
-        console.log({ product });
+        // console.log({ product });
         let totalcost = 0;
         product?.items?.forEach((item, itemIndex) => {
 
@@ -40,7 +40,7 @@ export const updateProductsFnV2 = ({ setValue, watchProducts }) => {
     let newSubtotal = 0;
 
     watchProducts?.forEach((product, index) => {
-        console.log({ product });
+        // console.log({ product });
         let totalcost = 0;
         product?.items?.forEach((item, itemIndex) => {
 
@@ -158,7 +158,7 @@ const ProductsList = () => {
 
                         const _items = watch(`products.${index}.items`);
 
-                        console.log({ errors })
+                        // console.log({ errors })
 
                         return <div className='space-y-7 p-4 py-4 border rounded-lg'>
                             <div className="flex justify-between gap-2 items-center">
