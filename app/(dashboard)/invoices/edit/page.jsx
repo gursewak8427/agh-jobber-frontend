@@ -102,6 +102,10 @@ export default function Page() {
 
   const closeMenu = () => setMenu("")
 
+  useEffect(() => {
+    onBlur()
+  }, [JSON.stringify(watchProducts)]);
+
   const onBlur = () => {
     let newSubtotal = updateProductsFn({ watchProducts, setValue })
 
