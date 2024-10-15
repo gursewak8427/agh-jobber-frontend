@@ -16,7 +16,7 @@ const Sidebar = () => {
     const [collapse, setCollapse] = useState(false)
 
     return (
-        <div className={`bg-primary dark:bg-dark-primary font-bold dark:text-dark-text text-tprimary h-screen sticky top-0 ${!collapse ? 'w-48' : 'w-16'} transition-all`}>
+        <div className={`bg-primary-dark dark:bg-dark-primary font-bold dark:text-dark-text text-tprimary h-screen sticky top-0 ${!collapse ? 'w-48' : 'w-16'} transition-all`}>
             <div className="py-6 px-4">
                 {/* <img src="https://cdn.jobber.com/yr/logos/v1/logo_jobber_bug.svg" alt="" className='w-8 object-contain' /> */}
                 <ChainCircleLogo />

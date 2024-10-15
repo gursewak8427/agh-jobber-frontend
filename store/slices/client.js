@@ -166,6 +166,15 @@ export const createQuote = createAsyncThunk("createQuote", async (data, { reject
     }
 });
 
+export const updateQuote = createAsyncThunk("updateQuote", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/quote/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 export const fetchQuotes = createAsyncThunk("fetchQuotes", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quote/`);
@@ -206,6 +215,15 @@ export const fetchJob = createAsyncThunk("fetchJob", async (data, { rejectWithVa
 export const createJob = createAsyncThunk("createJob", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/job/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const updateJob = createAsyncThunk("updateJob", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/job/`, data);
         return response.data;
     } catch (error) {
         return handleAsyncThunkError(error, rejectWithValue);
@@ -253,6 +271,15 @@ export const fetchInvoice = createAsyncThunk("fetchInvoice", async (data, { reje
 export const createInvoice = createAsyncThunk("createInvoice", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/invoice/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const updateInvoice = createAsyncThunk("updateInvoice", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/invoice/`, data);
         return response.data;
     } catch (error) {
         return handleAsyncThunkError(error, rejectWithValue);
@@ -438,6 +465,87 @@ export const sendInvoiceMessage = createAsyncThunk("sendInvoiceMessage", async (
     }
 });
 
+export const fetchTemplate = createAsyncThunk("fetchTemplate", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+
+export const fetchSingleTemplate = createAsyncThunk("fetchSingleTemplate", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/?id=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const fetchTemplateProductForQuote = createAsyncThunk("fetchTemplateProductForQuote", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/templateproductquote/?template=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const createTemplate = createAsyncThunk("createTemplate", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const updateTemplate = createAsyncThunk("updateTemplate", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const deleteTemplate = createAsyncThunk("deleteTemplate", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/?id=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const deleteTemplateProductItem = createAsyncThunk("deleteTemplateProductItem", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/templateproductitem/?id=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const deleteTemplateProduct = createAsyncThunk("deleteTemplateProduct", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/templateproduct/?id=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const createTemplateWith = createAsyncThunk("createTemplateWith", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/quotetemplate/`, data);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
 
 // Initial State
 const initialState = {
@@ -461,6 +569,8 @@ const initialState = {
     jobs: [],
     invoice: {},
     invoices: [],
+    templates: [],
+    quoteproducts: [],
     pagination: {
         count: 0,
         next: '',
@@ -470,6 +580,7 @@ const initialState = {
     loadingList: false,
     errorList: null,
     successList: null,
+    loadingpromise:null,
 
     loadingForm: false,
     errorForm: null,
@@ -490,6 +601,9 @@ const clientSlice = createSlice({
         },
         clearsuccessList: (state, action) => {
             state.successList = null
+        },
+        clearloadingpromise: (state, action) => {
+            state.loadingpromise = null
         },
         clearerrorList: (state, action) => {
             state.errorList = null
@@ -661,6 +775,19 @@ const clientSlice = createSlice({
                 state.errorList = action.payload.error || 'Failed to create quote';
             });
         builder
+            .addCase(updateQuote.pending, (state, action) => {
+                state.loadingObj['updatequote'] = true;
+            })
+            .addCase(updateQuote.fulfilled, (state, action) => {
+                state.quote = action.payload;
+                delete state.loadingObj['updatequote'];
+                state.successList = 'Quote updated Successfully!'
+            })
+            .addCase(updateQuote.rejected, (state, action) => {
+                delete state.loadingObj['updatequote'];
+                state.errorList = action.payload.error || 'Failed to update quote';
+            });
+        builder
             .addCase(fetchQuotes.pending, (state, action) => {
                 state.loadingList = true;
             })
@@ -728,6 +855,19 @@ const clientSlice = createSlice({
                 state.errorList = action.payload.error || 'Failed to create job';
             });
         builder
+            .addCase(updateJob.pending, (state, action) => {
+                state.loadingObj['jobupdate'] = true
+            })
+            .addCase(updateJob.fulfilled, (state, action) => {
+                delete state.loadingObj['jobupdate'];
+                state.successList = "Job updated Succesfully!!"
+                state.job = action.payload;
+            })
+            .addCase(updateJob.rejected, (state, action) => {
+                delete state.loadingObj['jobupdate'];
+                state.errorList = action.payload.error || 'Failed to update job';
+            });
+        builder
             .addCase(fetchJobs.pending, (state, action) => {
                 state.loadingList = true;
             })
@@ -763,6 +903,19 @@ const clientSlice = createSlice({
             .addCase(createInvoice.rejected, (state, action) => {
                 delete state.loadingObj['createinvoice']
                 state.errorList = action.payload.error || 'Failed to create invoice';
+            });
+        builder
+            .addCase(updateInvoice.pending, (state, action) => {
+                state.loadingObj['updateinvoice'] = true
+            })
+            .addCase(updateInvoice.fulfilled, (state, action) => {
+                delete state.loadingObj['updateinvoice']
+                state.successList = "Invoice updated Successfully"
+                state.invoice = action.payload;
+            })
+            .addCase(updateInvoice.rejected, (state, action) => {
+                delete state.loadingObj['updateinvoice']
+                state.errorList = action.payload.error || 'Failed to update invoice';
             });
         builder
             .addCase(fetchInvoices.pending, (state, action) => {
@@ -1045,8 +1198,112 @@ const clientSlice = createSlice({
                 state.errorList = action.payload.error || 'Failed to send message!!!';
                 delete state.loadingObj['invoiceemail'];
             });
+        builder
+            .addCase(createTemplate.pending, (state, action) => {
+                state.loadingObj['savetemplate'] = true;
+            })
+            .addCase(createTemplate.fulfilled, (state, action) => {
+                state.successList = 'New Template Created Successfully!';
+                delete state.loadingObj['savetemplate'];
+            })
+            .addCase(createTemplate.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to create template!!!';
+                delete state.loadingObj['savetemplate'];
+            });
+        builder
+            .addCase(updateTemplate.pending, (state, action) => {
+                state.loadingObj['updatetemplate'] = true;
+            })
+            .addCase(updateTemplate.fulfilled, (state, action) => {
+                state.successList = 'Template updated successfully!';
+                delete state.loadingObj['updatetemplate'];
+            })
+            .addCase(updateTemplate.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to update template!!!';
+                delete state.loadingObj['updatetemplate'];
+            });
+        builder
+            .addCase(createTemplateWith.pending, (state, action) => {
+                state.loadingObj['savetemplatewith'] = true;
+            })
+            .addCase(createTemplateWith.fulfilled, (state, action) => {
+                state.successList = 'New Template Created Successfully!';
+                delete state.loadingObj['savetemplatewith'];
+            })
+            .addCase(createTemplateWith.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to create template!!!';
+                delete state.loadingObj['savetemplatewith'];
+            });
+        builder
+            .addCase(deleteTemplate.pending, (state, action) => {
+                state.loadingpromise = 'Deleting templete please wait!';
+            })
+            .addCase(deleteTemplate.fulfilled, (state, action) => {
+                state.successList = 'Template deleted Successfully!';
+                state.templates = action.payload;
+            })
+            .addCase(deleteTemplate.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to delete template!!!';
+            });
+        builder
+            .addCase(deleteTemplateProductItem.pending, (state, action) => {
+                state.loadingpromise = 'Deleting Item please wait!';
+            })
+            .addCase(deleteTemplateProductItem.fulfilled, (state, action) => {
+                state.successList = 'Item deleted Successfully!';
+            })
+            .addCase(deleteTemplateProductItem.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to delete item!!!';
+            });
+        builder
+            .addCase(deleteTemplateProduct.pending, (state, action) => {
+                state.loadingpromise = 'Deleting Product please wait!';
+            })
+            .addCase(deleteTemplateProduct.fulfilled, (state, action) => {
+                state.successList = 'Product deleted Successfully!';
+            })
+            .addCase(deleteTemplateProduct.rejected, (state, action) => {
+                state.errorList = action.payload.error || 'Failed to delete Product!!!';
+            });
+        builder
+            .addCase(fetchTemplate.pending, (state, action) => {
+                state.loadingFull = true;
+            })
+            .addCase(fetchTemplate.fulfilled, (state, action) => {
+                state.templates = action.payload;
+                state.loadingFull = false;
+            })
+            .addCase(fetchTemplate.rejected, (state, action) => {
+                state.loadingFull = false;
+                state.errorList = action.payload.error || 'Failed to fetch templates!!!';
+            });
+        builder
+            .addCase(fetchTemplateProductForQuote.pending, (state, action) => {
+                state.loadingFull = true;
+            })
+            .addCase(fetchTemplateProductForQuote.fulfilled, (state, action) => {
+                state.quoteproducts = action.payload;
+                state.loadingFull = false;
+            })
+            .addCase(fetchTemplateProductForQuote.rejected, (state, action) => {
+                state.loadingFull = false;
+                state.errorList = action.payload.error || 'Failed to fetch templates!!!';
+            });
+
+        builder
+            .addCase(fetchSingleTemplate.pending, (state, action) => {
+                state.loadingFull = true;
+            })
+            .addCase(fetchSingleTemplate.fulfilled, (state, action) => {
+                state.quoteproducts = action.payload;
+                state.loadingFull = false;
+            })
+            .addCase(fetchSingleTemplate.rejected, (state, action) => {
+                state.loadingFull = false;
+                state.errorList = action.payload.error || 'Failed to fetch templates!!!';
+            });
     },
 });
 
-export const { setLoading, removeLoading, clearsuccessList, clearerrorList, darkmodeState } = clientSlice.actions;
+export const { setLoading, removeLoading, clearsuccessList, clearerrorList, darkmodeState,clearloadingpromise } = clientSlice.actions;
 export default clientSlice.reducer;

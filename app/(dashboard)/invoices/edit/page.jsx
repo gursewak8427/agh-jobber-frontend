@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createInvoice, createQuote, fetchallClients, fetchClient, fetchInvoicecount, fetchInvoiceCustomFields, fetchTeam } from '@/store/slices/client';
+import { createInvoice, createQuote, fetchallClients, fetchClient, fetchInvoice, fetchInvoicecount, fetchInvoiceCustomFields, fetchTeam, updateInvoice } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary } from '@/utils';
@@ -22,6 +22,7 @@ import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_c
 
 export default function Page() {
   const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const client_id = searchParams.get("client_id");
 
   const [menu, setMenu] = useState("")
@@ -40,7 +41,7 @@ export default function Page() {
 
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  const { loadingObj, client, team, invoicecount, invoicecustomfields } = useSelector(state => state.clients);
+  const { loadingObj, client, invoice, team, invoicecount, invoicecustomfields } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -61,6 +62,7 @@ export default function Page() {
     control,
     formState: { errors },
     setValue,
+    reset,
   } = methods;
 
   const { fields: productsList, append: appendProduct, remove: removeProduct } = useFieldArray({
@@ -94,12 +96,11 @@ export default function Page() {
         _requireddeposit = requireddeposite
       }
     }
-    // console.log({ _requireddeposit })
+    console.log({ _requireddeposit })
     setValue(`requiredAmount`, parseFloat(_requireddeposit)?.toFixed(2))
   }, [requireddeposite, requiredtype])
 
   const closeMenu = () => setMenu("")
-
 
   useEffect(() => {
     onBlur()
@@ -131,8 +132,8 @@ export default function Page() {
     setValue(`gst`, gstAmount);
     setValue(`totalcost`, parseFloat(_totatcost)?.toFixed());
 
-    // console.log({ _discount, discounttype })
-    setValue(`discountAmount`, _discount)
+    console.log({ _discount, discounttype })
+    setValue(`discountAmount`, parseFloat(_discount)?.toFixed(2))
   }
 
 
@@ -151,26 +152,48 @@ export default function Page() {
     dispatch(fetchClient(client_id));
   }, [client_id])
 
+
   useEffect(() => {
-    if (!client_id) {
-      router.push(`/invoices`)
-      return;
-    };
+    if (!id) return;
 
+    dispatch(fetchInvoice(id));
+  }, [id])
 
-    if (client?.property?.length > 1) {
-      setSelectedProperty(null)
-      setPropertyModal("SELECT")
-    } else {
-      if (client?.property?.length == 0) {
-        setSelectedProperty(null)
-        setPropertyModal("NEW")
-      } else {
-        setSelectedProperty(client?.property?.[0])
+  useEffect(() => {
+    console.log({ invoice })
+    if (invoice) {
+      reset({
+        ...invoice,
+        products: invoice?.service,
+        clientview_quantities: invoice?.clientquotestyle?.quantities || false,
+        clientview_materials: invoice?.clientquotestyle?.materials || false,
+        clientview_markuppercentage: invoice?.clientquotestyle?.markuppercentage || false,
+        clientview_markupamount: invoice?.clientquotestyle?.markupamount || false,
+        clientview_labour: invoice?.clientquotestyle?.labour || false,
+        clientview_total: invoice?.clientquotestyle?.total || false,
+
+        discount: invoice?.discount,
+        discounttype: invoice?.discounttype,
+        discountAmount: invoice?.discounttype == "amount" ? invoice?.discount : parseFloat(invoice?.subtotal * invoice?.discount / 100)?.toFixed(2),
+      })
+
+      if (Boolean(invoice?.discount)) {
+        setDiscount(true)
+      }
+      if (Boolean(invoice?.requireddeposite)) {
+        setRequiredDeposit(true)
+      }
+
+      setSelectedProperty(invoice?.property)
+      setSalesPerson(invoice?.salesperson)
+
+      setIssueDateStatus(true)
+
+      if (invoice?.paymentdue != "net_30") {
+        setPaymentDueStatus(true)
       }
     }
-  }, [client])
-
+  }, [invoice])
 
   function addDays(date, days) {
     console.log({ date, days })
@@ -195,27 +218,13 @@ export default function Page() {
 
   const onSubmit = async (data) => {
 
-    const changeAdditionaljobdetails = invoicecustomfields?.map((item, index) => {
-
-      const change = data?.InvoiceCustomFields?.[`${item.id}key`] || null;
-      if (!change) return null;
-
-      const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
-      if (hasChanged) {
-        return { custom_field_id: item.id, ...change };
-      }
-      return null;
-    })
-      .filter(Boolean);
-
-    let _data = { ...data };
-    delete _data?.quoteno
-
     let issueDate = issueDateStatus ? data?.issueddate : new Date()?.toISOString().slice(0, 10);
 
     let jsonData = {
+      "id": invoice?.id,
       "clientinvoicestyle": {
         ...(clientView && {
+          id: invoice?.clientquotestyle?.id,
           quantities: data?.clientview_quantities,
           materials: data?.clientview_materials,
           markuppercentage: data?.clientview_markuppercentage,
@@ -229,42 +238,28 @@ export default function Page() {
         ...product,
       })),
       "subject": data?.subject,
-      "issueddate": issueDate,
-      "paymentdue": paymentDueStatus ? data?.paymentdue : "net_30",
-      "paymentduedate": data?.paymentdue == "custom" ? data?.paymentduedate : data?.paymentdue == "upon_receipt" ? "upon_receipt" : calculateDueDate(issueDate, paymentDueStatus ? data?.paymentdue : "net_30"),//duedate set based on paymentdue like net15 means issue date + 15 days if custom date then it will automatic work
-      "salesperson_id": selectedSalesPerson?.id,
-      "custom_field": changeAdditionaljobdetails,
+      "issueddate": issueDateStatus ? data?.issueddate : new Date()?.toLocaleString(),
+      paymentdue: "net_30",
+      "paymentduedate": data?.paymentdue == "custom" ? data?.paymentduedate : data?.paymentdue == "upon_receipt" ? "upon_receipt" : calculateDueDate(issueDate, paymentDueStatus ? data?.paymentdue : "net_30"),//duedate set based on paymentdue like net15 means issue date + 15 days if custom date then it will automatic work      "salesperson_id": selectedSalesPerson?.id,
       "subtotal": subtotal,
       "discount": data?.discount,
       "discounttype": data?.discounttype,
       "tax": gst,
       "costs": totalcost,
 
-      // Why these here
-      // "repeats": data?.repeats,
-      // "duration": data?.duration,
-      // "durationtype": data?.durationtype,
-      // "firstvisit": data?.firstvisit,
-      // "lastvisit": data?.lastvisit,
-      // "totalvisit": data?.totalvisit,
-      // "totalcost": data?.totalcost,
-      // "totalprice": data?.totalcost,
-
       "internalnote": data?.internalnote,
       "clientmessage": data?.clientmessage,
 
-      "property_id": selectedProperty?.id,
+      "property_id": invoice?.property?.id,
       "client_id": client_id,
     }
 
-    console.log({ jsonData })
-    return;
-    dispatch(createInvoice(jsonData)).then(({ payload }) => {
+    console.log({ jsonData });
+    dispatch(updateInvoice(jsonData)).then(({ payload }) => {
       if (payload?.id) {
         router.push(`/invoices/view/${payload?.id}`)
       }
-    })
-    console.log({ jsonData });
+    });
   };
 
   return (
@@ -295,21 +290,13 @@ export default function Page() {
                 {
                   client_id && <div className="flex text-sm">
                     <div className="w-1/2">
-                      {
-                        selectedProperty &&
-                        <>
-                          <h1 className='font-bold mb-2'>Property address</h1>
-                          <p className='max-w-[150px]'>{getAddress(selectedProperty)}</p>
-                          <Button className='text-green-700 p-0 dark:text-dark-second-text' onClick={() => {
-                            setPropertyModal("SELECT")
-                          }}>change</Button>
-                        </>
-                      }
+                      <h1 className='font-bold mb-2'>Property address</h1>
+                      <p className='max-w-[150px]'>{getAddress(invoice?.property)}</p>
                     </div>
                     <div className="w-1/2">
                       <h1 className='font-bold mb-2'>Contact details</h1>
-                      <p className='max-w-[140px]'>{getPrimary(client?.mobile)?.number}</p>
-                      <p className='max-w-[140px]'>{getPrimary(client?.email)?.email}</p>
+                      <p className='max-w-[140px]'>{getPrimary(invoice?.client?.mobile)?.number}</p>
+                      <p className='max-w-[140px]'>{getPrimary(invoice?.client?.email)?.email}</p>
                     </div>
                   </div>
                 }
@@ -379,14 +366,6 @@ export default function Page() {
                         }
                       </CustomMenu>
                   }
-                </div>
-                <div className="space-y-2">
-                  {
-                    invoicecustomfields?.map((field, index) => <CustomSingleField register={register} prefix="InvoiceCustomFields" field={field} index={index} customfields={invoicecustomfields} />)
-                  }
-                </div>
-                <div className="my-4">
-                  <CustomButton title="Add Custom Field" onClick={() => setOpen("invoice")} />
                 </div>
               </div>
             </div>
@@ -514,7 +493,7 @@ export default function Page() {
                           <div className="flex items-center">
                             <input type="text" {...register("discount")} onBlur={onBlur}
                               className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
-                            <select name="discounttype" id="discounttype" {...register("discounttype")} onBlur={onBlur} className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
+                            <select name="discounttype" id="discounttype" {...register("discounttype")} onBlur={onBlur} className="dark:bg-dark-secondary h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
                               <option value="amount">$</option>
                               <option value="percentage">%</option>
                             </select>
@@ -539,28 +518,6 @@ export default function Page() {
                   <div className="mb-2 flex items-center justify-between space-x-3 border-b-gray-300 pb-2 border-b-[5px]">
                     <div className="font-semibold min-w-[200px]">Total</div>
                     <p className='text-gray-700 font-semibold dark:text-dark-text'>${totalcost || `0.00`}</p>
-                  </div>
-
-                  <div className="mb-4 flex items-center justify-between space-x-3 pb-2">
-                    <div className="font-medium min-w-[200px]">Required Deposit</div>
-
-                    {
-                      isRequiredDeposit ? <div className="flex items-center gap-2 justify-between w-full">
-                        <div className="flex items-center">
-                          <input type="text" {...register("requireddeposite")} onBlur={onBlur}
-                            className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-r-none" />
-                          <select name="requiredtype" id="requiredtype" {...register("requiredtype")} onBlur={onBlur} className="dark:bg-dark-secondary w-16 h-10 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-l-none" >
-                            <option value="amount">$</option>
-                            <option value="percentage">%</option>
-                          </select>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span className="font-normal flex items-center">${requiredAmount || 0}</span>
-                          <Trash2 onClick={() => setRequiredDeposit(false)} className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
-                        </div>
-                      </div> :
-                        <p onClick={() => setRequiredDeposit(true)} className='text-green-700 underline font-semibold cursor-pointer'>Add required deposit</p>
-                    }
                   </div>
                 </div>
               </div>
@@ -588,7 +545,7 @@ export default function Page() {
                 {
                   !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
                     <div className="flex gap-2 items-center">
-                      <CustomButton loading={loadingObj.createinvoice} type={"submit"} title="Save Invoice"></CustomButton>
+                      <CustomButton loading={loadingObj.updateinvoice} type={"submit"} title="Save Invoice"></CustomButton>
                       <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
                         {/* Menu Items */}
                         <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>

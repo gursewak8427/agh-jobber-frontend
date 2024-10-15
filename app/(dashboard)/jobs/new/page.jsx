@@ -8,7 +8,7 @@ import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
 import { createJob, createJobEmployeeSheet, createJobExepense, createJobService, createJobVisit, createQuote, fetchallClients, fetchClient, fetchJobcount, fetchJobCustomFields, fetchQuotecount, fetchQuoteCustomFields, fetchTeam } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
@@ -20,10 +20,8 @@ import CustomMenu from '@/components/CustomMenu';
 import JobType from '@/components/JobType';
 import Heading from '@/components/Heading';
 import { toast } from 'react-toastify';
+import ProductsList, { defaultProductLineItem, updateProductsFn, updateProductsFnV2 } from '@/app/_components/products/ProductsList';
 
-const defaultProductLineItem = { type: "default", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
-const defaultProductOptional = { type: "optional", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
-const defaultProductTextItem = { type: "text", name: "", description: "", quantity: 1, material: 0, markuppercentage: 0, markupamount: 0, labour: 0, total: 0 }
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -50,6 +48,14 @@ export default function Page() {
 
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const methods = useForm({
+    defaultValues: {
+      products: [defaultProductLineItem],
+      discount: 0,
+      requireddeposite: 0,
+      invocieReceiveType: "per_visit"
+    },
+  });
   const {
     register,
     handleSubmit,
@@ -58,14 +64,7 @@ export default function Page() {
     formState: { errors },
     setValue,
     getValues
-  } = useForm({
-    defaultValues: {
-      products: [defaultProductLineItem],
-      discount: 0,
-      requireddeposite: 0,
-      invocieReceiveType: "per_visit"
-    },
-  });
+  } = methods;
 
   const { fields: productsList, append: appendProduct, remove: removeProduct } = useFieldArray({
     control,
@@ -154,36 +153,18 @@ export default function Page() {
     setValue(`requiredAmount`, parseFloat(_requireddeposit)?.toFixed(2))
   }, [requireddeposite, requiredtype])
 
-  // Calculation logic for each product line
-  // useEffect(() => {
-
-  // }, [watchProducts, discount, setValue]);
-
   const closeMenu = () => setMenu("")
 
+  // Calculation logic for each product line
+  useEffect(() => {
+    onBlur()
+  }, [JSON.stringify(watchProducts)]);
+
   const onBlur = () => {
-    let newSubtotal = 0;
+    let [newSubtotalWihoutMarkup, newSubtotal] = updateProductsFnV2({ watchProducts, setValue });
 
-    watchProducts.forEach((product, index) => {
-      if (product.type !== "text") {
-        const material = parseFloat(product.material) || 0;
-        const labour = parseFloat(product.labour) || 0;
-        const markupPercentage = parseFloat(product.markuppercentage) || 0;
-
-        const markupAmount = (material + labour) * (markupPercentage / 100);
-        const totalAmount = (material + labour + markupAmount) * (product?.quantity || 1);
-
-        setValue(`products.${index}.markupamount`, markupAmount.toFixed(2));
-        setValue(`products.${index}.total`, totalAmount.toFixed(2));
-
-        newSubtotal += totalAmount;
-      }
-    });
-
-
-    let _totatcost = parseFloat(newSubtotal);
-
-    setValue(`totalcost`, parseFloat(_totatcost)?.toFixed());
+    setValue(`totalcost`, parseFloat(newSubtotalWihoutMarkup)?.toFixed());
+    setValue(`totalprice`, parseFloat(newSubtotal)?.toFixed());
   }
 
 
@@ -274,7 +255,7 @@ export default function Page() {
       "lastvisit": data?.lastvisit,
       "totalvisit": data?.totalvisit,
       "totalcost": data?.totalcost,
-      "totalprice": data?.totalcost,
+      "totalprice": data?.totalprice,
       "internalnote": data?.internalnote,
       "isrelatedinvoices": data?.isrelatedinvoices,
       "status": "Upcoming",
@@ -356,309 +337,210 @@ export default function Page() {
         </div>
 
         {/* Job Title */}
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300 pb-4">
-            <div className="w-1/2 flex flex-col space-y-4">
-              <div className="flex flex-col">
-                <input
-                  {...register("title")}
-                  placeholder='Title'
-                  className="focus:outline-gray-500 dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                />
-                <textarea
-                  {...register("instructions")}
-                  placeholder='Instructions'
-                  className="focus:outline-gray-500 dark:bg-dark-secondary outline-offset-2 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
-                ></textarea>
-              </div>
-              {
-                client_id && <div className="flex text-sm">
-                  <div className="w-1/2">
-                    {
-                      selectedProperty &&
-                      <>
-                        <h1 className='font-bold mb-2'>Property address</h1>
-                        <p className='max-w-[150px]'>{getAddress(selectedProperty)}</p>
-                        <Button className='text-green-700 p-0' onClick={() => {
-                          setPropertyModal("SELECT")
-                        }}>change</Button>
-                      </>
-                    }
-                  </div>
-                  <div className="w-1/2">
-                    <h1 className='font-bold mb-2'>Contact details</h1>
-                    <p className='max-w-[140px]'>{getPrimary(client?.mobile)?.number}</p>
-                    <p className='max-w-[140px]'>{getPrimary(client?.email)?.email}</p>
-                  </div>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex items-start justify-start gap-4 border-b-4 border-b-gray-300 pb-4">
+              <div className="w-1/2 flex flex-col space-y-4">
+                <div className="flex flex-col">
+                  <input
+                    {...register("title")}
+                    placeholder='Title'
+                    className="focus:outline-gray-500 dark:bg-dark-secondary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
+                  />
+                  <textarea
+                    {...register("instructions")}
+                    placeholder='Instructions'
+                    className="focus:outline-gray-500 dark:bg-dark-secondary outline-offset-2 border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
+                  ></textarea>
                 </div>
-              }
-            </div>
-            {/* Job details */}
-            <div className="p-4 rounded-lg w-1/2">
-              <h1 className='font-bold mb-2'>Job details</h1>
-              <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium min-w-[200px]">Job number #{jobcount}</div>
                 {
-                  isJobno ? <div className="flex gap-2 items-center">
-                    <input type="text" {...register("jobno")} onBlur={onBlur} defaultValue={jobcount}
-                      className="w-16 h-8 dark:bg-dark-secondary text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
-                    <CustomButton onClick={() => { setValue("jobno", jobcount); setJobNo(false) }} title={"Cancel"} />
-                  </div> :
-                    <Button onClick={() => setJobNo(true)} className='px-0 text-green-700 underline font-semibold'>change</Button>
-                }
-              </div>
-
-              <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
-                <div className="font-medium min-w-[200px]">Salesperson</div>
-                {
-                  selectedSalesPerson ? <div className="flex items-center bg-secondary p-2 rounded-full dark:bg-dark-primary">
-                    <Avatar className="mr-2 bg-slate-600 text-sm dark:text-dark-text">{selectedSalesPerson?.name[0]}</Avatar>
-                    <div className="text-sm">{selectedSalesPerson?.name}</div>
-                    <IconButton color="error" onClick={() => setSalesPerson(null)}>
-                      <X />
-                    </IconButton>
-                  </div> :
-                    <CustomMenu open={menu == "salesperson"} icon={<CustomButton onClick={() => setMenu("salesperson")} title={"Add"} frontIcon={<PlusIcon className='w-4 h-4' />} />}>
+                  client_id && <div className="flex text-sm">
+                    <div className="w-1/2">
                       {
-                        team?.map((t, i) => {
-                          return <MenuItem key={`salesperson-${i}`} onClick={() => {
-                            closeMenu();
-                            setSalesPerson(t)
-                          }}>
-                            <Typography>{t?.name}</Typography>
-                          </MenuItem>
-                        })
+                        selectedProperty &&
+                        <>
+                          <h1 className='font-bold mb-2'>Property address</h1>
+                          <p className='max-w-[150px]'>{getAddress(selectedProperty)}</p>
+                          <Button className='text-green-700 p-0' onClick={() => {
+                            setPropertyModal("SELECT")
+                          }}>change</Button>
+                        </>
                       }
-                    </CustomMenu>
-                }
-              </div>
-              <div className="space-y-2">
-                {
-                  jobcustomfields?.map((field, index) => <CustomSingleField register={register} prefix="JobCustomFields" field={field} index={index} customfields={jobcustomfields} />)
-                }
-              </div>
-              <div className="my-4">
-                <CustomButton title="Add Custom Field" onClick={() => setOpen("job")} />
-              </div>
-            </div>
-          </div>
-
-          <div className="py-2">
-            <h2 className="text-2xl font-semibold mb-2">Type</h2>
-            <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 flex flex-row items-start justify-start gap-2">
-              <div className="w-2/5 space-y-3">
-                <JobType visits={visits} register={register} watch={watch} setValue={setValue} />
-
-                {/* Team  */}
-                <div className='border border-gray-400 rounded-xl p-4 space-y-4'>
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-semibold mb-2">Team</h2>
-                    <CustomMenu open={menu == "team"} icon={<CustomButton onClick={() => setMenu("team")} title={"Assign"} frontIcon={<PlusIcon className='w-4 h-4' />} />}>
-                      {
-                        team?.map((t, i) => {
-                          return <MenuItem key={`team-${i}`}>
-                            <div className="flex items-center gap-2">
-                              <input type="checkbox" id={`teamCheckbox-${t?.id}`} checked={teamList?.some(_t => _t?.id == t?.id)} onChange={(e) => {
-                                if (!e?.target?.checked) {
-                                  setTeamList(teamList?.filter(teamId => teamId?.id != t?.id))
-                                } else {
-                                  setTeamList([...teamList, t])
-                                }
-                              }} />
-                              <label className='cursor-pointer' htmlFor={`teamCheckbox-${t?.id}`}>{t?.name}</label>
-                            </div>
-                          </MenuItem>
-                        })
-                      }
-                      <div className="p-2 px-3">
-                        <CustomButton onClick={() => {
-                          router?.push(`/clients/new`)
-                        }} frontIcon={<PlusIcon className='w-4 h-4' />} title={"Create User"} />
-                      </div>
-                    </CustomMenu>
+                    </div>
+                    <div className="w-1/2">
+                      <h1 className='font-bold mb-2'>Contact details</h1>
+                      <p className='max-w-[140px]'>{getPrimary(client?.mobile)?.number}</p>
+                      <p className='max-w-[140px]'>{getPrimary(client?.email)?.email}</p>
+                    </div>
                   </div>
+                }
+              </div>
+              {/* Job details */}
+              <div className="p-4 rounded-lg w-1/2">
+                <h1 className='font-bold mb-2'>Job details</h1>
+                <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
+                  <div className="font-medium min-w-[200px]">Job number #{jobcount}</div>
                   {
-                    teamList?.length == 0 ?
-                      <p className="text-sm mt-2 text-gray-700 italic dark:text-dark-text">No users are currently assigned</p> :
-                      <div className="flex items-start justify-start gap-4 flex-wrap">
+                    isJobno ? <div className="flex gap-2 items-center">
+                      <input type="text" {...register("jobno")} onBlur={onBlur} defaultValue={jobcount}
+                        className="w-16 h-8 dark:bg-dark-secondary text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg" />
+                      <CustomButton onClick={() => { setValue("jobno", jobcount); setJobNo(false) }} title={"Cancel"} />
+                    </div> :
+                      <Button onClick={() => setJobNo(true)} className='px-0 text-green-700 underline font-semibold'>change</Button>
+                  }
+                </div>
+
+                <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
+                  <div className="font-medium min-w-[200px]">Salesperson</div>
+                  {
+                    selectedSalesPerson ? <div className="flex items-center bg-secondary p-2 rounded-full dark:bg-dark-primary">
+                      <Avatar className="mr-2 bg-slate-600 text-sm dark:text-dark-text">{selectedSalesPerson?.name[0]}</Avatar>
+                      <div className="text-sm">{selectedSalesPerson?.name}</div>
+                      <IconButton color="error" onClick={() => setSalesPerson(null)}>
+                        <X />
+                      </IconButton>
+                    </div> :
+                      <CustomMenu open={menu == "salesperson"} icon={<CustomButton onClick={() => setMenu("salesperson")} title={"Add"} frontIcon={<PlusIcon className='w-4 h-4' />} />}>
                         {
-                          teamList?.map(t => {
-                            return <div className='px-3 py-1 bg-primary rounded-full dark:bg-dark-primary'>
-                              <span className='text-xs'>{t?.name}</span>
-                              <IconButton>
-                                <X className='w-5 h-5 text-red-700' />
-                              </IconButton>
-                            </div>
+                          team?.map((t, i) => {
+                            return <MenuItem key={`salesperson-${i}`} onClick={() => {
+                              closeMenu();
+                              setSalesPerson(t)
+                            }}>
+                              <Typography>{t?.name}</Typography>
+                            </MenuItem>
                           })
                         }
-                      </div>
+                      </CustomMenu>
                   }
                 </div>
-              </div>
-
-              <div className="calender flex flex-grow flex-1">
-
-              </div>
-            </div>
-          </div>
-
-
-          {/* Invoicing */}
-          {
-            jobtype == "recurring" ? <div className='border mb-4 border-gray-400 rounded-xl p-4 space-y-4'>
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold mb-2">Invoicing</h2>
-              </div>
-              <div className="flex w-full gap-2">
-                <div className="w-1/2 space-y-4">
-                  <div className="space-y-1">
-                    <div className='text-sm font-semibold cursor-pointer'>How do you want to invoice?</div>
-                    <div className="flex gap-4 items-center">
-                      <div className="gap-2 flex">
-                        <input type="radio" {...register("invocieReceiveType")} value={"per_visit"} id="per-visit" className='focus:outline-none' />
-                        <label className='cursor-pointer text-sm text-gray-500 dark:text-dark-text' htmlFor="per-visit">Per Visit</label>
-                      </div>
-                      <div className="gap-2 flex">
-                        <input type="radio" {...register("invocieReceiveType")} value={"fixed_price"} id="fixed-price" className='focus:outline-none' />
-                        <label className='cursor-pointer text-sm text-gray-500 dark:text-dark-text' htmlFor="fixed-price">Fixed price</label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <div className='text-sm font-semibold cursor-pointer'>When do you want to invoice?</div>
-                    <div className="mb-4 flex flex-col">
-                      <select {...register('invoiceTiming')} name="invoiceTiming" id="invoiceTiming" className='max-w-full w-[400px] dark:bg-dark-secondary border-gray-400 focus:outline-gray-500 border p-2 rounded-md h-11 text-sm'>
-                        <option className='text-sm' value="monthly_last">Monthly on the last of the month</option>
-                        <option className='text-sm' value="after_each_vist">After each visit is complete</option>
-                        <option className='text-sm' value="as_we_need">As needed -- no reminder</option>
-                        <option className='text-sm' value="when_job_close">Once when job is closed</option>
-                        <option disabled>or</option>
-                        <option disabled className='text-sm' value="custom_schedule">Custom Schedule</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-1/2 space-y-3">
-                  <span className='font-semibold text-md'>Get paid automatically</span>
-                  <p className='text-md text-gray-500 dark:text-dark-text'>Sit back as the money rolls in. Clients are automatically invoiced and charged based on their billing frequency once they save a payment method on file. Learn more in <Link href={"#"} className='text-green-600 dark:text-dark-second-text'>Help Center</Link></p>
-                </div>
-              </div>
-            </div> : jobtype == "oneoff" && <div className='border mb-4 border-gray-400 rounded-xl p-4 space-y-4'>
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold mb-2">Invoicing</h2>
-              </div>
-              <div className="flex items-center mb-4">
-                <input  {...register("invoiceupdate")} type="checkbox" className="mr-2 w-5 h-5" id='invoiceupdate' />
-                <label className='text-sm font-semibold cursor-pointer' htmlFor='invoiceupdate'>Remind me to invoice when I close the job</label>
-              </div>
-            </div>
-          }
-
-          {/* Line Items */}
-          <div className='border border-gray-400 rounded-xl p-4 space-y-4'>
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold mb-2">Line Items</h2>
-              <CustomButton
-                onClick={() => appendProduct(defaultProductLineItem)}
-                variant="primary" title="New Line Item" frontIcon={<PlusIcon className='text-white' />} >
-              </CustomButton>
-            </div>
-            <div className="flex flex-col items-center mb-4">
-              {/* data products loop */}
-              <table className='w-full'>
-                <tbody>
+                <div className="space-y-2">
                   {
-                    productsList?.map((product, index) => {
-
-                      return <>
-                        {/* <tr>
-                          <td colSpan={5}>
-                            <Button onClick={() => { removeProduct(index); }} className='text-red-500 hover:underline float-right'>Delete</Button>
-                          </td>
-                        </tr> */}
-                        <tr>
-                          <td className='pr-2 pb-4 w-[700px] h-[100px]'>
-                            <div className="flex flex-col h-full items-start justify-start">
-                              <input
-                                hidden
-                                {...register(`products.${index}.type`)}
-                                placeholder='Name'
-                                value={product?.type}
-                                className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                              />
-                              <input
-                                {...register(`products.${index}.name`)}
-                                placeholder='Name'
-                                className="w-full focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                              />
-                              <textarea
-                                {...register(`products.${index}.description`)}
-                                placeholder='Description'
-                                className="w-full border-t-0 focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none h-[70px] focus:h-[100px] transition-all"
-                              ></textarea>
-                            </div>
-                          </td>
-                          <td className='pr-2 pb-4 h-[100px]'>
-                            <div className="flex flex-col h-full items-start justify-start">
-                              <input
-                                {...register(`products.${index}.quantity`)}
-                                onBlur={onBlur}
-                                placeholder='Quantity'
-                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg mb-2"
-                              />
-                              <div className="w-full h-full flex-1 border px-3 py-2 dark:bg-dark-primary border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
-                                <CameraIcon className='text-green-800' />
-                              </div>
-                            </div>
-                          </td>
-                          <td className='pr-2 pb-4 h-[100px]'>
-                            <div className="flex flex-col h-full items-start justify-start">
-                              <input
-                                {...register(`products.${index}.material`)}
-                                onBlur={onBlur}
-                                placeholder='Material'
-                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                              />
-                              <input
-                                {...register(`products.${index}.labour`)}
-                                onBlur={onBlur}
-                                placeholder='Labour'
-                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
-                              />
-                            </div>
-                          </td>
-                          <td className='pr-2 pb-4 h-[100px]'>
-                            <div className="flex flex-col h-full items-start justify-start">
-                              <input
-                                {...register(`products.${index}.markuppercentage`)}
-                                onBlur={onBlur}
-                                placeholder='Markup (%)'
-                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
-                              />
-                              <input
-                                readOnly
-                                {...register(`products.${index}.markupamount`)}
-                                placeholder='Amount'
-                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg rounded-t-none border-t-0"
-                              />
-                            </div>
-                          </td>
-                          <td className='pr-2 pb-4 h-[100px]'>
-                            <div className="flex h-full items-start justify-start">
-                              <input
-                                {...register(`products.${index}.total`)}
-                                readOnly
-                                placeholder='Total'
-                                className="focus:outline-none border px-3 py-2 dark:bg-dark-primary border-gray-300 focus:border-gray-400 rounded-lg"
-                              />
-                            </div>
-                          </td>
-                        </tr>
-                      </>
-                    })
+                    jobcustomfields?.map((field, index) => <CustomSingleField register={register} prefix="JobCustomFields" field={field} index={index} customfields={jobcustomfields} />)
                   }
-                </tbody>
-              </table>
+                </div>
+                <div className="my-4">
+                  <CustomButton title="Add Custom Field" onClick={() => setOpen("job")} />
+                </div>
+              </div>
+            </div>
+
+            <div className="py-2">
+              <h2 className="text-2xl font-semibold mb-2">Type</h2>
+              <div className="lg:col-span-3 py-4 text-tprimary dark:text-dark-text space-y-4 flex flex-row items-start justify-start gap-2">
+                <div className="w-2/5 space-y-3">
+                  <JobType visits={visits} register={register} watch={watch} setValue={setValue} />
+
+                  {/* Team  */}
+                  <div className='border border-gray-400 rounded-xl p-4 space-y-4'>
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-xl font-semibold mb-2">Team</h2>
+                      <CustomMenu open={menu == "team"} icon={<CustomButton onClick={() => setMenu("team")} title={"Assign"} frontIcon={<PlusIcon className='w-4 h-4' />} />}>
+                        {
+                          team?.map((t, i) => {
+                            return <MenuItem key={`team-${i}`}>
+                              <div className="flex items-center gap-2">
+                                <input type="checkbox" id={`teamCheckbox-${t?.id}`} checked={teamList?.some(_t => _t?.id == t?.id)} onChange={(e) => {
+                                  if (!e?.target?.checked) {
+                                    setTeamList(teamList?.filter(teamId => teamId?.id != t?.id))
+                                  } else {
+                                    setTeamList([...teamList, t])
+                                  }
+                                }} />
+                                <label className='cursor-pointer' htmlFor={`teamCheckbox-${t?.id}`}>{t?.name}</label>
+                              </div>
+                            </MenuItem>
+                          })
+                        }
+                        <div className="p-2 px-3">
+                          <CustomButton onClick={() => {
+                            router?.push(`/clients/new`)
+                          }} frontIcon={<PlusIcon className='w-4 h-4' />} title={"Create User"} />
+                        </div>
+                      </CustomMenu>
+                    </div>
+                    {
+                      teamList?.length == 0 ?
+                        <p className="text-sm mt-2 text-gray-700 italic dark:text-dark-text">No users are currently assigned</p> :
+                        <div className="flex items-start justify-start gap-4 flex-wrap">
+                          {
+                            teamList?.map(t => {
+                              return <div className='px-3 py-1 bg-primary rounded-full dark:bg-dark-primary'>
+                                <span className='text-xs'>{t?.name}</span>
+                                <IconButton>
+                                  <X className='w-5 h-5 text-red-700' />
+                                </IconButton>
+                              </div>
+                            })
+                          }
+                        </div>
+                    }
+                  </div>
+                </div>
+
+                <div className="calender flex flex-grow flex-1">
+
+                </div>
+              </div>
+            </div>
+
+
+            {/* Invoicing */}
+            {
+              jobtype == "recurring" ? <div className='border mb-4 border-gray-400 rounded-xl p-4 space-y-4'>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold mb-2">Invoicing</h2>
+                </div>
+                <div className="flex w-full gap-2">
+                  <div className="w-1/2 space-y-4">
+                    <div className="space-y-1">
+                      <div className='text-sm font-semibold cursor-pointer'>How do you want to invoice?</div>
+                      <div className="flex gap-4 items-center">
+                        <div className="gap-2 flex">
+                          <input type="radio" {...register("invocieReceiveType")} value={"per_visit"} id="per-visit" className='focus:outline-none' />
+                          <label className='cursor-pointer text-sm text-gray-500 dark:text-dark-text' htmlFor="per-visit">Per Visit</label>
+                        </div>
+                        <div className="gap-2 flex">
+                          <input type="radio" {...register("invocieReceiveType")} value={"fixed_price"} id="fixed-price" className='focus:outline-none' />
+                          <label className='cursor-pointer text-sm text-gray-500 dark:text-dark-text' htmlFor="fixed-price">Fixed price</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className='text-sm font-semibold cursor-pointer'>When do you want to invoice?</div>
+                      <div className="mb-4 flex flex-col">
+                        <select {...register('invoiceTiming')} name="invoiceTiming" id="invoiceTiming" className='max-w-full w-[400px] dark:bg-dark-secondary border-gray-400 focus:outline-gray-500 border p-2 rounded-md h-11 text-sm'>
+                          <option className='text-sm' value="monthly_last">Monthly on the last of the month</option>
+                          <option className='text-sm' value="after_each_vist">After each visit is complete</option>
+                          <option className='text-sm' value="as_we_need">As needed -- no reminder</option>
+                          <option className='text-sm' value="when_job_close">Once when job is closed</option>
+                          <option disabled>or</option>
+                          <option disabled className='text-sm' value="custom_schedule">Custom Schedule</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-1/2 space-y-3">
+                    <span className='font-semibold text-md'>Get paid automatically</span>
+                    <p className='text-md text-gray-500 dark:text-dark-text'>Sit back as the money rolls in. Clients are automatically invoiced and charged based on their billing frequency once they save a payment method on file. Learn more in <Link href={"#"} className='text-green-600 dark:text-dark-second-text'>Help Center</Link></p>
+                  </div>
+                </div>
+              </div> : jobtype == "oneoff" && <div className='border mb-4 border-gray-400 rounded-xl p-4 space-y-4'>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold mb-2">Invoicing</h2>
+                </div>
+                <div className="flex items-center mb-4">
+                  <input  {...register("invoiceupdate")} type="checkbox" className="mr-2 w-5 h-5" id='invoiceupdate' />
+                  <label className='text-sm font-semibold cursor-pointer' htmlFor='invoiceupdate'>Remind me to invoice when I close the job</label>
+                </div>
+              </div>
+            }
+
+            {/* Line Items */}
+            <div className="lg:col-span-3 py-4 bg-white p-3 dark:bg-dark-secondary text-tprimary space-y-4 dark:text-dark-text">
+              {/* data products loop */}
+              <ProductsList />
+
               <div className='flex gap-4 justify-end w-full capitalize border-t-2 border-gray-300 pt-4 mt-4'>
                 <div className='space-y-2'>
                   <div className='text-sm'>total cost</div>
@@ -670,72 +552,71 @@ export default function Page() {
                 </div>
               </div>
 
-            </div>
-          </div>
 
+              <div className="border border-gray-300 p-4 rounded-lg">
+                <h1 className='text-2xl font-bold mb-2'>Internal notes & attachments</h1>
+                <div className="mt-4">
+                  <textarea {...register("internalnote")} placeholder='Note details' name="internalnote" id="internalnote" rows={3} className="w-full dark:bg-dark-primary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
+                </div>
 
-          <div className="border border-gray-300 p-4 rounded-lg">
-            <h1 className='text-2xl font-bold mb-2'>Internal notes & attachments</h1>
-            <div className="mt-4">
-              <textarea {...register("internalnote")} placeholder='Note details' name="internalnote" id="internalnote" rows={3} className="w-full dark:bg-dark-primary focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
-            </div>
+                <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
+                  <label htmlFor="" className='text-gray-500'>Drag your files here or <span className='ml-2 text-green-700 font-semibold border-2 rounded-xl p-2'>Select a file</span></label>
+                  <input hidden type="file" name="" id="" />
+                </div>
 
-            <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
-              <label htmlFor="" className='text-gray-500'>Drag your files here or <span className='ml-2 text-green-700 font-semibold border-2 rounded-xl p-2'>Select a file</span></label>
-              <input hidden type="file" name="" id="" />
-            </div>
+                <Divider className='my-2' />
 
-            <Divider className='my-2' />
-
-            <div className="mt-4 space-y-2">
-              <p className='font-normal text-sm text-tprimary dark:text-dark-text'>Link not to related</p>
-              <div className="flex gap-2 text-sm items-center capitalize">
-                <div className="flex gap-2 items-center">
-                  <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="isrelatedinvoices" id="isrelatedinvoices" />
-                  <label htmlFor="invoices">invoices</label>
+                <div className="mt-4 space-y-2">
+                  <p className='font-normal text-sm text-tprimary dark:text-dark-text'>Link not to related</p>
+                  <div className="flex gap-2 text-sm items-center capitalize">
+                    <div className="flex gap-2 items-center">
+                      <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="isrelatedinvoices" id="isrelatedinvoices" />
+                      <label htmlFor="invoices">invoices</label>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              <div className="mt-4 space-y-2 flex justify-between">
+                <CustomButton title="Cancel"></CustomButton>
+                {
+                  !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
+                    <div className="flex gap-2 items-center">
+                      <CustomButton type={"submit"} loading={loadingObj.jobcreate} title="Save Job"></CustomButton>
+                      <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
+                        {/* Menu Items */}
+                        <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
+                          Save and...
+                        </Typography>
+
+                        <MenuItem className="text-tprimary dark:text-dark-text text-sm">
+                          <ListItemIcon>
+                            <Hammer className="text-green-700" size={16} />
+                          </ListItemIcon>
+                          Create Another
+                        </MenuItem>
+
+                        <MenuItem className="text-tprimary dark:text-dark-text text-sm">
+                          <ListItemIcon>
+                            <MessageSquareText className="text-orange-700" size={16} />
+                          </ListItemIcon>
+                          Text Booking Confirmation
+                        </MenuItem>
+
+                        <MenuItem className="text-tprimary dark:text-dark-text text-sm">
+                          <ListItemIcon>
+                            <Mail className="text-gray-700 dark:text-gray-400" size={16} />
+                          </ListItemIcon>
+                          Email Booking Confirmation
+                        </MenuItem>
+                      </CustomMenu>
+                    </div>
+                  </>
+                }
+              </div>
             </div>
-          </div>
-
-          <div className="mt-4 space-y-2 flex justify-between">
-            <CustomButton title="Cancel"></CustomButton>
-            {
-              !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
-                <div className="flex gap-2 items-center">
-                  <CustomButton type={"submit"} loading={loadingObj.jobcreate} title="Save Job"></CustomButton>
-                  <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
-                    {/* Menu Items */}
-                    <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
-                      Save and...
-                    </Typography>
-
-                    <MenuItem className="text-tprimary dark:text-dark-text text-sm">
-                      <ListItemIcon>
-                        <Hammer className="text-green-700" size={16} />
-                      </ListItemIcon>
-                      Create Another
-                    </MenuItem>
-
-                    <MenuItem className="text-tprimary dark:text-dark-text text-sm">
-                      <ListItemIcon>
-                        <MessageSquareText className="text-orange-700" size={16} />
-                      </ListItemIcon>
-                      Text Booking Confirmation
-                    </MenuItem>
-
-                    <MenuItem className="text-tprimary dark:text-dark-text text-sm">
-                      <ListItemIcon>
-                        <Mail className="text-gray-700 dark:text-gray-400" size={16} />
-                      </ListItemIcon>
-                      Email Booking Confirmation
-                    </MenuItem>
-                  </CustomMenu>
-                </div>
-              </>
-            }
-          </div>
-        </form>
+          </form>
+        </FormProvider>
       </div>
 
       <AddCustomFields open={open} onClose={() => setOpen(false)} />

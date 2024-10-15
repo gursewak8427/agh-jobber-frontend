@@ -2,20 +2,33 @@
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/Topbar";
 import { CssBaseline } from "@mui/material";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { Suspense, useEffect } from "react";
 import { Loading } from "../_components/loading";
-import { Bounce, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from "react-redux";
-import { clearerrorList, clearsuccessList, darkmodeState, fetchBusniessProfile } from "@/store/slices/client";
+import { clearerrorList, clearsuccessList, darkmodeState, fetchBusniessProfile, clearloadingpromise } from "@/store/slices/client";
 import theme from "@/theme";
 
 const MainLayout = ({ children }) => {
-  const { successList, errorList, darkMode } = useSelector(state => state.clients);
+  const { successList, errorList, darkMode, loadingpromise } = useSelector(state => state.clients);
   const dispatch = useDispatch();
   useEffect(() => {
+    if (loadingpromise) {
+      toast.dismiss();
+      toast.loading(loadingpromise, {
+        position: "top-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      dispatch(clearloadingpromise())
+    }
     if (successList) {
+      toast.dismiss();
       toast.success(successList, {
         position: "top-right",
         autoClose: 5000,
@@ -27,6 +40,7 @@ const MainLayout = ({ children }) => {
       dispatch(clearsuccessList())
     }
     if (errorList) {
+      toast.dismiss();
       toast.error(errorList, {
         position: "top-right",
         autoClose: 5000,
@@ -34,23 +48,20 @@ const MainLayout = ({ children }) => {
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
       });
       dispatch(clearerrorList())
     }
-  }, [successList, errorList])
+  }, [successList, errorList, loadingpromise])
   useEffect(() => {
     dispatch(fetchBusniessProfile());
-    if(localStorage.getItem('mode')){
-      dispatch(darkmodeState(localStorage.getItem('mode')))
+    if (JSON.parse(localStorage.getItem('mode'))) {
+      dispatch(darkmodeState(JSON.parse(localStorage.getItem('mode'))))
     }
   }, [])
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
-      
+
     } else {
       document.documentElement.classList.remove('dark');
     }

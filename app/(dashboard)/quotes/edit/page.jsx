@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
-import { createQuote, fetchallClients, fetchClient, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading } from '@/store/slices/client';
+import { createQuote, fetchallClients, fetchClient, fetchQuote, fetchQuotecount, fetchQuoteCustomFields, fetchTeam, fetchTemplateProductForQuote, removeLoading, setLoading, updateQuote } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomSingleField from '@/app/_components/CustomSingleField';
 import { getAddress, getClientName, getPrimary, templateProductsToQuote } from '@/utils';
@@ -18,7 +18,6 @@ import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_components/products/ProductsList';
-import { datadisclarmer } from './data';
 
 const defaultFormValues = {
   products: [defaultProductLineItem],
@@ -30,7 +29,9 @@ const defaultFormValues = {
 
 export default function Page() {
   const searchParams = useSearchParams();
+  const id = searchParams.get("id");
   const client_id = searchParams.get("client_id");
+  const property_id = searchParams.get("property_id");
   const template_ids = searchParams.get("template");
 
   const [open, setOpen] = useState(false);
@@ -49,7 +50,7 @@ export default function Page() {
   const [selectedProperty, setSelectedProperty] = useState(null);
 
   // Custom fields, change with quote custom fields
-  const { clientslist, client, team, quotecount, quotecustomfields, loadingObj, quoteproducts } = useSelector(state => state.clients);
+  const { clientslist, client, team, quotecount, quotecustomfields, loadingObj, quoteproducts, quote } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -130,35 +131,54 @@ export default function Page() {
     setValue(`totalcost`, parseFloat(_totatcost)?.toFixed(2));
 
     console.log({ _discount, discounttype })
-    setValue(`discountAmount`, _discount)
+    setValue(`discountAmount`, parseFloat(_discount)?.toFixed(2))
   }
 
 
   useEffect(() => {
     dispatch(fetchallClients());
-    dispatch(fetchQuotecount());
     dispatch(fetchQuoteCustomFields());
     dispatch(fetchTeam());
-  }, [])
-
-  useEffect(() => {
-    if (template_ids)
-      dispatch(fetchTemplateProductForQuote(template_ids));
-  }, [template_ids])
-
-  // Set Template Products as default values.
-  useEffect(() => {
-    // console.log(templateProductsToQuote(quoteproducts), "templateProductsToQuote");
-
-    if (quoteproducts && quoteproducts.length > 0) {
-      reset({
-        ...defaultFormValues,
-        products: templateProductsToQuote(quoteproducts) || [defaultProductLineItem],
-      });
-    } else {
-      reset({ ...defaultFormValues })
+    if (id) {
+      dispatch(fetchQuote(id));
     }
-  }, [quoteproducts, setValue]);
+  }, [id])
+
+  useEffect(() => {
+    if (id && quote) {
+      reset({
+        ...quote,
+        products: quote?.product,
+        clientview_quantities: quote?.clientquotestyle?.quantities || false,
+        clientview_materials: quote?.clientquotestyle?.materials || false,
+        clientview_markuppercentage: quote?.clientquotestyle?.markuppercentage || false,
+        clientview_markupamount: quote?.clientquotestyle?.markupamount || false,
+        clientview_labour: quote?.clientquotestyle?.labour || false,
+        clientview_total: quote?.clientquotestyle?.total || false,
+        discount: quote?.discount,
+        discounttype: quote?.discounttype,
+        requireddeposite: quote?.requireddeposite,
+        requiredtype: quote?.depositetype,
+        requiredAmount: quote?.depositetype == "amount" ? quote?.requireddeposite : parseFloat(quote?.costs * quote?.requireddeposite / 100)?.toFixed(2),
+        discountAmount: quote?.discounttype == "amount" ? quote?.discount : parseFloat(quote?.subtotal * quote?.discount / 100)?.toFixed(2),
+      })
+
+      setRating(quote?.rateopportunity)
+
+      if (Boolean(quote?.discount)) {
+        setDiscount(true)
+      }
+      if (Boolean(quote?.requireddeposite)) {
+        setRequiredDeposit(true)
+      }
+
+      setSelectedProperty(quote?.property)
+      setSalesPerson(quote?.salesperson)
+    }
+  }, [id, quote])
+
+  console.log(quote, "=--=quote")
+
 
   useEffect(() => {
     if (!client_id) return;
@@ -166,70 +186,38 @@ export default function Page() {
     dispatch(fetchClient(client_id));
   }, [client_id])
 
-  useEffect(() => {
-    if (!client_id) return;
-
-
-    console.log({ client }, '===client')
-
-    if (client?.property?.length > 1) {
-      setSelectedProperty(null)
-      setPropertyModal("SELECT")
-    } else {
-      if (client?.property?.length == 0) {
-        setSelectedProperty(null)
-        setPropertyModal("NEW")
-      } else {
-        setSelectedProperty(client?.property?.[0])
-      }
-    }
-  }, [client])
-
   const closeMenu = () => setMenu("")
-
 
   const onSubmit = async (data) => {
 
-    const changeAdditionalquotedetails = quotecustomfields
-      ?.map((item, index) => {
-
-        const change = data?.QuoteCustomFields?.[`${item.id}key`] || null;
-        if (!change) return null;
-
-        const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
-        if (hasChanged) {
-          return { custom_field_id: item.id, ...change };
-        }
-        return null;
-      })
-      .filter(Boolean);
-
-    let _data = { ...data };
-    delete _data?.quoteno
-
     let jsonData = {
+      "id": quote.id,
+      // client_id: client_id,
+      // property_id: selectedProperty?.id,
       "clientquotestyle": {
-        quantities: data?.clientview_quantities ?? false,
-        materials: data?.clientview_materials ?? false,
-        markuppercentage: data?.clientview_markuppercentage ?? false,
-        markupamount: data?.clientview_markupamount ?? false,
-        labour: data?.clientview_labour ?? false,
-        total: data?.clientview_total ?? false,
+        ...(clientView && {
+          id: quote?.clientquotestyle?.id,
+          quantities: data?.clientview_quantities,
+          materials: data?.clientview_materials,
+          markuppercentage: data?.clientview_markuppercentage,
+          markupamount: data?.clientview_markupamount,
+          labour: data?.clientview_labour,
+          total: data?.clientview_total,
+        })
       },
       "product": data?.products?.map(product => ({
         ...product,
       })),
       "title": data?.title,
-      "quoteno": isQuoteNo ? data?.quoteno : quotecount,
       "rateopportunity": rating,
       "subtotal": subtotal,
-      "discount": data?.discount,
+      "discount": data?.discount, // need to calculate discount amount each time.
       "discounttype": data?.discounttype,
       "tax": gst,
       "costs": totalcost,
       // "estimatemargin": 0.0,
       "requireddeposite": data?.requireddeposite,
-      "depositetype": "amount",
+      "depositetype": data?.requiredtype,
       "clientmessage": data?.clientmessage,
 
       "disclaimer": data?.disclaimer,
@@ -237,20 +225,10 @@ export default function Page() {
       "isrelatedjobs": data?.isrelatedjobs,
       "isrelatedinvoices": data?.isrelatedinvoices,
       "salesperson_id": selectedSalesPerson?.id,
-      // ==============
-
-      // "status": "Draft",
-      // "contractor": 2,//aa tusi nhi bhejna ok remove krdo
-      "property_id": selectedProperty?.id,
-      "client_id": client_id,
-
-      // "clientpdfstyle": null,  
-      "custom_field": changeAdditionalquotedetails,
     }
 
-    console.log(jsonData);
-
-    dispatch(createQuote(jsonData)).then(({ payload }) => {
+    console.log({ jsonData });
+    dispatch(updateQuote(jsonData)).then(({ payload }) => {
       if (payload?.id) {
         router.push(`/quotes/view/${payload?.id}`)
       }
@@ -268,7 +246,7 @@ export default function Page() {
         {/* Header */}
         <div className="flex justify-start items-center mb-6">
           <div className="text-4xl font-semibold text-tprimary dark:text-dark-text">Quote for</div>
-          <Button onClick={() => setSelectClientModal(true)} className='ml-2 capitalize flex items-center gap-2 border-b border-dashed'>
+          <div className='ml-2 capitalize flex items-center gap-2 border-b border-dashed'>
             {
               !client_id ? <>
                 <div className="text-4xl font-semibold text-tprimary dark:text-dark-second-text">Client Name</div>
@@ -278,7 +256,7 @@ export default function Page() {
               </> : <div className="text-4xl font-semibold text-tprimary dark:text-dark-second-text">{getClientName(client)}</div>
             }
 
-          </Button>
+          </div>
         </div>
 
         {/* Job Title */}
@@ -303,9 +281,6 @@ export default function Page() {
                         <>
                           <h1 className='font-bold mb-2'>Property address</h1>
                           <p className='max-w-[150px]'>{getAddress(selectedProperty)}</p>
-                          <Button className='text-green-700 p-0 dark:text-dark-second-text' onClick={() => {
-                            setPropertyModal("SELECT")
-                          }}>change</Button>
                         </>
                       }
                     </div>
@@ -321,16 +296,8 @@ export default function Page() {
               <div className="p-4 rounded-lg w-1/2">
                 <h1 className='font-bold mb-2'>Quote details</h1>
                 <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
-                  <div className="font-medium min-w-[200px]">Quote number {!isQuoteNo && <>#{quotecount}</>}</div>
-                  {
-                    isQuoteNo ? <div className="flex gap-2 items-center">
-                      <input type="text" {...register("quoteno")} onBlur={onBlur} defaultValue={quotecount}
-                        className="w-16 h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg dark:bg-dark-secondary" />
-                      <CustomButton onClick={() => { setValue("quoteno", quotecount); setQuoteNo(false) }} title={"Cancel"} />
-                    </div> :
-                      <Button onClick={() => setQuoteNo(true)} className='px-0 text-green-700 underline font-semibold'>change</Button>
-                  }
-
+                  <div className="font-medium min-w-[200px]">Quote number</div>
+                  <div>#{quote?.quoteno}</div>
                 </div>
 
                 <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
@@ -342,7 +309,7 @@ export default function Page() {
                   />
                 </div>
 
-                <div className="mb-4 flex items-center space-x-3 border-b border-b-gray-400 pb-2">
+                <div className="mb-4 flex items-center space-x-3 border-b-0 border-b-gray-400 pb-2">
                   <div className="font-medium min-w-[200px]">Salesperson</div>
                   {
                     selectedSalesPerson ? <div className="flex items-center bg-secondary p-2 rounded-full dark:bg-dark-primary">
@@ -368,14 +335,15 @@ export default function Page() {
                 </div>
 
 
-                <div className="space-y-2">
-                  {
-                    quotecustomfields?.map((field, index) => <CustomSingleField register={register} prefix="QuoteCustomFields" field={field} index={index} customfields={quotecustomfields} />)
-                  }
-                </div>
-                <div className="my-4">
-                  <CustomButton title="Add Custom Field" onClick={() => setOpen("quote")} />
-                </div>
+                {/* #HOLD */}
+                {/* <div className="space-y-2">
+                {
+                  quotecustomfields?.map((field, index) => <CustomSingleField register={register} prefix="QuoteCustomFields" field={field} index={index} customfields={quotecustomfields} />)
+                }
+              </div>
+              <div className="my-4">
+                <CustomButton title="Add Custom Field" onClick={() => setOpen("quote")} />
+              </div> */}
               </div>
             </div>
 
@@ -496,7 +464,7 @@ export default function Page() {
                             </select>
                           </div>
                           <div className="flex items-center gap-1 ">
-                            <span className="font-normal flex items-center"><Minus className='font-normal w-4 h-5' /> ${discountAmount || 0}</span>
+                            <span className="font-normal flex items-center"><Minus className='' /> ${discountAmount || 0}</span>
                             <Trash2 onClick={() => setDiscount(false)} className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
                           </div>
                         </div> :
@@ -531,7 +499,7 @@ export default function Page() {
                           </select>
                         </div>
                         <div className="flex items-center gap-1">
-                          <span className="font-normal flex items-center">${requiredAmount || 0}</span>
+                          <span className="font-normal flex items-center"><Minus />${requiredAmount || 0}</span>
                           <Trash2 onClick={() => setRequiredDeposit(false)} className='w-5 h-5 text-red-500 cursor-pointer hover:text-red-700' />
                         </div>
                       </div> :
@@ -548,91 +516,19 @@ export default function Page() {
 
               <div className="mt-4">
                 <h1 className='font-bold mb-2 dark:text-white'>Contract / Disclaimer</h1>
-                <textarea {...register("disclaimer")} name="" id="" rows={8} className="dark:bg-dark-secondary   dark:text-white w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
-                  {datadisclarmer.message}
+                <textarea {...register("disclaimer")} name="" id="" rows={3} className="dark:bg-dark-secondary   dark:text-white w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+                  This quote is valid for the next 15 days, after which values may be subject to change.
                 </textarea>
               </div>
 
-              <div className="border border-gray-300 p-4 rounded-lg">
-                <h1 className='font-bold mb-2 dark:text-white'>Internal notes & attachments</h1>
-                <div className="mt-4">
-                  <textarea {...register("internalnote")} placeholder='Note details' name="internalnote" id="internalnote" rows={3} className="dark:bg-dark-secondary   dark:text-white w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg"></textarea>
-                </div>
-
-                <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
-                  <label htmlFor="" className='text-gray-500'>Drag your files here or <span className='ml-2 text-green-700 font-semibold border-2 rounded-xl p-2'>Select a file</span></label>
-                  <input hidden type="file" name="" id="" />
-                </div>
-
-                <Divider className='my-2' />
-
-                <div className="mt-4 space-y-2">
-                  <p className='font-normal text-sm text-tprimary dark:text-white'>Link not to related</p>
-                  <div className="flex gap-2 text-sm items-center capitalize">
-                    <div className="flex gap-2 items-center dark:text-white">
-                      <input {...register("isrelatedjobs")} type="checkbox" className='w-5 h-5' name="" id="jobs" />
-                      <label htmlFor="jobs">jobs</label>
-                    </div>
-                    <div className="flex gap-2 items-center dark:text-white">
-                      <input {...register("isrelatedinvoices")} type="checkbox" className='w-5 h-5' name="" id="invoices" />
-                      <label htmlFor="invoices">invoices</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               <div className="mt-4 space-y-2 flex justify-between">
-                <CustomButton title="Cancel"></CustomButton>
-                {
-                  !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
-                    <div className="flex gap-2 items-center">
-                      <CustomButton type={"submit"} loading={loadingObj.draftquote} title="Save Quote"></CustomButton>
-                      <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
-                        {/* Menu Items */}
-                        <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
-                          Save and...
-                        </Typography>
-
-                        <MenuItem className="text-tprimary text-sm">
-                          <ListItemIcon>
-                            <MessageSquareText className="text-orange-700" size={16} />
-                          </ListItemIcon>
-                          Send as text mesage
-                        </MenuItem>
-
-                        <MenuItem className="text-tprimary text-sm">
-                          <ListItemIcon>
-                            <Mail className="text-gray-700" size={16} />
-                          </ListItemIcon>
-                          Send as email
-                        </MenuItem>
-
-                        <MenuItem className="text-tprimary text-sm">
-                          <ListItemIcon>
-                            <Hammer className="text-green-700" size={16} />
-                          </ListItemIcon>
-                          Convert to Job
-                        </MenuItem>
-
-                        <MenuItem className="text-tprimary text-sm">
-                          <ListItemIcon>
-                            <MessageCircle className="text-orange-700" size={16} />
-                          </ListItemIcon>
-                          Mark as awaiting Response
-                        </MenuItem>
-                      </CustomMenu>
-                    </div>
-                  </>
-                }
-
+                <CustomButton title="Cancel" onClick={() => { router.back() }}></CustomButton>
+                <CustomButton type={"submit"} loading={loadingObj.updatequote} title="Update Quote"></CustomButton>
               </div>
             </div>
-
           </form>
         </FormProvider>
       </div>
-
-
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
       <SelectClient
         open={selectClientModal}
