@@ -40,7 +40,7 @@ const TextMessageModal = ({ open, onClose, client, quote, profile }) => {
             const validMobile = client.mobile.find(mobile => mobile.valid && mobile.sms);
             if (validMobile) {
                 setValue(`mobile`, `+${validMobile.number}`)
-                setValue(`message`, `Dear ${getClientName(client)}, We are delighted to share the quotation from ${profile.company_name} with you! Thank you for considering us.`)
+                setValue(`message`, `Dear ${getClientName(client)}, we're pleased to share the quote from ${profile.company_name}. Thank you for considering us.`)
             }
         }
     }, [client]);
