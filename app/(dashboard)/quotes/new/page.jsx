@@ -328,7 +328,7 @@ export default function Page() {
                         className="w-16 h-8 text-right focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg dark:bg-dark-secondary" />
                       <CustomButton onClick={() => { setValue("quoteno", quotecount); setQuoteNo(false) }} title={"Cancel"} />
                     </div> :
-                      <Button onClick={() => setQuoteNo(true)} className='px-0 text-green-700 dark:text-dark-second-text underline font-semibold'>change</Button>
+                      <Button onClick={() => setQuoteNo(true)} className='px-0 text-green_light dark:text-dark-second-text underline font-semibold'>change</Button>
                   }
 
                 </div>
@@ -391,8 +391,8 @@ export default function Page() {
                       <span>Client view</span>
                       {
                         !clientView ?
-                          <Button onClick={() => setClientView(true)} className='text-green-600 dark:text-dark-second-text'>Change</Button> :
-                          <Button onClick={() => setClientView(false)} className='text-red-600 dark:text-red-400'>Cancel Changes</Button>
+                          <Button onClick={() => setClientView(true)} className='text-green_light dark:text-dark-second-text'>Change</Button> :
+                          <Button onClick={() => setClientView(false)} className='text-red_danger dark:text-red_Light_danger'>Cancel Changes</Button>
                       }
                     </div>
                     {

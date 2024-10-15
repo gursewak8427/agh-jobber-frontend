@@ -37,12 +37,15 @@ module.exports = {
         "primary-dark": '#e7e6df',
         "secondary": '#FFFFFF',
         "tprimary": '#032B3A',
+        "red_danger":"#DC2626!important",
+        "red_Light_danger":"#F87171!important",
+        "green_light":"#16A34A!important",
         // Define dark mode colors
         "dark-primary": "#171B1C", // Example dark background
         "dark-secondary": "#273135", // Dark secondary color
         "dark-text": "#f5f5f5", // Light text on dark background
         "dark-hover":"#FFFFFF1A",
-        "dark-second-text":"#4ADE80"
+        "dark-second-text":"#4ADE80!important"
       },
     },
   },
