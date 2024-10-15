@@ -130,6 +130,7 @@ const ProductsList = () => {
 
     };
 
+    const productlistoptions = ['each', 'hour', 'day', 'lin.ft', 'sq.ft', 'cu.ft', 'lin.yd', 'sq.yd', 'cu.yd', 'lin.m', 'sq.m', 'cu.m', 'lb', 'kg', 'ton']
 
     // Function to append a new item to a specific product
     const addItemToProduct = (productIndex) => {
@@ -266,8 +267,11 @@ const ProductsList = () => {
                                                                             placeholder='Quantity'
                                                                             className="w-20 h-11 dark:bg-dark-secondary dark:text-white focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg mb-2 rounded-l-none"
                                                                         >
-                                                                            <option value="ft">ft</option>
-                                                                            <option value="sqrt">sqrt</option>
+                                                                            {
+                                                                                productlistoptions.map((item, index) => (
+                                                                                    <option value={item} key={index}>{item}</option>
+                                                                                ))
+                                                                            }
                                                                         </select>
                                                                     </div>
                                                                     {/* <div className="w-full h-full flex-1 border px-3 py-2 border-gray-300 border-dotted focus:border-gray-400 rounded-lg grid place-items-center cursor-pointer">
