@@ -1108,7 +1108,8 @@ const clientSlice = createSlice({
             })
             .addCase(sendQuoteMessage.fulfilled, (state, action) => {
                 delete state.loadingObj['quotemessage']
-                state.successList = action.payload.message;
+                state.successList = "Message Sent Successfully!";
+                state.quote=action.payload
             })
             .addCase(sendQuoteMessage.rejected, (state, action) => {
                 delete state.loadingObj['quotemessage']
