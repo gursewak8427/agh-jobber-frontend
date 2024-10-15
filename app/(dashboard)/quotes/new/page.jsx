@@ -18,6 +18,7 @@ import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_components/products/ProductsList';
+import { datadisclarmer } from './data';
 
 const defaultFormValues = {
   products: [defaultProductLineItem],
@@ -547,8 +548,8 @@ export default function Page() {
 
               <div className="mt-4">
                 <h1 className='font-bold mb-2 dark:text-white'>Contract / Disclaimer</h1>
-                <textarea {...register("disclaimer")} name="" id="" rows={3} className="dark:bg-dark-secondary   dark:text-white w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
-                  This quote is valid for the next 15 days, after which values may be subject to change.
+                <textarea {...register("disclaimer")} name="" id="" rows={8} className="dark:bg-dark-secondary   dark:text-white w-full focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+                  {datadisclarmer.message}
                 </textarea>
               </div>
 
@@ -629,7 +630,7 @@ export default function Page() {
 
           </form>
         </FormProvider>
-      </div >
+      </div>
 
 
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
@@ -658,6 +659,6 @@ export default function Page() {
         setSelectedProperty(property)
         setPropertyModal(false)
       }} client={client} />
-    </div >
+    </div>
   );
 }

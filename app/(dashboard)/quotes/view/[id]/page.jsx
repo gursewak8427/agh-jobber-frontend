@@ -41,7 +41,7 @@ export default function Page() {
         <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
         {status}
       </div>
-      case "Lead": return <div className="w-full h-full flex items-center justify-start capitalize">
+      case "Approved": return <div className="w-full h-full flex items-center justify-start capitalize">
         <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
         {status}
       </div>
@@ -172,7 +172,10 @@ export default function Page() {
         </div>
         <div className="flex items-center gap-2">
           <CustomButton disabled={loadingFull} onClick={() => setsendtextmsg(true)} title={"Send text message"} variant={"primary"} />
-          <CustomButton disabled={loadingFull} onClick={() => router.push(`/quotes/edit?id=${quote?.id}&client_id=${quote?.client?.id}`)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
+          {
+            quote?.status === 'Approved' ? '' :
+              <CustomButton disabled={loadingFull} onClick={() => router.push(`/quotes/edit?id=${quote?.id}&client_id=${quote?.client?.id}`)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
+          }
           <CustomMenu open={menu} icon={<CustomButton onClick={() => setmenu(true)} title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
             <MoreActionsMenuItems />
           </CustomMenu>
@@ -300,6 +303,14 @@ export default function Page() {
                 </div>
 
                 <div className="space-y-8">
+                  {
+                    quote?.client_approval ?
+                      <div className="">
+                        <img src={quote?.client_signature} className="w-[8rem] object-contain bg-white" />
+                        <h1 className='font-bold mb-2'>Client Signature</h1>
+                      </div> : ''
+                  }
+
                   <div className="">
                     <h1 className='font-bold mb-2'>Client message</h1>
                     <p className="text-sm">{quote?.clientmessage || "--"}</p>
@@ -307,7 +318,10 @@ export default function Page() {
 
                   <div className="">
                     <h1 className='font-bold mb-2'>Contract / Disclaimer</h1>
-                    <p className="text-sm">{quote?.disclaimer}</p>
+                    {quote?.disclaimer?.split(/\r?\n/).map((line, index) => (
+                      <p key={index} className="text-sm">{line}</p>
+                    ))}
+
                   </div>
                 </div>
               </div>

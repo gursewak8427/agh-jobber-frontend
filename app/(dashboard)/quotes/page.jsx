@@ -14,8 +14,6 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
 import { formatUserDate } from '@/utils';
 
-
-
 const columns = [
   {
     field: "name",
