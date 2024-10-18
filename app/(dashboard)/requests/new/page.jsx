@@ -20,11 +20,6 @@ import CustomMenu from '@/components/CustomMenu';
 import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_components/products/ProductsList';
 
 const defaultFormValues = {
-    products: [defaultProductLineItem],
-    discount: 0,
-    requireddeposite: 0,
-    clientview_quantities: true,
-    clientview_total: true
 }
 
 export default function Page() {
@@ -165,95 +160,14 @@ export default function Page() {
         dispatch(fetchClient(client_id));
     }, [client_id])
 
-    useEffect(() => {
-        if (!client_id) return;
-
-
-        console.log({ client }, '===client')
-
-        if (client?.property?.length > 1) {
-            setSelectedProperty(null)
-            setPropertyModal("SELECT")
-        } else {
-            if (client?.property?.length == 0) {
-                setSelectedProperty(null)
-                setPropertyModal("NEW")
-            } else {
-                setSelectedProperty(client?.property?.[0])
-            }
-        }
-    }, [client])
-
-    const closeMenu = () => setMenu("")
-
-
     const onSubmit = async (data) => {
-
-        const changeAdditionalquotedetails = quotecustomfields
-            ?.map((item, index) => {
-
-                const change = data?.QuoteCustomFields?.[`${item.id}key`] || null;
-                if (!change) return null;
-
-                const hasChanged = Object.keys(change).some(key => change[key] != item[key]);
-                if (hasChanged) {
-                    return { custom_field_id: item.id, ...change };
-                }
-                return null;
-            })
-            .filter(Boolean);
-
-        let _data = { ...data };
-        delete _data?.quoteno
-
         let jsonData = {
-            "clientquotestyle": {
-                quantities: data?.clientview_quantities ?? false,
-                materials: data?.clientview_materials ?? false,
-                markuppercentage: data?.clientview_markuppercentage ?? false,
-                markupamount: data?.clientview_markupamount ?? false,
-                labour: data?.clientview_labour ?? false,
-                total: data?.clientview_total ?? false,
-            },
-            "product": data?.products?.map(product => ({
-                ...product,
-            })),
-            "title": data?.title,
-            "quoteno": isQuoteNo ? data?.quoteno : quotecount,
-            "rateopportunity": rating,
-            "subtotal": subtotal,
-            "discount": data?.discount,
-            "discounttype": data?.discounttype,
-            "tax": gst,
-            "costs": totalcost,
-            // "estimatemargin": 0.0,
-            "requireddeposite": data?.requireddeposite,
-            "depositetype": "amount",
-            "clientmessage": data?.clientmessage,
-
-            "disclaimer": data?.disclaimer,
-            "internalnote": data?.internalnote,
-            "isrelatedjobs": data?.isrelatedjobs,
-            "isrelatedinvoices": data?.isrelatedinvoices,
-            "salesperson_id": selectedSalesPerson?.id,
-            // ==============
-
-            // "status": "Draft",
-            // "contractor": 2,//aa tusi nhi bhejna ok remove krdo
-            "property_id": selectedProperty?.id,
+            ...data,
             "client_id": client_id,
-
-            // "clientpdfstyle": null,  
-            "custom_field": changeAdditionalquotedetails,
+            "date": new Date()?.toLocaleDateString(),
         }
 
-        console.log(jsonData);
-
-        dispatch(createQuote(jsonData)).then(({ payload }) => {
-            if (payload?.id) {
-                router.push(`/quotes/view/${payload?.id}`)
-            }
-        });
+        console.log(jsonData, "--requestDetails");
     };
 
 
@@ -263,7 +177,7 @@ export default function Page() {
             <div className='text-sm text-tprimary dark:text-dark-text'>
                 Back to : <Link href={"/requests"} className='text-green-700 dark:text-dark-second-text'>Requests</Link>
             </div>
-            <div className="p-8 border bg-white border-gray-200 rounded-xl border-t-8 border-t-pink-950">
+            <div className="p-8 border bg-white dark:bg-dark-secondary border-gray-200 rounded-xl border-t-8 border-t-pink-950">
                 {/* Header */}
                 <div className="flex justify-start items-center mb-6">
                     <div className="text-4xl font-semibold text-tprimary dark:text-dark-text">Request for</div>
@@ -298,10 +212,10 @@ export default function Page() {
                                     </div>
                                 </div>
                                 {/* Request details */}
-                                <div className="p-4 rounded-lg w-1/2">
+                                <div className="p-4 w-1/2 border-l-4 border-gray-500">
                                     <h1 className='font-bold mb-2'>Request details</h1>
-                                    <div className="mb-4 flex items-center space-x-3 border-b pb-2">
-                                        <div className="font-medium min-w-[200px]">Requested on Oct 18, 2024</div>
+                                    <div className="mb-4 flex items-center space-x-3 pb-2">
+                                        <div className="font-medium min-w-[200px]">Requested on {new Date()?.toLocaleDateString()}</div>
                                     </div>
                                 </div>
                             </div>
@@ -309,9 +223,11 @@ export default function Page() {
                             <div className="">
                                 <h1 className='font-bold text-xl'>Service Details</h1>
                                 <div className='flex flex-col gap-2'>
-                                    <label className='font-bold text-gray-500' htmlFor="">Please provide as much information as you can</label>
+                                    <label className='font-bold text-gray-500' htmlFor="servicedetails">Please provide as much information as you can</label>
 
-                                    <textarea name="" rows={4} id="" className="px-4 py-2 border outline-none hover:ring-2 ring-offset-2 rounded ring-green-700"></textarea>
+                                    <textarea
+                                        {...register("servicedetails")}
+                                        name="servicedetails" rows={4} id="servicedetails" className="dark:bg-dark-secondary bg-white px-4 py-2 border outline-none hover:ring-2 ring-offset-2 rounded ring-green-700"></textarea>
                                 </div>
                             </div>
 
@@ -319,30 +235,42 @@ export default function Page() {
 
                             <div className='flex flex-col gap-2'>
                                 <label className='font-bold' htmlFor="">Which day would be best for an assessment of the work?</label>
-                                <input type='date' name="" id="" className="px-4 py-2 w-[200px] h-11 border outline-none hover:ring-2 ring-offset-2 rounded ring-green-700" />
+                                <input
+                                    {...register("dayone")}
+                                    type='date' name="dayone" id="dayone" className="px-4 py-2 w-[200px] h-11 border outline-none hover:ring-2 ring-offset-2 rounded ring-green-700 dark:bg-dark-secondary" />
                             </div>
 
                             <div className='flex flex-col gap-2'>
                                 <label className='font-bold' htmlFor="">What is another day that works for you? <span className='text-gray-500'>(optional)</span></label>
-                                <input type='date' name="" id="" className="px-4 py-2 w-[200px] h-11 border outline-none hover:ring-2 ring-offset-2 rounded ring-green-700" />
+                                <input
+                                    {...register("daytwo")}
+                                    type='date' name="daytwo" id="daytwo" className="px-4 py-2 w-[200px] h-11 border outline-none hover:ring-2 ring-offset-2 rounded ring-green-700 dark:bg-dark-secondary" />
                             </div>
 
                             <div className='flex flex-col gap-2'>
                                 <label className='font-bold' htmlFor="">What are your preferred arrival times? <span className='text-gray-500'>(optional)</span></label>
                                 <label htmlFor="1" className="flex items-center gap-2">
-                                    <input type='checkbox' name="arrivaltime" id="1" className="" />
+                                    <input
+                                        {...register("time")}
+                                        type='checkbox' name="time" id="1" value={"anytime"} className="" />
                                     <span>Any Time</span>
                                 </label>
                                 <label htmlFor="2" className="flex items-center gap-2">
-                                    <input type='checkbox' name="arrivaltime" id="2" className="" />
+                                    <input
+                                        {...register("time")}
+                                        type='checkbox' name="time" id="2" value={"morning"} className="" />
                                     <span>Morning</span>
                                 </label>
                                 <label htmlFor="3" className="flex items-center gap-2">
-                                    <input type='checkbox' name="arrivaltime" id="3" className="" />
+                                    <input
+                                        {...register("time")}
+                                        type='checkbox' name="time" id="3" value={"afternoon"} className="" />
                                     <span>Afternoon</span>
                                 </label>
                                 <label htmlFor="4" className="flex items-center gap-2">
-                                    <input type='checkbox' name="arrivaltime" id="4" className="" />
+                                    <input
+                                        {...register("time")}
+                                        type='checkbox' name="time" id="4" value={"evening"} className="" />
                                     <span>Evening</span>
                                 </label>
                             </div>
@@ -351,13 +279,17 @@ export default function Page() {
                             <div className="bg-primary bg-opacity-40 border border-gray-300 p-4 rounded-lg dark:bg-dark-secondary">
                                 <h1 className='font-bold mb-2'>Internal notes & attachments</h1>
                                 <div className="mt-4">
-                                    <textarea placeholder='Note details' name="" id="" rows={3} className="w-full focus:outline-none dark:bg-dark-primary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
+                                    <textarea
+                                        {...register("internalnotes")}
+                                        placeholder='Note details' name="internalnotes" id="internalnotes" rows={3} className="w-full focus:outline-none dark:bg-dark-primary border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg">
 
                                     </textarea>
                                 </div>
 
                                 <div className="mt-4 border-2 border-gray-300 text-sm border-dashed p-2 py-4 rounded-xl flex justify-center items-center">
-                                    <label htmlFor="" className='text-gray-500'>Drag your files here or <span className='ml-2 text-green-700 font-semibold border-2 rounded-xl p-2'>Select a file</span></label>
+                                    <label htmlFor="" className='text-gray-500 flex flex-col items-center gap-2'>Drag your files here or
+                                        <CustomButton title={"Select a file"} />
+                                    </label>
                                     <input hidden type="file" name="" id="" />
                                 </div>
 
@@ -367,8 +299,10 @@ export default function Page() {
                                     <p className='font-normal text-sm text-tprimary dark:text-dark-text'>Link note to related</p>
                                     <div className="flex gap-2 text-sm items-center capitalize">
                                         <div className="flex gap-2 items-center">
-                                            <input type="checkbox" className='w-5 h-5' name="" id="invoices" />
-                                            <label htmlFor="invoices">invoices</label>
+                                            <input
+                                                {...register("relatedtoinvoice")}
+                                                type="checkbox" className='w-5 h-5' name="relatedtoinvoice" id="relatedtoinvoice" />
+                                            <label htmlFor="relatedtoinvoice">invoices</label>
                                         </div>
                                     </div>
                                 </div>
@@ -380,41 +314,7 @@ export default function Page() {
                             {
                                 !client_id ? <CustomButton onClick={() => { setSelectClientModal(true) }} variant="primary" title="Select Client"></CustomButton> : <>
                                     <div className="flex gap-2 items-center">
-                                        <CustomButton type={"submit"} loading={loadingObj.draftquote} title="Save Quote"></CustomButton>
-                                        <CustomMenu open={true} icon={<CustomButton backIcon={<ChevronDown className='w-5 h-5 text-white' />} type={"button"} variant="primary" title="Save and"></CustomButton>}>
-                                            {/* Menu Items */}
-                                            <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
-                                                Save and...
-                                            </Typography>
-
-                                            <MenuItem className="text-tprimary text-sm">
-                                                <ListItemIcon>
-                                                    <MessageSquareText className="text-orange-700" size={16} />
-                                                </ListItemIcon>
-                                                Send as text mesage
-                                            </MenuItem>
-
-                                            <MenuItem className="text-tprimary text-sm">
-                                                <ListItemIcon>
-                                                    <Mail className="text-gray-700" size={16} />
-                                                </ListItemIcon>
-                                                Send as email
-                                            </MenuItem>
-
-                                            <MenuItem className="text-tprimary text-sm">
-                                                <ListItemIcon>
-                                                    <Hammer className="text-green-700" size={16} />
-                                                </ListItemIcon>
-                                                Convert to Job
-                                            </MenuItem>
-
-                                            <MenuItem className="text-tprimary text-sm">
-                                                <ListItemIcon>
-                                                    <MessageCircle className="text-orange-700" size={16} />
-                                                </ListItemIcon>
-                                                Mark as awaiting Response
-                                            </MenuItem>
-                                        </CustomMenu>
+                                        <CustomButton type={"submit"} loading={loadingObj.draftquote} title="Save Request"></CustomButton>
                                     </div>
                                 </>
                             }
@@ -431,26 +331,14 @@ export default function Page() {
                 onClose={() => setSelectClientModal(false)}
                 onSelect={id => {
                     if (template_ids) {
-                        router.push(`/quotes/new?client_id=${id}&template=${template_ids}`);
+                        router.push(`/requests/new?client_id=${id}&template=${template_ids}`);
                     } else {
-                        router.push(`/quotes/new?client_id=${id}`);
+                        router.push(`/requests/new?client_id=${id}`);
                     }
                     setSelectClientModal(false)
                 }}
                 clients={clientslist}
             />
-
-            <SelectProperty onCreateNew={() => {
-                setPropertyModal("NEW")
-            }} open={selectPropertyModal == "SELECT"} onClose={() => setPropertyModal(false)} onSelect={property => {
-                setSelectedProperty(property)
-                setPropertyModal(false)
-            }} properties={client?.property} />
-
-            <NewProperty open={selectPropertyModal == "NEW"} onClose={() => setPropertyModal(false)} onCreate={property => {
-                setSelectedProperty(property)
-                setPropertyModal(false)
-            }} client={client} />
         </div>
     );
 }

@@ -69,7 +69,7 @@ export default function Page() {
 
 
                 <div className="w-full flex items-start gap-3">
-                    <div className="border rounded-lg h-screen border-gray-300 w-3/4 p-4 bg-white">
+                    <div className="border rounded-lg h-screen border-gray-300 w-3/4 p-4 bg-white dark:bg-dark-secondary">
                         <div className="top-filters grid grid-cols-3 gap-3">
                             <div>
                                 <input type="text"
@@ -113,7 +113,7 @@ export default function Page() {
                         </div>
 
                         <div className="w-full h-[200px] flex flex-col items-center justify-center gap-3">
-                            <p className='text-tprimary text-lg'>Let's create a request and track incoming work</p>
+                            <p className='text-tprimary dark:text-dark-text text-lg'>Let's create a request and track incoming work</p>
                             <CustomButton variant={"primary"} onClick={() => router.push(`/requests/new`)} title={"Create a Request"} />
                         </div>
                     </div>
@@ -123,7 +123,7 @@ export default function Page() {
                             <div className="flex gap-2 items-center">
                                 <div className="text-yellow-500 bg-yellow-500 bg-opacity-30 w-[50px] rounded-[40px] flex items-center justify-center gap-3">
                                     <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                                    <span className='text-tprimary'>0</span>
+                                    <span className='text-tprimary dark:text-dark-text'>0</span>
                                 </div>
                                 <div className="text-sm">
                                     New
@@ -132,7 +132,7 @@ export default function Page() {
                             <div className="flex gap-2 items-center">
                                 <div className="text-orange-500 bg-orange-500 bg-opacity-30 w-[50px] rounded-[40px] flex items-center justify-center gap-3">
                                     <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                                    <span className='text-tprimary'>0</span>
+                                    <span className='text-tprimary dark:text-dark-text'>0</span>
                                 </div>
                                 <div className="text-sm">
                                     Assessment completed
@@ -141,7 +141,7 @@ export default function Page() {
                             <div className="flex gap-2 items-center">
                                 <div className="text-red-500 bg-red-500 bg-opacity-30 w-[50px] rounded-[40px] flex items-center justify-center gap-3">
                                     <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                                    <span className='text-tprimary'>0</span>
+                                    <span className='text-tprimary dark:text-dark-text'>0</span>
                                 </div>
                                 <div className="text-sm">
                                     Overdue
@@ -150,7 +150,7 @@ export default function Page() {
                             <div className="flex gap-2 items-center">
                                 <div className="text-green-300 bg-green-300 bg-opacity-30 w-[50px] rounded-[40px] flex items-center justify-center gap-3">
                                     <div className="w-2 h-2 bg-green-300 rounded-full"></div>
-                                    <span className='text-tprimary'>0</span>
+                                    <span className='text-tprimary dark:text-dark-text'>0</span>
                                 </div>
                                 <div className="text-sm">
                                     Today
@@ -159,7 +159,7 @@ export default function Page() {
                             <div className="flex gap-2 items-center">
                                 <div className="text-green-500 bg-green-500 bg-opacity-30 w-[50px] rounded-[40px] flex items-center justify-center gap-3">
                                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                    <span className='text-tprimary'>0</span>
+                                    <span className='text-tprimary dark:text-dark-text'>0</span>
                                 </div>
                                 <div className="text-sm">
                                     Upcoming
@@ -168,7 +168,7 @@ export default function Page() {
                             <div className="flex gap-2 items-center">
                                 <div className="text-orange-500 bg-orange-500 bg-opacity-30 w-[50px] rounded-[40px] flex items-center justify-center gap-3">
                                     <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                                    <span className='text-tprimary'>0</span>
+                                    <span className='text-tprimary dark:text-dark-text'>0</span>
                                 </div>
                                 <div className="text-sm">
                                     Unscheduled
@@ -177,7 +177,7 @@ export default function Page() {
                             <div className="flex gap-2 items-center">
                                 <div className="text-green-400 bg-green-400 bg-opacity-30 w-[50px] rounded-[40px] flex items-center justify-center gap-3">
                                     <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                    <span className='text-tprimary'>0</span>
+                                    <span className='text-tprimary dark:text-dark-text'>0</span>
                                 </div>
                                 <div className="text-sm">
                                     Converted
@@ -186,7 +186,7 @@ export default function Page() {
                             <div className="flex gap-2 items-center">
                                 <div className="text-gray-500 bg-gray-500 bg-opacity-30 w-[50px] rounded-[40px] flex items-center justify-center gap-3">
                                     <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-                                    <span className='text-tprimary'>0</span>
+                                    <span className='text-tprimary dark:text-dark-text'>0</span>
                                 </div>
                                 <div className="text-sm">
                                     Archived

@@ -70,11 +70,11 @@ const MainLayout = ({ children }) => {
     <Suspense>
       <ThemeProvider theme={theme(darkMode ? 'dark' : 'light')}>
         <CssBaseline />
-        <div className="flex dark:bg-dark-secondary">
+        <div className="bg-white flex dark:bg-dark-secondary z-[999]">
           <Sidebar />
-          <div className="flex-1">
+          <div className="flex-1 z-[997]">
             <Topbar />
-            <div className="z-40 p-6 min-h-screen relative dark:text-dark-text ">{children}<Loading /></div>
+            <div className="p-6 min-h-screen relative dark:text-dark-text ">{children}<Loading /></div>
           </div>
         </div>
       </ThemeProvider>

@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-8 px-4 py-6  dark:text-dark-text dark:bg-dark-secondary">
-      <Greeting profile={profile}/>
+      <Greeting profile={profile} />
       <Workflow />
 
       {/* Content */}
