@@ -74,7 +74,7 @@ const MainLayout = ({ children }) => {
           <Sidebar />
           <div className="flex-1">
             <Topbar />
-            <div className="p-6 min-h-screen relative dark:text-dark-text ">{children}<Loading /></div>
+            <div className="z-40 p-6 min-h-screen relative dark:text-dark-text ">{children}<Loading /></div>
           </div>
         </div>
       </ThemeProvider>

@@ -14,21 +14,48 @@ const Section = ({ children, border }) => {
 
 const Sidebar = () => {
     const [collapse, setCollapse] = useState(false)
+    const [createStatus, setCreateStatus] = useState(false)
 
     return (
-        <div className={`bg-primary-dark dark:bg-dark-primary font-bold dark:text-dark-text text-tprimary h-screen sticky top-0 ${!collapse ? 'w-48' : 'w-16'} transition-all`}>
+        <div className={`z-50 select-none bg-primary-dark dark:bg-dark-primary font-bold dark:text-dark-text text-tprimary h-screen sticky top-0 ${!collapse ? 'w-48' : 'w-16'} transition-all`}>
             <div className="py-6 px-4">
                 {/* <img src="https://cdn.jobber.com/yr/logos/v1/logo_jobber_bug.svg" alt="" className='w-8 object-contain' /> */}
                 <ChainCircleLogo />
             </div>
-            <nav className="flex flex-col">
+            <nav className="flex flex-col ">
                 <Section border={true}>
-                    <Link href="/">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <LucidePlusCircle className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Create"}
-                        </div>
-                    </Link>
+                    <div onClick={() => {
+                        setCreateStatus(!createStatus)
+                    }} className={`${createStatus ? 'bg-white' : ''} relative cursor-pointer max-h-10 h-10 flex items-center p-2 rounded-md`}>
+                        <LucidePlusCircle className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
+                        {!collapse && "Create"}
+                        {createStatus &&
+                            <div className="select-none absolute right-0 transform translate-x-[105%] flex bg-white z-50 items-center border p-1 rounded-lg">
+                                <div className="absolute w-5 h-5 bg-white transform -translate-x-[85%] rotate-45">
+                                </div>
+                                <div className='ml-4 flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary'>
+                                    <Users className={`w-4 h-4 font-black`} />
+                                    Client
+                                </div>
+                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary'>
+                                    <ClipboardList className={`w-4 h-4 font-black text-orange-500`} />
+                                    Request
+                                </div>
+                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary'>
+                                    <FileText className={`w-4 h-4 font-black text-purple-500`} />
+                                    Quote
+                                </div>
+                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary'>
+                                    <Briefcase className={`w-4 h-4 font-black text-green-500`} />
+                                    Job
+                                </div>
+                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary'>
+                                    <DollarSign className={`w-4 h-4 font-black text-blue-500`} />
+                                    Invoice
+                                </div>
+                            </div>
+                        }
+                    </div>
                     <Link href="/">
                         <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md font-bold dark:hover:bg-dark-hover">
                             <Home className={`w-4 h-4 font-bold ${!collapse ? 'mr-3' : ''}`} />
