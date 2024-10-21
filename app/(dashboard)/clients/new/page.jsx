@@ -40,6 +40,9 @@ import AddCustomFields from "@/app/_components/CustomFields";
 import { createClient, fetchClientsCustomFields, fetchPropertyCustomFields, removeLoading, setLoading } from "@/store/slices/client";
 import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
+import { getPhoneCodeFromCountry, verifyPhones } from "@/utils";
+import { toast } from "react-toastify";
+
 
 const defaultValues = {
   mobiles: [{ type: "personal", number: "", sms: false }],
@@ -94,6 +97,8 @@ export default function Page() {
 
   // (_field) => _field?.id == field && _field?.field_value != newValue
 
+
+
   const onSubmit = async (data) => {
     setRequiredError([])
     try {
@@ -133,6 +138,8 @@ export default function Page() {
         })
         .filter(Boolean);
 
+      verifyPhones(data.mobiles)
+
       const jsonData = {
         additionaldetails: changedValues,
         additionalpropertydetails: changeAdditionalpropertydetails,
@@ -140,7 +147,7 @@ export default function Page() {
           if (mobile.number.trim() == "") return null;
           return {
             type: mobile.type,
-            number: mobile.number,
+            number: `${getPhoneCodeFromCountry(data.country)}${mobile.number}`,
             sms: mobile.sms || false,
             primary: data.mobiles?.length == 1 ? true : mobile.primary || false,
           }
@@ -193,6 +200,7 @@ export default function Page() {
       };
 
       console.log("Prepared Data:", jsonData);
+
       dispatch(setLoading("clientsave"))
       dispatch(createClient(jsonData)).then(({ payload }) => {
         console.log({ payload })
@@ -203,6 +211,7 @@ export default function Page() {
       })
       // API call logic here, e.g., await axios.post("/api/clients", jsonData);
     } catch (error) {
+      toast.error(error?.message || "Failed")
       console.error("Error submitting form", error);
     }
   };
@@ -226,7 +235,7 @@ export default function Page() {
         <div className="p-8 border flex gap-4 items-start justify-start border-gray-200 rounded-xl text-tprimary dark:text-dark-text">
           <div className="w-1/2 space-y-3">
             <div className="flex items-center gap-3 mb-8">
-              <Avatar className="dark:text-dark-text dark:bg-dark-primary"/>
+              <Avatar className="dark:text-dark-text dark:bg-dark-primary" />
               <div className="font-bold text-2xl">Client details</div>
             </div>
             <div className="flex flex-col text-sm space-y-4">
@@ -497,7 +506,7 @@ export default function Page() {
           {/* Right */}
           <div div className="w-1/2" >
             <div className="flex items-center gap-3 mb-8">
-              <Avatar className="dark:bg-dark-primary dark:text-dark-text"/>
+              <Avatar className="dark:bg-dark-primary dark:text-dark-text" />
               <div className="font-bold text-2xl">Property details</div>
             </div>
             <div className="flex flex-col text-sm space-y-4">

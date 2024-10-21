@@ -191,3 +191,22 @@ export function nFormatter(num, digits) {
 export const templateProductsToQuote = (quoteproducts) => {
     return quoteproducts?.map(s => s?.products)?.flat()
 }
+
+export const contries_code = {
+    "india": "91",
+    "canada": "1",
+}
+
+export const getPhoneCodeFromCountry = country => {
+    return contries_code[country?.toLowerCase()]
+}
+
+export const verifyPhones = (phones) => {
+    phones?.forEach(phn => {
+        if (!/^([6-9]\d{9}|\d{10})$/.test(phn?.number)) {
+            throw new Error("Phone Number Failed");
+        }
+    })
+
+    return true;
+}

@@ -1,13 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Clock, FileText, DollarSign, CheckCircle, XCircle, Wallet, Info, ArrowRight, ChevronDown, ChevronRight, Calendar, Search, MoreHorizontal, PlusIcon } from 'lucide-react';
+import { Clock, FileText, DollarSign, CheckCircle, XCircle, Wallet, Info, ArrowRight, ChevronDown, ChevronRight, Calendar, Search, MoreHorizontal, PlusIcon, Archive, Trash2 } from 'lucide-react';
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 
 import Greeting from "@/components/Greeting";
 import Workflow from "@/components/Workflow";
-import { Button, Divider } from '@mui/material';
+import { Button, Divider, IconButton } from '@mui/material';
 import PageHeading from '@/components/PageHeading';
 import CustomTable from '@/components/CustomTable';
 import Link from 'next/link';
@@ -57,6 +57,27 @@ const columns = [
     headerName: "Total",
     flex: 1,
     minWidth: 100,
+  },
+  {
+    field: "actions",
+    headerName: "Actions",
+    flex: 1,
+    minWidth: 100,
+    renderCell: (params) => {
+      return <>
+        <div className="flex items-center">
+          <IconButton onClick={(e) => {
+            e?.stopPropagation()
+            alert(`Archieve ${params?.row?.id}`)
+          }}><Archive className="text-black" /></IconButton>
+          <IconButton
+            onClick={(e) => {
+              e?.stopPropagation()
+              alert(`Delete ${params?.row?.id}`)
+            }}><Trash2 className="text-red-400" /></IconButton>
+        </div>
+      </>
+    },
   },
   // {
   //   field: "balance",
