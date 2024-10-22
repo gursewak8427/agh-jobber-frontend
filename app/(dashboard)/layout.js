@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from "react-redux";
 import { clearerrorList, clearsuccessList, darkmodeState, fetchBusniessProfile, clearloadingpromise } from "@/store/slices/client";
 import theme from "@/theme";
+import { LoadScript } from "@react-google-maps/api";
 
 const MainLayout = ({ children }) => {
   const { successList, errorList, darkMode, loadingpromise } = useSelector(state => state.clients);
@@ -68,16 +69,18 @@ const MainLayout = ({ children }) => {
   }, [darkMode]);
   return (
     <Suspense>
-      <ThemeProvider theme={theme(darkMode ? 'dark' : 'light')}>
-        <CssBaseline />
-        <div className="bg-white flex dark:bg-dark-secondary z-[999]">
-          <Sidebar />
-          <div className="flex-1 z-[997]">
-            <Topbar />
-            <div className="p-6 min-h-screen relative dark:text-dark-text ">{children}<Loading /></div>
+      <LoadScript googleMapsApiKey="AIzaSyC4xDqx5yDdrRzTGbAakYuRBjjf0wxpvYs" libraries={['places']}>
+        <ThemeProvider theme={theme(darkMode ? 'dark' : 'light')}>
+          <CssBaseline />
+          <div className="bg-white flex dark:bg-dark-secondary z-[999]">
+            <Sidebar />
+            <div className="flex-1 z-[997]">
+              <Topbar />
+              <div className="p-6 min-h-screen relative dark:text-dark-text ">{children}<Loading /></div>
+            </div>
           </div>
-        </div>
-      </ThemeProvider>
+        </ThemeProvider>
+      </LoadScript>
     </Suspense>
   );
 };
