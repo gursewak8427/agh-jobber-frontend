@@ -69,7 +69,7 @@ const MainLayout = ({ children }) => {
   }, [darkMode]);
   return (
     <Suspense>
-      <LoadScript googleMapsApiKey="AIzaSyDGqtlymNogb3XbdxJoSzQSlwCrzvGZhfc" libraries={['places']}>
+      <LoadScript googleMapsApiKey="AIzaSyC4xDqx5yDdrRzTGbAakYuRBjjf0wxpvYs" libraries={['places']}>
         <ThemeProvider theme={theme(darkMode ? 'dark' : 'light')}>
           <CssBaseline />
           <div className="bg-white flex dark:bg-dark-secondary z-[999]">

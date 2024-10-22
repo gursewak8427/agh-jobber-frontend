@@ -188,6 +188,7 @@ export default function Page() {
               province: data.province,
               postalcode: data.postalCode,
               country: data.country,
+              map: data.map,
             },
           ],
         }),
