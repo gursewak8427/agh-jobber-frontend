@@ -1,4 +1,5 @@
 "use client";
+import { ServerLoading } from "@/components/LoadingPage";
 import React, { useState } from "react";
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from "react-places-autocomplete";
 
@@ -91,7 +92,7 @@ const AddressInputMap = ({ onComplete }) => {
                         {
                             (loading || suggestions?.length > 0) &&
                             <div className="absolute mt-2 bg-white border border-gray-200 rounded-md shadow-lg">
-                                {loading && <div className="p-2 text-sm text-gray-600">Loading...</div>}
+                                {loading && <ServerLoading />}
                                 {suggestions.map((suggestion) => {
                                     const isActive = suggestion.active;
                                     const suggestionStyles = isActive

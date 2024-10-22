@@ -8,7 +8,7 @@ export const fetchTeam = createAsyncThunk("fetchTeam", async (data, { rejectWith
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/team/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -88,7 +88,25 @@ export const fetchClients = createAsyncThunk("fetchClients", async (data, { reje
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/?page=${data.page}&page_size=${data.page_size}`);
         return response.data;
     } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
 
+export const deleteClient = createAsyncThunk("deleteClient", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/clients/?id=${data.id}&type=${data.type}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const achivedClient = createAsyncThunk("achivedClient", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/clients/?id=${data.id}&type=${data.type}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -97,7 +115,7 @@ export const fetchallClients = createAsyncThunk("fetchallClients", async (data, 
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/?list=true`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -106,7 +124,7 @@ export const fetchClientsCustomFields = createAsyncThunk("fetchClientsCustomFiel
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/customclientfield/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -115,7 +133,7 @@ export const createClientsCustomFields = createAsyncThunk("createClientsCustomFi
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/customclientfield/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -134,7 +152,7 @@ export const createPropertyCustomFields = createAsyncThunk("createPropertyCustom
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/custompropertyfield/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -143,7 +161,7 @@ export const createClient = createAsyncThunk("createClient", async (data, { reje
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/client/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -152,7 +170,7 @@ export const fetchClient = createAsyncThunk("fetchClient", async (data, { reject
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/client/?id=${data}`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -161,7 +179,7 @@ export const fetchProperty = createAsyncThunk("fetchProperty", async (data, { re
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/property/?id=${data}`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -170,7 +188,7 @@ export const createProperty = createAsyncThunk("createProperty", async (data, { 
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/property/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -179,7 +197,7 @@ export const fetchQuotecount = createAsyncThunk("fetchQuotecount", async (data, 
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quotecount/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -188,7 +206,7 @@ export const fetchJobcount = createAsyncThunk("fetchJobcount", async (data, { re
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/jobcount/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -197,7 +215,7 @@ export const fetchInvoicecount = createAsyncThunk("fetchInvoicecount", async (da
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/invoicecount/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -206,7 +224,7 @@ export const createQuoteCustomFields = createAsyncThunk("createQuoteCustomFields
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/customquotefield/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -215,7 +233,7 @@ export const fetchQuoteCustomFields = createAsyncThunk("fetchQuoteCustomFields",
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/customquotefield/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -224,7 +242,7 @@ export const fetchQuote = createAsyncThunk("fetchQuote", async (data, { rejectWi
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quote/?id=${data}`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -251,7 +269,7 @@ export const fetchQuotes = createAsyncThunk("fetchQuotes", async (data, { reject
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/quote/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -260,7 +278,7 @@ export const fetchJobCustomFields = createAsyncThunk("fetchJobCustomFields", asy
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/customjobfield/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -270,7 +288,7 @@ export const createJobCustomFields = createAsyncThunk("createJobCustomFields", a
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/customjobfield/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -279,7 +297,7 @@ export const fetchJob = createAsyncThunk("fetchJob", async (data, { rejectWithVa
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/job/?id=${data}`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -306,7 +324,7 @@ export const fetchJobs = createAsyncThunk("fetchJobs", async (data, { rejectWith
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/job/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -316,7 +334,7 @@ export const fetchInvoiceCustomFields = createAsyncThunk("fetchInvoiceCustomFiel
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/custominvoicefield/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -326,7 +344,7 @@ export const createInvoiceCustomFields = createAsyncThunk("createInvoiceCustomFi
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/custominvoicefield/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -335,7 +353,7 @@ export const fetchInvoice = createAsyncThunk("fetchInvoice", async (data, { reje
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/invoice/?id=${data}`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -362,7 +380,7 @@ export const fetchInvoices = createAsyncThunk("fetchInvoices", async (data, { re
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/invoice/`);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -371,7 +389,7 @@ export const createJobService = createAsyncThunk("createJobService", async (data
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobservice/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -389,7 +407,7 @@ export const createJobVisit = createAsyncThunk("createJobVisit", async (data, { 
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobvisit/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -400,7 +418,7 @@ export const putJobVisit = createAsyncThunk("putJobVisit", async (data, { reject
         const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/jobvisit/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -411,7 +429,7 @@ export const createInvoiceReminder = createAsyncThunk("createInvoiceReminder", a
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobinvoicereminder/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -422,7 +440,7 @@ export const putInvoiceReminder = createAsyncThunk("putInvoiceReminder", async (
         const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/jobinvoicereminder/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -431,7 +449,7 @@ export const createJobExepense = createAsyncThunk("createJobExepense", async (da
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobexpense/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -441,7 +459,7 @@ export const putJobExepense = createAsyncThunk("putJobExepense", async (data, { 
         const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/jobexpense/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -450,7 +468,7 @@ export const putJobEmployeeSheet = createAsyncThunk("putJobEmployeeSheet", async
         const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_API_URL}/jobexployeesheet/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -460,7 +478,7 @@ export const createJobEmployeeSheet = createAsyncThunk("createJobEmployeeSheet",
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/jobexployeesheet/`, data);
         return response.data;
     } catch (error) {
-
+        return handleAsyncThunkError(error, rejectWithValue);
     }
 });
 
@@ -711,6 +729,36 @@ const clientSlice = createSlice({
             .addCase(fetchClients.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(deleteClient.pending, (state) => {
+                state.loadingList = true;
+                state.loadingpromise = 'Deleting Client'
+            })
+            .addCase(deleteClient.fulfilled, (state, action) => {
+                state.loadingList = false;
+                state.successList = 'Client Deleted Successfully!';
+                // Remove client from list
+                state.clients = state.clients.filter((client) => client.id !== Number(action.payload.id));
+            })
+            .addCase(deleteClient.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = 'Failed to delete client';
+            });
+        builder
+            .addCase(achivedClient.pending, (state) => {
+                state.loadingList = true;
+                state.loadingpromise = 'Achieving Client'
+            })
+            .addCase(achivedClient.fulfilled, (state, action) => {
+                state.loadingList = false;
+                state.successList = 'Client Achieved Successfully!';
+                // Remove client from list with payload convert to num as id
+                state.clients = state.clients.filter((client) => client.id !== Number(action.payload.id));
+            })
+            .addCase(achivedClient.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = 'Failed to achieve client';
             });
         builder
             .addCase(fetchClientsCustomFields.pending, (state) => {
