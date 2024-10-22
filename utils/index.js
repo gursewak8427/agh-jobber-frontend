@@ -204,7 +204,7 @@ export const getPhoneCodeFromCountry = country => {
 export const verifyPhones = (phones) => {
     phones?.forEach(phn => {
         if (!/^([6-9]\d{9}|\d{10})$/.test(phn?.number)) {
-            throw new Error("Phone Number Failed");
+            throw new Error("10 digit phone number is required");
         }
     })
 

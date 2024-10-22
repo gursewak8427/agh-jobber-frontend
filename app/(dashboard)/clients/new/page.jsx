@@ -139,8 +139,10 @@ export default function Page() {
           return null;
         })
         .filter(Boolean);
-
-      verifyPhones(data.mobiles)
+      console.log(data.mobiles);
+      
+      const verifiedMobiles = data.mobiles.filter((mobile) => mobile.number.trim() !== "");
+      verifyPhones(verifiedMobiles);
 
       const jsonData = {
         additionaldetails: changedValues,
