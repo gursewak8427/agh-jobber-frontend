@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { Home, Calendar, Users, ClipboardList, FileText, Briefcase, DollarSign, BarChart2, PieChart, Clock, App, UserPlus, LayoutGrid, ArrowLeft, ArrowLeftCircle, ArrowLeftIcon, PlusCircle, LucidePlusCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@mui/material';
 import ChainCircleLogo from './logo';
+import { usePathname } from 'next/navigation';
 
 const Section = ({ children, border }) => {
     return <section className={`py-2 px-3 w-full flex flex-col gap-1 ${border ? 'border-b border-gray-400' : ''}`}>
@@ -12,107 +13,159 @@ const Section = ({ children, border }) => {
     </section>
 }
 
+
 const Sidebar = () => {
     const [collapse, setCollapse] = useState(false)
+    const [createStatus, setCreateStatus] = useState(false)
+    const pathname = usePathname();
+    const sectionRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (sectionRef.current && !sectionRef.current.contains(event.target)) {
+                setCreateStatus(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const iconProps = { className: `w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}` }
+
+    const s1 = [{
+        title: "Home",
+        path: "/",
+        icon: <Home {...iconProps} />
+    },
+    {
+        title: "Schedule",
+        path: "/schedule",
+        icon: <Calendar {...iconProps} />
+    }]
+
+    const s2 = [{
+        title: "Clients",
+        path: "/clients",
+        icon: <Users {...iconProps} />
+    },
+    {
+        title: "Requests",
+        path: "/requests",
+        icon: <ClipboardList {...iconProps} />
+    },
+    {
+        title: "Quotes",
+        path: "/quotes",
+        icon: <FileText {...iconProps} />
+    },
+    {
+        title: "Jobs",
+        path: "/jobs",
+        icon: <Briefcase {...iconProps} />
+    },
+    {
+        title: "Invoices",
+        path: "/invoices",
+        icon: <DollarSign {...iconProps} />
+    }]
+
+    const s3 = [{
+        title: "Marketing",
+        path: "/marketing",
+        icon: <PieChart {...iconProps} />
+    },
+    {
+        title: "Reports",
+        path: "/reports",
+        icon: <DollarSign {...iconProps} />
+    },
+    {
+        title: "Expenses",
+        path: "/expenses",
+        icon: <Clock {...iconProps} />
+    },
+    {
+        title: "Timesheets",
+        path: "/timesheets",
+        icon: <LayoutGrid {...iconProps} />
+    },
+    {
+        title: "Apps",
+        path: "/apps",
+        icon: <UserPlus {...iconProps} />
+    }]
+
+    const s4 = [{
+        title: "Refer a friend",
+        path: "/refer",
+        icon: <UserPlus {...iconProps} />
+    }]
+
+    const renderItems = arr => {
+        return arr?.map((item, index) => {
+            return <Link href={item?.path}>
+                <div className={`overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary p-2 rounded-md dark:hover:bg-dark-hover ${pathname == item?.path && 'bg-gray-100 dark:bg-dark-secondary'}`}>
+                    {item?.icon}
+                    {!collapse && item?.title}
+                </div>
+            </Link>
+        })
+    }
 
     return (
-        <div className={`bg-primary-dark dark:bg-dark-primary font-bold dark:text-dark-text text-tprimary h-screen sticky top-0 ${!collapse ? 'w-48' : 'w-16'} transition-all`}>
+        <div className={`z-[998] select-none bg-primary-dark dark:bg-dark-primary font-bold dark:text-dark-text text-tprimary h-screen sticky top-0 ${!collapse ? 'w-48' : 'w-16'} transition-all`}>
             <div className="py-6 px-4">
                 {/* <img src="https://cdn.jobber.com/yr/logos/v1/logo_jobber_bug.svg" alt="" className='w-8 object-contain' /> */}
                 <ChainCircleLogo />
             </div>
-            <nav className="flex flex-col">
+            <nav className="flex flex-col ">
                 <Section border={true}>
-                    <Link href="/">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <LucidePlusCircle className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Create"}
-                        </div>
-                    </Link>
-                    <Link href="/">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md font-bold dark:hover:bg-dark-hover">
-                            <Home className={`w-4 h-4 font-bold ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Home"}
-                        </div>
-                    </Link>
-                    <Link href="/schedule">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <Calendar className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Schedule"}
-                        </div>
-                    </Link>
+                    <div onClick={() => {
+                        setCreateStatus(!createStatus)
+                    }} ref={sectionRef} className={`${createStatus ? 'bg-gray-100 dark:bg-dark-secondary' : ''} relative cursor-pointer max-h-10 h-10 flex items-center p-2 rounded-md`}>
+                        <LucidePlusCircle className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
+                        {!collapse && "Create"}
+                        {createStatus &&
+                            <div className="select-none absolute right-0 transform translate-x-[105%] flex bg-white dark:bg-dark-primary z-50 items-center border border-tprimary dark:border-white p-1 rounded-lg">
+                                <div className="absolute w-5 h-5 bg-white dark:bg-dark-primary transform -translate-x-[75%] rotate-45 border-l  border-tprimary dark:border-white border-b">
+                                </div>
+                                <div className='ml-4 flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
+                                    <Users className={`w-4 h-4 font-black`} />
+                                    Client
+                                </div>
+                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
+                                    <ClipboardList className={`w-4 h-4 font-black text-orange-500`} />
+                                    Request
+                                </div>
+                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
+                                    <FileText className={`w-4 h-4 font-black text-purple-500`} />
+                                    Quote
+                                </div>
+                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
+                                    <Briefcase className={`w-4 h-4 font-black text-green-500`} />
+                                    Job
+                                </div>
+                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
+                                    <DollarSign className={`w-4 h-4 font-black text-blue-500`} />
+                                    Invoice
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    {renderItems(s1)}
                 </Section>
                 <Section border={true}>
-                    <Link href="/clients">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <Users className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Clients"}
-                        </div>
-                    </Link>
-                    <Link href="/requests">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <ClipboardList className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Requests"}
-                        </div>
-                    </Link>
-                    <Link href="/quotes">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <FileText className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Quotes"}
-                        </div>
-                    </Link>
-                    <Link href="/jobs">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <Briefcase className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Jobs"}
-                        </div>
-                    </Link>
-                    <Link href="/invoices">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <DollarSign className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Invoices"}
-                        </div>
-                    </Link>
+                    {renderItems(s2)}
                 </Section>
                 <Section border={true}>
-                    <Link href="/marketing">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <BarChart2 className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Marketing"}
-                        </div>
-                    </Link>
-                    <Link href="/reports">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <PieChart className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Reports"}
-                        </div>
-                    </Link>
-                    <Link href="/expenses">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <DollarSign className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Expenses"}
-                        </div>
-                    </Link>
-                    <Link href="/timesheets">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <Clock className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Timesheets"}
-                        </div>
-                    </Link>
-                    <Link href="/apps">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <LayoutGrid className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Apps"}
-                        </div>
-                    </Link>
+                    {renderItems(s3)}
                 </Section>
                 <Section border={false}>
-                    <Link href="/refer">
-                        <div className="overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary-dark p-2 rounded-md dark:hover:bg-dark-hover">
-                            <UserPlus className={`w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}`} />
-                            {!collapse && "Refer a friend"}
-                        </div>
-                    </Link>
+                    {renderItems(s4)}
                 </Section>
 
                 <Button className='pl-4 py-4 w-full flex items-center hover:bg-primary-dark dark:hover:bg-dark-hover justify-start absolute bottom-0' onClick={() => setCollapse(!collapse)}>

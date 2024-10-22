@@ -1,9 +1,9 @@
 "use client"
-import { Clock, FileText, DollarSign, CheckCircle, XCircle, Wallet, Info, ArrowRight, ChevronDown, ChevronRight, Calendar, Search } from 'lucide-react';
+import { Clock, FileText, DollarSign, CheckCircle, XCircle, Wallet, Info, ArrowRight, ChevronDown, ChevronRight, Calendar, Search, Trash2, Archive } from 'lucide-react';
 
 import Greeting from "@/components/Greeting";
 import Workflow from "@/components/Workflow";
-import { Box, Button, Divider } from '@mui/material';
+import { Box, Button, Divider, IconButton } from '@mui/material';
 import PageHeading from '@/components/PageHeading';
 import CustomTable from '@/components/CustomTable';
 import Link from 'next/link';
@@ -59,6 +59,27 @@ const columns = [
         return '--';
       }
       return `$${parseFloat(value)?.toFixed(2)}`;
+    },
+  },
+  {
+    field: "actions",
+    headerName: "Actions",
+    flex: 1,
+    minWidth: 100,
+    renderCell: (params) => {
+      return <>
+        <div className="flex items-center">
+          <IconButton onClick={(e) => {
+            e?.stopPropagation()
+            alert(`Archieve ${params?.row?.id}`)
+          }}><Archive className="text-black" /></IconButton>
+          <IconButton
+            onClick={(e) => {
+              e?.stopPropagation()
+              alert(`Delete ${params?.row?.id}`)
+            }}><Trash2 className="text-red-400" /></IconButton>
+        </div>
+      </>
     },
   },
 ];

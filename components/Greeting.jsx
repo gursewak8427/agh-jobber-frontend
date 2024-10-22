@@ -1,4 +1,4 @@
-const Greeting = ({profile}) => {
+const Greeting = ({ profile }) => {
     const currentHour = new Date().getHours(); // Get the current hour (0-23)
 
     let greetingMessage;
@@ -12,7 +12,7 @@ const Greeting = ({profile}) => {
     }
 
     return (
-        <div className="text-tprimary dark:text-dark-text dark:bg-dark-secondary ">
+        <div className="z-0 text-tprimary dark:text-dark-text dark:bg-dark-secondary ">
             <h1 className="text-2xl font-bold">{new Date().toDateString()}</h1>
             <h1 className="text-4xl font-black tracking-tighter">
                 {greetingMessage}, {profile.name}

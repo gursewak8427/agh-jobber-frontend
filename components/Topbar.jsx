@@ -141,7 +141,7 @@ const Topbar = () => {
     }
     return (
         <>
-            <div className="bg-primary flex justify-between items-center p-4 shadow-sm sticky top-0 z-50 dark:bg-dark-secondary  dark:text-dark-text">
+            <div className="z-[996] bg-white flex justify-between items-center p-4 shadow-sm sticky top-0 dark:bg-dark-secondary dark:text-dark-text border-b-2">
                 <div className="text-sm text-gray-500  dark:text-dark-text">
                     <p className="font-bold">{profile?.company_name}</p>
                 </div>

@@ -16,7 +16,7 @@ function CustomModal({ show, onClose, children, wide, extrawide }) {
 
     return (
         <Transition appear show={show} as={Fragment}>
-            <Dialog as="div" className="relative z-50" onClose={handleClose}>
+            <Dialog as="div" className="relative z-[10000]" onClose={handleClose}>
                 <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-300"
