@@ -42,7 +42,7 @@ import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 import { getPhoneCodeFromCountry, verifyPhones } from "@/utils";
 import { toast } from "react-toastify";
-
+import AddressInputMap from "@/app/_components/AddressInputMap";
 
 const defaultValues = {
   mobiles: [{ type: "personal", number: "", sms: false }],
@@ -55,6 +55,7 @@ const defaultValues = {
 };
 
 export default function Page() {
+
   const [requiredError, setRequiredError] = useState([])
   const [open, setOpen] = useState(false)
 
@@ -68,6 +69,7 @@ export default function Page() {
   } = useForm({
     defaultValues,
   });
+
 
 
   const router = useRouter();
@@ -111,7 +113,7 @@ export default function Page() {
 
 
       const changedValues = clientcustomfields
-        .map((item, index) => {
+        ?.map((item, index) => {
 
           const change = data?.clientCustomFields?.[`${item.id}key`] || null;
           if (!change) return null;
@@ -511,14 +513,26 @@ export default function Page() {
             </div>
             <div className="flex flex-col text-sm space-y-4">
               <div>
-                <div>
+                <AddressInputMap onComplete={({ address, mapLink }) => {
+                  console.log({
+                    address, mapLink
+                  })
+                  setValue(`map`, mapLink)
+                  setValue(`street1`, address?.street1)
+                  setValue(`street2`, address?.street2)
+                  setValue(`city`, address?.city)
+                  setValue(`province`, address?.province)
+                  setValue(`country`, address?.country)
+                  setValue(`postalCode`, address?.postalcode)
+                }} />
+                {/* <div>
                   <input {...register("street1")}
                     type="text"
                     placeholder='Street 1'
                     className="w-full h-11 dark:bg-dark-secondary dark:text-dark-text focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                   />
-                </div>
-                <div>
+                </div> */}
+                <div className="">
                   <input {...register("street2")}
                     type="text"
                     placeholder='Street 2'
@@ -610,13 +624,11 @@ export default function Page() {
                   Additional property details
                 </AccordionSummary>
                 <AccordionDetails>
-                  {/* {JSON.stringify(clientcustomfields)} */}
                   <div className="space-y-2">
                     {
                       propertycustomfields?.map((field, index) => <CustomSingleField register={register} prefix="propertyCustomFields" field={field} index={index} customfields={propertycustomfields} />)
                     }
                   </div>
-                  {/* <AddCustomFields /> */}
                   <div className="my-4">
                     <CustomButton title="Add Custom Field" onClick={() => setOpen("property")} />
                   </div>

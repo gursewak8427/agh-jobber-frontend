@@ -174,7 +174,9 @@ const Topbar = () => {
                             </div>
                         </MenuItem>
                         <Divider />
-                        <MenuItem onClick={null}>Settings</MenuItem>
+                        <MenuItem onClick={() => {
+                            router.push('/settings/company')
+                        }}>Settings</MenuItem>
                         <MenuItem onClick={null}>Account and Billing</MenuItem>
                         <MenuItem onClick={null}>Manage Team</MenuItem>
                         <MenuItem onClick={null}>Refer a Friend</MenuItem>

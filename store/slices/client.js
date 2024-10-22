@@ -12,6 +12,77 @@ export const fetchTeam = createAsyncThunk("fetchTeam", async (data, { rejectWith
     }
 });
 
+export const fetchCommunications = createAsyncThunk("fetchCommunications", async (data, { rejectWithValue }) => {
+    try {
+        // const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/team/`);
+        // return response.data;
+
+        return [{
+            id: 1,
+            client: /* id of client, it will auto populate */{
+                id: 5,
+                fname: "Gursewak",
+                lname: "Singh",
+                companyname: "Prismaple",
+            },
+            sentDate: '2024-10-22T10:22:12.382Z',
+            to: "brajesh_dev@yahoo.com",
+            subject: "We've received your requested changes",
+            status: "Sent",
+            type: "Quote changes requested",
+            openedDate: null,
+            message: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae, non."
+        },
+        {
+            id: 2,
+            client: /* id of client, it will auto populate */{
+                id: 6,
+                fname: "Gurjeet",
+                lname: "Singh",
+                companyname: "Prosbro",
+            },
+            sentDate: '2024-10-22T10:22:12.382Z',
+            to: "rahul_dev@yahoo.com",
+            subject: "Quote from AGH RENOVATION LIMITED - Oct 09, 2024",
+            status: "Opened",
+            type: "Quote Sent",
+            openedDate: '2024-10-08T10:22:12.382Z',
+            message: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae, non."
+        }]
+    } catch (error) {
+
+    }
+});
+
+export const fetchCommunication = createAsyncThunk("fetchCommunication", async (data, { rejectWithValue }) => {
+    try {
+        // Here data is the 'id' of communication
+
+        // Fetch //////
+        // const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/team/`);
+        // return response.data;
+
+        return {
+            id: 1,
+            client: /* id of client, it will auto populate */{
+                id: 5,
+                fname: "Gursewak",
+                lname: "Singh",
+                companyname: "Prismaple",
+            },
+            sentDate: '2024-10-22T10:22:12.382Z',
+            to: "brajesh_dev@yahoo.com",
+            subject: "We've received your requested changes",
+            status: "Sent",
+            type: "Quote changes requested",
+            openedDate: null,
+            message: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae, non."
+        }
+    } catch (error) {
+
+    }
+});
+
 export const fetchClients = createAsyncThunk("fetchClients", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/?page=${data.page}&page_size=${data.page_size}`);
@@ -547,10 +618,13 @@ export const createTemplateWith = createAsyncThunk("createTemplateWith", async (
     }
 });
 
+
 // Initial State
 const initialState = {
     profile: {},
     team: [],
+    communications: [],
+    communication: {},
     clients: [],
     clientslist: [],
     client: {},
@@ -580,7 +654,7 @@ const initialState = {
     loadingList: false,
     errorList: null,
     successList: null,
-    loadingpromise:null,
+    loadingpromise: null,
 
     loadingForm: false,
     errorForm: null,
@@ -1109,7 +1183,7 @@ const clientSlice = createSlice({
             .addCase(sendQuoteMessage.fulfilled, (state, action) => {
                 delete state.loadingObj['quotemessage']
                 state.successList = "Message Sent Successfully!";
-                state.quote=action.payload
+                state.quote = action.payload
             })
             .addCase(sendQuoteMessage.rejected, (state, action) => {
                 delete state.loadingObj['quotemessage']
@@ -1303,8 +1377,34 @@ const clientSlice = createSlice({
                 state.loadingFull = false;
                 state.errorList = action.payload.error || 'Failed to fetch templates!!!';
             });
+
+        builder
+            .addCase(fetchCommunications.pending, (state, action) => {
+                state.loadingObj["fetchcommunications"] = true;
+            })
+            .addCase(fetchCommunications.fulfilled, (state, action) => {
+                state.loadingObj["fetchcommunications"] = false;
+                state.communications = action.payload;
+            })
+            .addCase(fetchCommunications.rejected, (state, action) => {
+                state.loadingObj["fetchcommunications"] = false;
+                state.errorList = action.payload?.message || 'Failed to fetch team';
+            });
+
+        builder
+            .addCase(fetchCommunication.pending, (state, action) => {
+                state.loadingObj["fetchcommunication"] = true;
+            })
+            .addCase(fetchCommunication.fulfilled, (state, action) => {
+                state.loadingObj["fetchcommunication"] = false;
+                state.communication = action.payload;
+            })
+            .addCase(fetchCommunication.rejected, (state, action) => {
+                state.loadingObj["fetchcommunication"] = false;
+                state.errorList = action.payload?.message || 'Failed to fetch team';
+            });
     },
 });
 
-export const { setLoading, removeLoading, clearsuccessList, clearerrorList, darkmodeState,clearloadingpromise } = clientSlice.actions;
+export const { setLoading, removeLoading, clearsuccessList, clearerrorList, darkmodeState, clearloadingpromise } = clientSlice.actions;
 export default clientSlice.reducer;

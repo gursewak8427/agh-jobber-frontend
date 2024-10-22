@@ -690,7 +690,9 @@ export default function Page() {
                 </div>
                 <div className="my-1 flex gap-2">
                   <CustomButton title={"View Communication"} />
-                  <CustomButton title={"View All"} />
+                  <CustomButton title={"View All"} onClick={() => {
+                    router.push(`/reports/client-communications/${client?.id}`)
+                  }} />
                 </div>
               </div>
             </div>
