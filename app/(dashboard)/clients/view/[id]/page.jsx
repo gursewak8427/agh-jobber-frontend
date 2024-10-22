@@ -432,7 +432,7 @@ export default function Page() {
                       className="cursor-pointer hover:bg-primary-dark dark:hover:bg-dark-hover"
                     >
                       <td className="py-4 px-2">
-                        <Link href={property.map} target="_blank" className="w-10 h-10 rounded border-green-700 border grid place-content-center hover:bg-green-700 hover:bg-opacity-20 cursor-pointer"
+                        <Link href={property?.map ?? '#'} target="_blank" className="w-10 h-10 rounded border-green-700 border grid place-content-center hover:bg-green-700 hover:bg-opacity-20 cursor-pointer"
                           onClick={(e) => e.stopPropagation()} // Prevent propagation to <tr> click> 
                         >
                           <MapPin className="text-green-700" />

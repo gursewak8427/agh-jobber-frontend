@@ -273,6 +273,24 @@ export const fetchQuotes = createAsyncThunk("fetchQuotes", async (data, { reject
     }
 });
 
+export const deleteQuote = createAsyncThunk("deleteQuote", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/quote/?id=${data.id}&type=${data.type}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const achivedQuote = createAsyncThunk("achivedQuote", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/quote/?id=${data.id}&type=${data.type}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 export const fetchJobCustomFields = createAsyncThunk("fetchJobCustomFields", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/customjobfield/`);
@@ -322,6 +340,24 @@ export const updateJob = createAsyncThunk("updateJob", async (data, { rejectWith
 export const fetchJobs = createAsyncThunk("fetchJobs", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/job/`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const deleteJob = createAsyncThunk("deleteJob", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/job/?id=${data.id}&type=${data.type}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const archivedJob = createAsyncThunk("archivedJob", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/job/?id=${data.id}&type=${data.type}`);
         return response.data;
     } catch (error) {
         return handleAsyncThunkError(error, rejectWithValue);
@@ -378,6 +414,24 @@ export const updateInvoice = createAsyncThunk("updateInvoice", async (data, { re
 export const fetchInvoices = createAsyncThunk("fetchInvoices", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/invoice/`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const deleteInvoice = createAsyncThunk("deleteInvoice", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/invoice/?id=${data.id}&type=${data.type}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
+export const archivedInvoice = createAsyncThunk("archivedInvoice", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/invoice/?id=${data.id}&type=${data.type}`);
         return response.data;
     } catch (error) {
         return handleAsyncThunkError(error, rejectWithValue);
@@ -813,7 +867,22 @@ const clientSlice = createSlice({
         builder
             .addCase(createPropertyCustomFields.rejected, (state, action) => {
                 delete state.loadingObj['property']
-                state.errorList = action.payload?.message || 'Failed to create client custom fields';
+                state.errorList = action.payload?.message || 'Failed to create client property custom fields';
+            })
+        builder
+            .addCase(createProperty.pending, (state, action) => {
+                state.loadingObj['newproperty'] = true
+            })
+        builder
+            .addCase(createProperty.fulfilled, (state, action) => {
+                state.propertycustomfields.push(action.payload);
+                delete state.loadingObj['newproperty'];
+                state.successList = 'Property Created Successfully!';
+            })
+        builder
+            .addCase(createProperty.rejected, (state, action) => {
+                delete state.loadingObj['newproperty']
+                state.errorList = action.payload?.message || 'Failed to create client property custom fields';
             })
         builder
             .addCase(fetchClient.pending, (state, action) => {
@@ -921,6 +990,34 @@ const clientSlice = createSlice({
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
+        builder
+            .addCase(deleteQuote.pending, (state, action) => {
+                state.loadingList = true;
+                state.loadingpromise = 'Deleting Quote'
+            })
+            .addCase(deleteQuote.fulfilled, (state, action) => {
+                state.quotes = state.quotes.filter((quote) => quote.id !== Number(action.payload.id));
+                state.loadingList = false;
+                state.successList = "Quote Deleted Successfully!!"
+            })
+            .addCase(deleteQuote.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to delete quote';
+            });
+        builder
+            .addCase(achivedQuote.pending, (state, action) => {
+                state.loadingList = true;
+                state.loadingpromise = 'Achieving Quote'
+            })
+            .addCase(achivedQuote.fulfilled, (state, action) => {
+                state.quotes = state.quotes.filter((quote) => quote.id !== Number(action.payload.id));
+                state.loadingList = false;
+                state.successList = "Quote Achieved Successfully!!"
+            })
+            .addCase(achivedQuote.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to achieve quote';
+            });
 
         builder
             .addCase(fetchJobcount.fulfilled, (state, action) => {
@@ -1002,6 +1099,34 @@ const clientSlice = createSlice({
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
         builder
+            .addCase(deleteJob.pending, (state, action) => {
+                state.loadingList = true;
+                state.loadingpromise = 'Deleting Job'
+            })
+            .addCase(deleteJob.fulfilled, (state, action) => {
+                state.jobs = state.jobs.filter((job) => job.id !== Number(action.payload.id));
+                state.loadingList = false;
+                state.successList = "Job Deleted Successfully!!"
+            })
+            .addCase(deleteJob.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to delete job';
+            });
+        builder
+            .addCase(archivedJob.pending, (state, action) => {
+                state.loadingList = true;
+                state.loadingpromise = 'Archiving Job'
+            })
+            .addCase(archivedJob.fulfilled, (state, action) => {
+                state.jobs = state.jobs.filter((job) => job.id !== Number(action.payload.id));
+                state.loadingList = false;
+                state.successList = "Job Archived Successfully!!"
+            })
+            .addCase(archivedJob.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to archive job';
+            });
+        builder
             .addCase(fetchInvoice.pending, (state, action) => {
                 state.loadingFull = true;
             })
@@ -1050,6 +1175,34 @@ const clientSlice = createSlice({
             .addCase(fetchInvoices.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(deleteInvoice.pending, (state, action) => {
+                state.loadingList = true;
+                state.loadingpromise = 'Deleting Invoice';
+            })
+            .addCase(deleteInvoice.fulfilled, (state, action) => {
+                state.invoices = state.invoices.filter((invoice) => invoice.id !== Number(action.payload.id));
+                state.loadingList = false;
+                state.successList = "Invoice Deleted Successfully"
+            })
+            .addCase(deleteInvoice.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to delete invoice';
+            });
+        builder
+            .addCase(archivedInvoice.pending, (state, action) => {
+                state.loadingList = true;
+                state.loadingpromise = 'Archiving Invoice';
+            })
+            .addCase(archivedInvoice.fulfilled, (state, action) => {
+                state.invoices = state.invoices.filter((invoice) => invoice.id !== Number(action.payload.id));
+                state.loadingList = false;
+                state.successList = "Invoice Archived Successfully"
+            })
+            .addCase(archivedInvoice.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to archive invoice';
             });
         builder
             .addCase(fetchInvoiceCustomFields.fulfilled, (state, action) => {

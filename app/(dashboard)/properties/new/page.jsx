@@ -44,6 +44,7 @@ import { useSelector } from "react-redux";
 import CustomSingleField from "@/app/_components/CustomSingleField";
 import SelectClient from "@/app/_components/client/SelectClient";
 import { getClientName } from "@/utils";
+import AddressInputMap from "@/app/_components/AddressInputMap";
 
 export default function Page() {
     const searchParams = useSearchParams();
@@ -63,8 +64,7 @@ export default function Page() {
 
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const { propertycustomfields } = useSelector(state => state.clients);
-    const { clientslist } = useSelector(state => state.clients);
+    const { propertycustomfields, clientslist, loadingObj } = useSelector(state => state.clients);
 
     const onSubmit = async (data) => {
 
@@ -90,13 +90,16 @@ export default function Page() {
                 province: data.province,
                 postalcode: data.postalcode,
                 country: data.country,
+                map: data.map,
 
                 client: client_id,
                 ...(changeAdditionalpropertydetails && changeAdditionalpropertydetails?.length > 0 && {
                     additionalpropertydetails: changeAdditionalpropertydetails,
                 })
             }
-            dispatch(createProperty(jsonData));
+            dispatch(createProperty(jsonData)).then(({ _ }) => {
+                router.push(`/clients/view/${client_id}`)
+            });
         } catch (error) {
             console.error("Error submitting form", error);
         }
@@ -141,13 +144,22 @@ export default function Page() {
                             </div>
                             <div className="flex flex-col text-sm space-y-4">
                                 <div>
-                                    <div>
+                                    <AddressInputMap onComplete={({ address, mapLink }) => {
+                                        setValue(`map`, mapLink)
+                                        setValue(`address1`, address?.street1)
+                                        setValue(`address2`, address?.street2)
+                                        setValue(`city`, address?.city)
+                                        setValue(`province`, address?.province)
+                                        setValue(`country`, address?.country)
+                                        setValue(`postalcode`, address?.postalcode)
+                                    }} />
+                                    {/* <div>
                                         <input {...register("address1")}
                                             type="text"
                                             placeholder='Street 1'
                                             className="w-full dark:bg-dark-secondary dark:text-dark-text h-11 focus:outline-none border px-3 py-2 border-gray-300 focus:border-gray-400 rounded-lg rounded-b-none"
                                         />
-                                    </div>
+                                    </div> */}
                                     <div>
                                         <input {...register("address2")}
                                             type="text"
@@ -213,7 +225,7 @@ export default function Page() {
                                 <CustomButton title="Cancel" onClick={() => {
                                     onClose()
                                 }}></CustomButton>
-                                <CustomButton type={'submit'} variant="primary" title="Create Property"></CustomButton>
+                                <CustomButton type={'submit'} variant="primary" title="Create Property" loading={loadingObj.newproperty}></CustomButton>
                             </div>
                         </div>
                     </SectionBox>

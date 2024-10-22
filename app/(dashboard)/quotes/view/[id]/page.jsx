@@ -319,9 +319,12 @@ export default function Page() {
                   <div className="">
                     <h1 className='font-bold mb-2'>Contract / Disclaimer</h1>
                     {quote?.disclaimer?.split(/\r?\n/).map((line, index) => (
-                      <p key={index} className="text-sm">{line}</p>
+                      line.trim() === '' ? (
+                        <br key={index} />
+                      ) : (
+                        <p key={index} className="text-sm">{line}</p>
+                      )
                     ))}
-
                   </div>
                 </div>
               </div>

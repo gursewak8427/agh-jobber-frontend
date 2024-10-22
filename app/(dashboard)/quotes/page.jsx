@@ -9,106 +9,108 @@ import CustomTable from '@/components/CustomTable';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { fetchQuotes } from '@/store/slices/client';
+import { achivedQuote, deleteQuote, fetchQuotes } from '@/store/slices/client';
 import { DataGrid } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
 import { formatUserDate } from '@/utils';
 
-const columns = [
-  {
-    field: "name",
-    headerName: "Client",
-    flex: 1, // Allow the column to take available space
-    minWidth: 150,
-  },
-  {
-    field: "quoteno",
-    headerName: "Quote number",
-    flex: 1,
-    minWidth: 200,
-  },
-  {
-    field: "address",
-    headerName: "Property",
-    flex: 1,
-    minWidth: 150,
-    // renderCell: (params) => getStatusBox(params.value),
-  },
-  {
-    field: "created",
-    headerName: "Created",
-    flex: 1,
-    minWidth: 100,
-    renderCell: (params) => formatUserDate(params.value),
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    flex: 1,
-    minWidth: 100,
-    renderCell: (params) => getStatusBox(params?.value?.toString()),
-  },
-  {
-    field: "costs",
-    headerName: "Total",
-    type: 'number',
-    flex: 1,
-    minWidth: 150,
-    valueFormatter: (value) => {
-      if (value == null) {
-        return '--';
-      }
-      return `$${parseFloat(value)?.toFixed(2)}`;
-    },
-  },
-  {
-    field: "actions",
-    headerName: "Actions",
-    flex: 1,
-    minWidth: 100,
-    renderCell: (params) => {
-      return <>
-        <div className="flex items-center">
-          <IconButton onClick={(e) => {
-            e?.stopPropagation()
-            alert(`Archieve ${params?.row?.id}`)
-          }}><Archive className="text-black" /></IconButton>
-          <IconButton
-            onClick={(e) => {
-              e?.stopPropagation()
-              alert(`Delete ${params?.row?.id}`)
-            }}><Trash2 className="text-red-400" /></IconButton>
-        </div>
-      </>
-    },
-  },
-];
-
-
-
-// Function to handle status rendering
-const getStatusBox = status => {
-  console.log(status)
-  switch (status) {
-    case "Draft": return <div className="w-full h-full flex items-center justify-start capitalize">
-      <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
-      {status}
-    </div>
-    case "Lead": return <div className="w-full h-full flex items-center justify-start capitalize">
-      <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
-      {status}
-    </div>
-    case "Awaiting Response": return <div className="w-full h-full flex items-center justify-start capitalize">
-      <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
-      {status}
-    </div>
-
-    default:
-      break;
-  }
-}
 
 export default function Page() {
+
+  const columns = [
+    {
+      field: "name",
+      headerName: "Client",
+      flex: 1, // Allow the column to take available space
+      minWidth: 150,
+    },
+    {
+      field: "quoteno",
+      headerName: "Quote number",
+      flex: 1,
+      minWidth: 200,
+    },
+    {
+      field: "address",
+      headerName: "Property",
+      flex: 1,
+      minWidth: 150,
+      // renderCell: (params) => getStatusBox(params.value),
+    },
+    {
+      field: "created",
+      headerName: "Created",
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => formatUserDate(params.value),
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => getStatusBox(params?.value?.toString()),
+    },
+    {
+      field: "costs",
+      headerName: "Total",
+      type: 'number',
+      flex: 1,
+      minWidth: 150,
+      valueFormatter: (value) => {
+        if (value == null) {
+          return '--';
+        }
+        return `$${parseFloat(value)?.toFixed(2)}`;
+      },
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => {
+        return <>
+          <div className="flex items-center">
+            <IconButton onClick={(e) => {
+              e?.stopPropagation()
+              dispatch(achivedQuote({ id: params?.row?.id, type: 'archive' }))
+            }}><Archive className="text-black" /></IconButton>
+            <IconButton
+              onClick={(e) => {
+                e?.stopPropagation()
+                dispatch(deleteQuote({ id: params?.row?.id, type: 'delete' }))
+              }}><Trash2 className="text-red-400" /></IconButton>
+          </div>
+        </>
+      },
+    },
+  ];
+
+
+
+  // Function to handle status rendering
+  const getStatusBox = status => {
+    console.log(status)
+    switch (status) {
+      case "Draft": return <div className="w-full h-full flex items-center justify-start capitalize">
+        <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+        {status}
+      </div>
+      case "Lead": return <div className="w-full h-full flex items-center justify-start capitalize">
+        <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+        {status}
+      </div>
+      case "Awaiting Response": return <div className="w-full h-full flex items-center justify-start capitalize">
+        <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+        {status}
+      </div>
+
+      default:
+        break;
+    }
+  }
+
   const router = useRouter()
   const dispatch = useDispatch();
 

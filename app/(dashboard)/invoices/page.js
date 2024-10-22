@@ -14,103 +14,103 @@ import Link from 'next/link';
 import CustomButton from '@/components/CustomButton';
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchallClients, fetchClients, fetchInvoices } from "@/store/slices/client";
+import { archivedInvoice, deleteInvoice, fetchallClients, fetchClients, fetchInvoices } from "@/store/slices/client";
 import { useAppDispatch } from "@/store/hooks";
 import SelectClient from "@/app/_components/client/SelectClient";
 import { formatUserDate } from "@/utils";
 
-const columns = [
-  {
-    field: "name",
-    headerName: "Name",
-    flex: 1, // Allow the column to take available space
-    minWidth: 150,
-  },
-  {
-    field: "invoiceno",
-    headerName: "Invoice number",
-    flex: 1,
-    minWidth: 200,
-  },
-  {
-    field: "paymentduedate",
-    headerName: "Due date",
-    flex: 1,
-    minWidth: 150,
-    renderCell: (params) => formatUserDate(params.value),
-  },
-  {
-    field: "name",
-    headerName: "Subject",
-    flex: 1,
-    minWidth: 150,
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    flex: 1,
-    minWidth: 200,
-    renderCell: (params) => getStatusBox(params?.value?.toString()),
-  },
-  {
-    field: "costs",
-    headerName: "Total",
-    flex: 1,
-    minWidth: 100,
-  },
-  {
-    field: "actions",
-    headerName: "Actions",
-    flex: 1,
-    minWidth: 100,
-    renderCell: (params) => {
-      return <>
-        <div className="flex items-center">
-          <IconButton onClick={(e) => {
-            e?.stopPropagation()
-            alert(`Archieve ${params?.row?.id}`)
-          }}><Archive className="text-black" /></IconButton>
-          <IconButton
-            onClick={(e) => {
-              e?.stopPropagation()
-              alert(`Delete ${params?.row?.id}`)
-            }}><Trash2 className="text-red-400" /></IconButton>
-        </div>
-      </>
-    },
-  },
-  // {
-  //   field: "balance",
-  //   headerName: "Balance",
-  //   flex: 1,
-  //   minWidth: 100,
-  // },
-];
-
-
-// Function to handle status rendering
-const getStatusBox = status => {
-  console.log(status)
-  switch (status) {
-    case "Draft": return <div className="w-full h-full flex items-center justify-start capitalize">
-      <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
-      {status}
-    </div>
-    case "Lead": return <div className="w-full h-full flex items-center justify-start capitalize">
-      <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
-      {status}
-    </div>
-    case "Awaiting Response": return <div className="w-full h-full flex items-center justify-start capitalize">
-      <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
-      {status}
-    </div>
-
-    default:
-      break;
-  }
-}
 
 export default function Page() {
+  const columns = [
+    {
+      field: "name",
+      headerName: "Name",
+      flex: 1, // Allow the column to take available space
+      minWidth: 150,
+    },
+    {
+      field: "invoiceno",
+      headerName: "Invoice number",
+      flex: 1,
+      minWidth: 200,
+    },
+    {
+      field: "paymentduedate",
+      headerName: "Due date",
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => formatUserDate(params.value),
+    },
+    {
+      field: "name",
+      headerName: "Subject",
+      flex: 1,
+      minWidth: 150,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => getStatusBox(params?.value?.toString()),
+    },
+    {
+      field: "costs",
+      headerName: "Total",
+      flex: 1,
+      minWidth: 100,
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => {
+        return <>
+          <div className="flex items-center">
+            <IconButton onClick={(e) => {
+              e?.stopPropagation()
+              dispatch(archivedInvoice({ id: params?.row?.id, type: "archive" }))
+            }}><Archive className="text-black" /></IconButton>
+            <IconButton
+              onClick={(e) => {
+                e?.stopPropagation()
+                dispatch(deleteInvoice({ id: params?.row?.id, type: "delete" }))
+              }}><Trash2 className="text-red-400" /></IconButton>
+          </div>
+        </>
+      },
+    },
+    // {
+    //   field: "balance",
+    //   headerName: "Balance",
+    //   flex: 1,
+    //   minWidth: 100,
+    // },
+  ];
+
+
+  // Function to handle status rendering
+  const getStatusBox = status => {
+    console.log(status)
+    switch (status) {
+      case "Draft": return <div className="w-full h-full flex items-center justify-start capitalize">
+        <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+        {status}
+      </div>
+      case "Lead": return <div className="w-full h-full flex items-center justify-start capitalize">
+        <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+        {status}
+      </div>
+      case "Awaiting Response": return <div className="w-full h-full flex items-center justify-start capitalize">
+        <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+        {status}
+      </div>
+
+      default:
+        break;
+    }
+  }
   const router = useRouter();
 
   const dispatch = useAppDispatch();
