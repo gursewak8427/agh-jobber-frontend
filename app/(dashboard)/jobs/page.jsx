@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { fetchJobs } from '@/store/slices/client';
+import { archivedJob, deleteJob, fetchJobs } from '@/store/slices/client';
 import { formatUserDate } from '@/utils';
 
 export default function Page() {
@@ -70,12 +70,12 @@ export default function Page() {
           <div className="flex items-center">
             <IconButton onClick={(e) => {
               e?.stopPropagation()
-              alert(`Archieve ${params?.row?.id}`)
+              dispatch(archivedJob({ id: params?.row?.id, type: 'archive' }))
             }}><Archive className="text-black" /></IconButton>
             <IconButton
               onClick={(e) => {
                 e?.stopPropagation()
-                alert(`Delete ${params?.row?.id}`)
+                dispatch(deleteJob({ id: params?.row?.id, type: 'delete' }))
               }}><Trash2 className="text-red-400" /></IconButton>
           </div>
         </>
