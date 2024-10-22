@@ -65,7 +65,7 @@ const categories = [
 export default function SettingsSidebar() {
   const pathname = usePathname();
   return (
-    <aside className="w-64 text-white h-screen p-4">
+    <aside className="w-64 dark:text-dark-text h-screen p-4">
       <h2 className="text-xl font-bold mb-6">Settings</h2>
       <nav className="space-y-6">
         {categories.map((category, idx) => (
