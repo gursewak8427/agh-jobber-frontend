@@ -1,6 +1,12 @@
 "use client";
-import { TableCell, TableRow } from "@mui/material";
-import { Table, TableBody, TableHead, TableHeader } from "./ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 import { Switch } from "./ui/switch";
 import CustomButton from "@/components/CustomButton";
 import { useState } from "react";
@@ -12,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { Input } from "./ui/input";
 
 const businessHours = [
   {
@@ -77,12 +84,151 @@ export default function BusinessHoursSection() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Are you absolutely sure?</DialogTitle>
+              <DialogTitle>Edit Schedule</DialogTitle>
               <DialogDescription>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
+                Customize the schedule according to your needs.
               </DialogDescription>
             </DialogHeader>
+            <div className="space-y-4">
+              <Table className="max-w-md">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="font-semibold">Day</TableHead>
+                    <TableHead className="font-semibold">Enabled</TableHead>
+                    <TableHead className="font-semibold">Start Time</TableHead>
+                    <TableHead className="font-semibold">End Time</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>Monday</TableCell>
+                    <TableCell>
+                      <Switch />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Tuesday</TableCell>
+                    <TableCell>
+                      <Switch />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Wednesday</TableCell>
+                    <TableCell>
+                      <Switch />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Thursday</TableCell>
+                    <TableCell>
+                      <Switch />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Friday</TableCell>
+                    <TableCell>
+                      <Switch />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Saturday</TableCell>
+                    <TableCell>
+                      <Switch />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Sunday</TableCell>
+                    <TableCell>
+                      <Switch />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="time"
+                        className="h-8 placeholder:fill-ct-text-secondary dark:[color-scheme:dark]"
+                      />
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
