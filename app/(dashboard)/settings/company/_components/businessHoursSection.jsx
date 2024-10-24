@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../_components/table";
-import { Switch } from "../../_components/ui/switch";
+import { Switch } from "../../_components/switch";
 import CustomButton from "@/components/CustomButton";
 import { useState } from "react";
 import {
