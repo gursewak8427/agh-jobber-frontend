@@ -110,7 +110,6 @@ const countries = [
           className="rounded-none rounded-bl-md"
           placeholder="Postal Code"
         />
-        {/* FIXME: The select list is somehow being rendered behind the layout text */}
         <Select defaultValue="india">
           <SelectTrigger className="w-[180px] rounded-t-none rounded-bl-none border-l-0">
             <SelectValue placeholder="Country" />
