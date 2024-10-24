@@ -6,8 +6,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { Switch } from "./ui/switch";
+} from "../../_components/table";
+import { Switch } from "../../_components/ui/switch";
 import CustomButton from "@/components/CustomButton";
 import { useState } from "react";
 import {
@@ -17,8 +17,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Input } from "./ui/input";
+} from "../../_components/dialog";
+import { Input } from "../../_components/input";
 
 const businessHours = [
   {

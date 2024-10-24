@@ -1,4 +1,4 @@
-import { Input } from "../_components/ui/input";
+import { Input } from "../_components/input";
 import { Label } from "../_components/ui/label";
 import {
   Select,
@@ -6,8 +6,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../_components/ui/select";
-import BusinessHoursSection from "../_components/businessHoursSection";
+} from "../_components/select";
+import BusinessHoursSection from "./_components/businessHoursSection";
 
 const countries = [
   { id: "AF", name: "Afghanistan" },
