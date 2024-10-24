@@ -4,6 +4,14 @@ import { Table, TableBody, TableHead, TableHeader } from "./ui/table";
 import { Switch } from "./ui/switch";
 import CustomButton from "@/components/CustomButton";
 import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 
 const businessHours = [
   {
@@ -63,7 +71,20 @@ export default function BusinessHoursSection() {
       </Table>
       <div className="flex items-center justify-between max-w-md">
         <p>Edit work hours</p>
-        <CustomButton title={"Edit"} />
+        <Dialog>
+          <DialogTrigger asChild>
+            <CustomButton title={"Edit"} />
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Are you absolutely sure?</DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. This will permanently delete your
+                account and remove your data from our servers.
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="flex items-center justify-between max-w-md">
         <p>Display business hours on profile on client hub</p>
