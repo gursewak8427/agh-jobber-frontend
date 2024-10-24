@@ -56,7 +56,7 @@ export default function CompanySetting() {
   return (
     <div className="space-y-6 h-full">
       <h2 className="text-4xl font-bold">Company Settings</h2>
-      <div className="w-full max-w-4xl shadow-md rounded-lg p-6 border border-[#9ca3af] space-y-4 animate-fadeIn">
+      <div className="w-full -z-10 max-w-4xl shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
         <h3 className="text-2xl font-bold">Company Details</h3>
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="company-name">Company Name</Label>
@@ -69,9 +69,9 @@ export default function CompanySetting() {
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="phone-number">Phone number</Label>
           <Input id="phone-number" className="" placeholder="1234567890" />
-          <span className="text-sm text-[#9ca3af]">
+          <span className="text-sm text-ct-text-secondary">
             Calls made to your{" "}
-            <a href="#" className="text-green-600">
+            <a href="#" className="text-green-600 hover:underline">
               dedicated phone number
             </a>{" "}
             will forward to this number
@@ -113,6 +113,7 @@ export default function CompanySetting() {
               className="rounded-none rounded-bl-md"
               placeholder="Postal Code"
             />
+            {/* FIXME: The select list is somehow being rendered behind the layout text */}
             <Select defaultValue="india">
               <SelectTrigger className="w-[180px] rounded-t-none rounded-bl-none border-l-0">
                 <SelectValue placeholder="Country" />
@@ -133,7 +134,7 @@ export default function CompanySetting() {
           </div>
         </div>
       </div>
-      <div className="w-full max-w-4xl shadow-md rounded-lg p-6 border border-[#9ca3af] space-y-4 animate-fadeIn">
+      <div className="w-full max-w-4xl shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
         <h3 className="text-2xl font-bold">Business Hours</h3>
       </div>
     </div>
