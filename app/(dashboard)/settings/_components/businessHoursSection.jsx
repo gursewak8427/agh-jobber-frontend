@@ -1,7 +1,9 @@
+"use client";
 import { TableCell, TableRow } from "@mui/material";
 import { Table, TableBody, TableHead, TableHeader } from "./ui/table";
 import { Switch } from "./ui/switch";
 import CustomButton from "@/components/CustomButton";
+import { useState } from "react";
 
 const businessHours = [
   {
@@ -35,6 +37,7 @@ const businessHours = [
 ];
 
 export default function BusinessHoursSection() {
+  const [checked, setChecked] = useState(false);
   return (
     <div className="w-full max-w-4xl shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
       <h3 className="text-2xl font-bold">Business Hours</h3>
@@ -64,7 +67,7 @@ export default function BusinessHoursSection() {
       </div>
       <div className="flex items-center justify-between max-w-md">
         <p>Display business hours on profile on client hub</p>
-        <Switch />
+        <Switch checked={checked} onCheckedChange={setChecked} />
       </div>
     </div>
   );
