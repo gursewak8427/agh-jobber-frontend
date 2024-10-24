@@ -14,87 +14,165 @@ import Link from 'next/link';
 import CustomButton from '@/components/CustomButton';
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchClients } from "@/store/slices/client";
+import { achivedClient, deleteClient, fetchClients } from "@/store/slices/client";
 import { formatUserDate } from "@/utils";
 
-const columns = [
-  {
-    field: "client",
-    headerName: "Name",
-    flex: 1, // Allow the column to take available space
-    minWidth: 150,
-  },
-  {
-    field: "address",
-    headerName: "Address",
-    flex: 1,
-    minWidth: 200,
-  },
-  {
-    field: "tags",
-    headerName: "Tags",
-    flex: 1,
-    minWidth: 150,
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    flex: 1,
-    minWidth: 100,
-    renderCell: (params) => getStatusBox(params.value),
-  },
-  {
-    field: "updatedAt",
-    headerName: "Last Activity",
-    flex: 1,
-    minWidth: 100,
-    renderCell: (params) => formatUserDate(params.value),
-  },
-  {
-    field: "actions",
-    headerName: "Actions",
-    flex: 1,
-    minWidth: 100,
-    renderCell: (params) => {
-      return <>
-        <div className="flex items-center">
-          <IconButton onClick={(e) => {
-            e?.stopPropagation()
-            alert(`Archieve ${params?.row?.id}`)
-          }}><Archive className="text-black" /></IconButton>
-          <IconButton
-            onClick={(e) => {
-              e?.stopPropagation()
-              alert(`Delete ${params?.row?.id}`)
-            }}><Trash2 className="text-red-400" /></IconButton>
-        </div>
-      </>
-    },
-  },
-];
+// const columns = [
+//   {
+//     field: "client",
+//     headerName: "Name",
+//     flex: 1, // Allow the column to take available space
+//     minWidth: 150,
+//   },
+//   {
+//     field: "address",
+//     headerName: "Address",
+//     flex: 1,
+//     minWidth: 200,
+//   },
+//   {
+//     field: "tags",
+//     headerName: "Tags",
+//     flex: 1,
+//     minWidth: 150,
+//   },
+//   {
+//     field: "status",
+//     headerName: "Status",
+//     flex: 1,
+//     minWidth: 100,
+//     renderCell: (params) => getStatusBox(params.value),
+//   },
+//   {
+//     field: "updatedAt",
+//     headerName: "Last Activity",
+//     flex: 1,
+//     minWidth: 100,
+//     renderCell: (params) => formatUserDate(params.value),
+//   },
+//   {
+//     field: "actions",
+//     headerName: "Actions",
+//     flex: 1,
+//     minWidth: 100,
+//     renderCell: (params) => {
+//       return <>
+//         <div className="flex items-center">
+//           <IconButton onClick={(e) => {
+//             e?.stopPropagation()
+//             alert(`Archieve ${params?.row?.id}`)
+//           }}><Archive className="text-black" /></IconButton>
+//           <IconButton
+//             onClick={(e) => {
+//               e?.stopPropagation()
+//               alert(`Delete ${params?.row?.id}`)
+//             }}><Trash2 className="text-red-400" /></IconButton>
+//         </div>
+//       </>
+//     },
+//   },
+// ];
 
 
-// Function to handle status rendering
-const getStatusBox = status => {
-  switch (status) {
-    case "Lead": return <div className="text-sm flex items-center justify-start capitalize bg-blue-400 bg-opacity-20 px-2 py-1 rounded-full w-20 mt-2">
-      <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
-      {status}
-    </div>
-    case "Active": return <div className="text-sm flex items-center justify-start capitalize bg-green-400 bg-opacity-20 px-3 py-1 rounded-full w-20 mt-2">
-      <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
-      {status}
-    </div>
-    case "Archived": return <div className="text-sm flex items-center justify-start capitalize bg-gray-400 bg-opacity-20 px-2 py-1 rounded-full text-yellow-700 w-20 mt-2">
-      <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
-      {status}
-    </div>
-    default:
-      break;
-  }
-}
+// // Function to handle status rendering
+// const getStatusBox = status => {
+//   switch (status) {
+//     case "Lead": return <div className="text-sm flex items-center justify-start capitalize bg-blue-400 bg-opacity-20 px-2 py-1 rounded-full w-20 mt-2">
+//       <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+//       {status}
+//     </div>
+//     case "Active": return <div className="text-sm flex items-center justify-start capitalize bg-green-400 bg-opacity-20 px-3 py-1 rounded-full w-20 mt-2">
+//       <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+//       {status}
+//     </div>
+//     case "Archived": return <div className="text-sm flex items-center justify-start capitalize bg-gray-400 bg-opacity-20 px-2 py-1 rounded-full text-yellow-700 w-20 mt-2">
+//       <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
+//       {status}
+//     </div>
+//     default:
+//       break;
+//   }
+// }
 
 export default function Page() {
+  // Function to handle status rendering
+  const getStatusBox = status => {
+    switch (status) {
+      case "Lead": return <div className="text-sm flex items-center justify-start capitalize bg-blue-400 bg-opacity-20 px-2 py-1 rounded-full w-20 mt-2">
+        <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+        {status}
+      </div>
+      case "Active": return <div className="text-sm flex items-center justify-start capitalize bg-green-400 bg-opacity-20 px-3 py-1 rounded-full w-20 mt-2">
+        <div className="w-3 h-3 bg-green-800 rounded-full mr-2"></div>
+        {status}
+      </div>
+      case "Archived": return <div className="text-sm flex items-center justify-start capitalize bg-gray-400 bg-opacity-20 px-2 py-1 rounded-full text-yellow-700 w-20 mt-2">
+        <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
+        {status}
+      </div>
+      default:
+        break;
+    }
+  }
+
+  const columns = [
+    {
+      field: "client",
+      headerName: "Name",
+      flex: 1, // Allow the column to take available space
+      minWidth: 150,
+    },
+    {
+      field: "address",
+      headerName: "Address",
+      flex: 1,
+      minWidth: 200,
+    },
+    {
+      field: "tags",
+      headerName: "Tags",
+      flex: 1,
+      minWidth: 150,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => getStatusBox(params.value),
+    },
+    {
+      field: "updatedAt",
+      headerName: "Last Activity",
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => formatUserDate(params.value),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => {
+        return <>
+          <div className="flex items-center">
+            <IconButton onClick={(e) => {
+              e?.stopPropagation()
+              dispatch(achivedClient({ id: params?.row?.id, type: 'archive' }))
+
+            }}><Archive className="text-black" /></IconButton>
+            <IconButton
+              onClick={(e) => {
+                e?.stopPropagation()
+                dispatch(deleteClient({ id: params?.row?.id, type: 'delete' }))
+              }}><Trash2 className="text-red-400" /></IconButton>
+          </div>
+        </>
+      },
+    },
+  ];
+
+
   const router = useRouter();
   const { clients, loadingList } = useSelector(state => state.clients)
   const dispatch = useDispatch();
