@@ -1,12 +1,13 @@
-import { Input } from "../_components/input";
-import { Label } from "../_components/label";
+import { Input } from "../_components/ui/input";
+import { Label } from "../_components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../_components/select";
+} from "../_components/ui/select";
+import BusinessHoursSection from "../_components/businessHoursSection";
 
 const countries = [
   { id: "AF", name: "Afghanistan" },
@@ -134,9 +135,7 @@ export default function CompanySetting() {
           </div>
         </div>
       </div>
-      <div className="w-full max-w-4xl shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
-        <h3 className="text-2xl font-bold">Business Hours</h3>
-      </div>
+      <BusinessHoursSection/>
     </div>
   );
 }
