@@ -45,9 +45,16 @@ module.exports = {
         "dark-secondary": "#273135", // Dark secondary color
         "dark-text": "#f5f5f5", // Light text on dark background
         "dark-hover":"#FFFFFF1A",
-        "dark-second-text":"#4ADE80!important"
+        "dark-second-text":"#4ADE80!important",
+        // Theme responsive colors from ./theme.js
+        "ct-primary": "var(--ct-primary)",
+        "ct-secondary": "var(--ct-secondary)",
+        "ct-background": "var(--ct-background)",
+        "ct-background-paper": "var(--ct-background-paper)",
+        "ct-text-primary": "var(--ct-text-primary)",
+        "ct-text-secondary": "var(--ct-text-secondary)"
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
