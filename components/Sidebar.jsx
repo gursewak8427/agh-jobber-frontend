@@ -34,7 +34,7 @@ const Sidebar = () => {
         };
     }, []);
 
-    const iconProps = { className: `w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}` }
+    const iconProps = { className: `size-5 font-black ${!collapse ? 'mr-3' : ''}` }
 
     const s1 = [{
         title: "Home",
