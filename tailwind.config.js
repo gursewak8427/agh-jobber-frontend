@@ -52,7 +52,8 @@ module.exports = {
         "ct-background": "var(--ct-background)",
         "ct-background-paper": "var(--ct-background-paper)",
         "ct-text-primary": "var(--ct-text-primary)",
-        "ct-text-secondary": "var(--ct-text-secondary)"
+        "ct-text-secondary": "var(--ct-text-secondary)",
+        "ct-accent": "var(--ct-accent)"
       },
     },
   },
