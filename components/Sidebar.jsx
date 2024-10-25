@@ -107,7 +107,7 @@ const Sidebar = () => {
 
     const renderItems = arr => {
         return arr?.map((item, index) => {
-            return <Link href={item?.path}>
+            return <Link href={item?.path} key={item?.path}>
                 <div className={`overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary p-2 rounded-md dark:hover:bg-dark-hover ${pathname == item?.path && 'bg-gray-100 dark:bg-dark-secondary'}`}>
                     {item?.icon}
                     {!collapse && item?.title}
