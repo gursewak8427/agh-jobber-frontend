@@ -1,5 +1,7 @@
+import CustomButton from "@/components/CustomButton";
 import BusinessHoursSection from "./_components/businessHoursSection";
 import CompanyDetailsSection from "./_components/companyDetailsSection";
+import RegionalSettingsSection from "./_components/regionalSettingsSection";
 import TaxSettingsSection from "./_components/taxSettingsSection";
 
 export default function CompanySetting() {
@@ -9,6 +11,10 @@ export default function CompanySetting() {
       <CompanyDetailsSection />
       <BusinessHoursSection/>
       <TaxSettingsSection />
+      <RegionalSettingsSection />
+      <div className="flex flex-col items-end">
+        <CustomButton title={'Update'} variant={'primary'} />
+      </div>
     </div>
   );
 }

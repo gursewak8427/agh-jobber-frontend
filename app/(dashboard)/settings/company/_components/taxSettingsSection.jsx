@@ -14,7 +14,7 @@ import {
 
 export default function TaxSettingsSection() {
   return (
-    <div className="w-full max-w-4xl shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
+    <div className="w-full shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
       <div className="flex items-center justify-between">
         <h3 className="text-2xl font-bold">Tax Settings</h3>
         <div className="flex items-center gap-2">

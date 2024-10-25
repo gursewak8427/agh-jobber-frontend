@@ -54,7 +54,7 @@ const businessHours = [
 export default function BusinessHoursSection() {
   const [checked, setChecked] = useState(false);
   return (
-    <div className="w-full max-w-4xl shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
+    <div className="w-full shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
       <h3 className="text-2xl font-bold -mb-3">Business Hours</h3>
       <p className="text-sm">
         Business hours set your default availability for online booking, team

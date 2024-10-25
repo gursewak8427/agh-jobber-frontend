@@ -53,7 +53,7 @@ const countries = [
   ];
   
   export default function CompanyDetailsSection() {
-    return <div className="w-full -z-10 max-w-4xl shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
+    return <div className="w-full -z-10 shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
     <h3 className="text-2xl font-bold">Company Details</h3>
     <div className="grid w-full items-center gap-1.5">
       <Label htmlFor="company-name">Company Name</Label>
