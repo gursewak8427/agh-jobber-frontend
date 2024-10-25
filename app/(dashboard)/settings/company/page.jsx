@@ -6,7 +6,7 @@ import TaxSettingsSection from "./_components/taxSettingsSection";
 
 export default function CompanySetting() {
   return (
-    <div className="space-y-6 h-full">
+    <div className="space-y-6">
       <h2 className="text-4xl font-bold">Company Settings</h2>
       <CompanyDetailsSection />
       <BusinessHoursSection/>
