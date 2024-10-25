@@ -111,7 +111,7 @@ const countries = [
           placeholder="Postal Code"
         />
         <Select defaultValue="india">
-          <SelectTrigger className="w-[180px] rounded-t-none rounded-bl-none border-l-0">
+          <SelectTrigger className="rounded-t-none rounded-bl-none border-l-0">
             <SelectValue placeholder="Country" />
           </SelectTrigger>
           <SelectContent>
