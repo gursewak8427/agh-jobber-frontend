@@ -7,7 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -31,6 +31,7 @@ export default function ServicesTable() {
     state: { sorting },
   });
 
+  const [editService, setEditService] = useState(null);
   return (
     <div className="rounded-md border border-ct-text-secondary">
       <Table>
@@ -144,7 +145,7 @@ const columns = [
       return (
         <button
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="flex items-center justify-center gap-2"
+          className="flex items-center gap-2 h-full w-full"
         >
           Name
           <ArrowUpDown className="h-4 w-4" />
@@ -167,7 +168,7 @@ const columns = [
       return (
         <button
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="flex items-center justify-center gap-2"
+          className="flex items-center gap-2 w-full h-full"
         >
           Type
           <ArrowUpDown className="h-4 w-4" />
