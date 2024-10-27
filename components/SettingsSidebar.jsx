@@ -6,32 +6,27 @@ const categories = [
   {
     name: "BUSINESS MANAGEMENT",
     links: [
-      { name: "Company Settings", href: "/settings/company", tab: "company" },
-      { name: "Branding", href: "/settings/branding", tab: "branding" },
+      { name: "Company Settings", href: "/settings/company" },
+      { name: "Branding", href: "/settings/branding" },
       {
         name: "Products & Services",
         href: "/settings/products",
-        tab: "products",
       },
       {
         name: "Custom Fields",
-        href: "/settings/customfields",
-        tab: "customfields",
+        href: "/settings/custom-fields",
       },
       {
         name: "Jobber Payments",
         href: "/settings/jobberpayments",
-        tab: "jobberpayments",
       },
       {
         name: "Expense Tracking",
         href: "/settings/expensetracking",
-        tab: "expensetracking",
       },
       {
         name: "Automations",
         href: "/settings/automations",
-        tab: "automations",
       },
     ],
   },
