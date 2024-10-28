@@ -291,113 +291,71 @@ export default function Page() {
   }, [client]);
 
   const MoreActionsMenuItems = ({ onClose }) => {
-    return (<Fragment>
-      {/* Menu Items */}
-      <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
-        Create new...
-      </Typography>
+    return (
+      <>
+        {/* Menu Items */}
+        <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
+          Create new...
+        </Typography>
 
-      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
-        <ListItemIcon>
-          <Download className="text-orange-700" size={16} />
-        </ListItemIcon>
-        Request
-      </MenuItem>
+        <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+          <ListItemIcon>
+            <Download className="text-orange-700" size={16} />
+          </ListItemIcon>
+          Request
+        </MenuItem>
 
-      <MenuItem onClick={() => {
-        onClose();
-        progress.start();
-        React.startTransition(() => {
-          router.push(`/quotes/new?client_id=${id}`);
-          progress.done();
-        });
-      }} className="text-tprimary text-sm dark:text-dark-text">
-        <ListItemIcon>
-          <PencilRuler className="text-purple-700" size={16} />
-        </ListItemIcon>
-        Quote
-      </MenuItem>
+        <MenuItem
+          onClick={() => {
+            onClose();
+            progress.start();
+            React.startTransition(() => {
+              router.push(`/quotes/new?client_id=${id}`);
+              progress.done();
+            });
+          }}
+          className="text-tprimary text-sm dark:text-dark-text"
+        >
+          <ListItemIcon>
+            <PencilRuler className="text-purple-700" size={16} />
+          </ListItemIcon>
+          Quote
+        </MenuItem>
 
-      <MenuItem onClick={() => {
-        onClose();
-        progress.start();
-        React.startTransition(() => {
-          router.push(`/jobs/new?client_id=${id}`);
-          progress.done();
-        });
-      }} className="text-tprimary text-sm dark:text-dark-text">
-        <ListItemIcon>
-          <Hammer className="text-green-700" size={16} />
-        </ListItemIcon>
-        Job
-      </MenuItem>
+        <MenuItem
+          onClick={() => {
+            onClose();
+            progress.start();
+            React.startTransition(() => {
+              router.push(`/jobs/new?client_id=${id}`);
+              progress.done();
+            });
+          }}
+          className="text-tprimary text-sm dark:text-dark-text"
+        >
+          <ListItemIcon>
+            <Hammer className="text-green-700" size={16} />
+          </ListItemIcon>
+          Job
+        </MenuItem>
 
-      <MenuItem onClick={() => {
-        onClose();
-        progress.start();
-        React.startTransition(() => {
-          router.push(`/invoices/new?client_id=${id}`);
-          progress.done();
-        });
-      }} className="text-tprimary text-sm dark:text-dark-text">
-        <ListItemIcon>
-          <ListIcon className="text-blue-700" size={16} />
-        </ListItemIcon>
-        Invoice
-      </MenuItem>
+        <MenuItem
+          onClick={() => {
+            onClose();
+            progress.start();
+            React.startTransition(() => {
+              router.push(`/invoices/new?client_id=${id}`);
+              progress.done();
+            });
+          }}
+          className="text-tprimary text-sm dark:text-dark-text"
+        >
+          <ListItemIcon>
+            <ListIcon className="text-blue-700" size={16} />
+          </ListItemIcon>
+          Invoice
+        </MenuItem>
 
-      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
-        <ListItemIcon>
-          <CreditCard className="text-orange-700" size={16} />
-        </ListItemIcon>
-        Collect Payment
-      </MenuItem>
-
-      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
-        <ListItemIcon>
-          <FileIcon className="text-blue-700" size={16} />
-        </ListItemIcon>
-        Task
-      </MenuItem>
-
-      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
-        <ListItemIcon>
-          <Calendar className="text-yellow-700" size={16} />
-        </ListItemIcon>
-        Calendar Event
-      </MenuItem>
-
-      <Divider />
-
-      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
-        <ListItemIcon>
-          <Home className="text-tprimary dark:text-dark-text" size={16} />
-        </ListItemIcon>
-        Property
-      </MenuItem>
-
-      <Divider />
-
-      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
-        <ListItemIcon>
-          <ArchiveIcon className="text-tprimary dark:text-dark-text" size={16} />
-        </ListItemIcon>
-        Archive Client
-      </MenuItem>
-
-      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
-        <ListItemIcon>
-          <Download className="text-tprimary dark:text-dark-text" size={16} />
-        </ListItemIcon>
-        Download VCard
-      </MenuItem>
-
-      <Divider />
-
-      <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
-        Client hub
-      </Typography>
-      {email ? <>
         <MenuItem className="text-tprimary text-sm dark:text-dark-text">
           <ListItemIcon>
             <CreditCard className="text-orange-700" size={16} />
@@ -432,10 +390,7 @@ export default function Page() {
 
         <MenuItem className="text-tprimary text-sm dark:text-dark-text">
           <ListItemIcon>
-            <ArchiveIcon
-              className="text-tprimary dark:text-dark-text"
-              size={16}
-            />
+            <ArchiveIcon className="text-tprimary dark:text-dark-text" size={16} />
           </ListItemIcon>
           Archive Client
         </MenuItem>
@@ -449,12 +404,10 @@ export default function Page() {
 
         <Divider />
 
-        <Typography
-          variant="subtitle1"
-          style={{ padding: "8px 16px", fontWeight: "bold" }}
-        >
+        <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
           Client hub
         </Typography>
+
         {email ? (
           <>
             <MenuItem className="text-tprimary text-sm dark:text-dark-text">
@@ -466,10 +419,7 @@ export default function Page() {
 
             <MenuItem className="text-tprimary text-sm dark:text-dark-text">
               <ListItemIcon>
-                <LogIn
-                  className="text-tprimary dark:text-dark-text"
-                  size={16}
-                />
+                <LogIn className="text-tprimary dark:text-dark-text" size={16} />
               </ListItemIcon>
               Log in as Client
             </MenuItem>
@@ -482,9 +432,10 @@ export default function Page() {
             No Email Address
           </MenuItem>
         )}
-      </Fragment>
+      </>
     );
   };
+
 
   return (
     <div className="w-full mx-auto space-y-4">
@@ -498,7 +449,7 @@ export default function Page() {
           <CustomButton onClick={() => {
             progress.start();
             React.startTransition(() => {
-              router.push("/clients/new");
+              router.push(`/clients/edit?id=${id}`);
               progress.done();
             });
           }}
@@ -571,8 +522,7 @@ export default function Page() {
                       <td className="py-6">{property?.country}</td>
                       <td className="py-6">{property?.postalcode}</td>
                     </tr>
-                  );
-                })}
+                  })}
                 <tr>
                   <td className="py-4" colSpan={2}>
                     Tax rate
