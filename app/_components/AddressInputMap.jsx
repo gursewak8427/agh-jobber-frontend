@@ -1,7 +1,10 @@
 "use client";
 import { ServerLoading } from "@/components/LoadingPage";
 import React, { useState } from "react";
-import PlacesAutocomplete, { geocodeByAddress, getLatLng } from "react-places-autocomplete";
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng,
+} from "react-places-autocomplete";
 import { LoadScript } from "@react-google-maps/api";
 
 const AddressInputMap = ({ onComplete }) => {
@@ -60,10 +63,15 @@ const AddressInputMap = ({ onComplete }) => {
       }
     });
 
-    updatedAddress["street1"] = updatedAddress?.street1 || updatedAddress?.street2 || updatedAddress?.city;
+    updatedAddress["street1"] =
+      updatedAddress?.street1 ||
+      updatedAddress?.street2 ||
+      updatedAddress?.city;
 
     setAddressObj(updatedAddress);
-    setAddress(updatedAddress?.street1 || updatedAddress?.street2 || updatedAddress?.city);
+    setAddress(
+      updatedAddress?.street1 || updatedAddress?.street2 || updatedAddress?.city
+    );
     setCoordinates(latLng);
     setMapLink(`https://www.google.com/maps?q=${latLng.lat},${latLng.lng}`);
 
@@ -74,10 +82,22 @@ const AddressInputMap = ({ onComplete }) => {
   };
 
   return (
-    <LoadScript googleMapsApiKey="AIzaSyC4xDqx5yDdrRzTGbAakYuRBjjf0wxpvYs" libraries={['places']}>
+    <LoadScript
+      googleMapsApiKey="AIzaSyC4xDqx5yDdrRzTGbAakYuRBjjf0wxpvYs"
+      libraries={["places"]}
+    >
       <div className="flex flex-col items-center justify-center relative">
-        <PlacesAutocomplete value={address} onChange={setAddress} onSelect={handleSelect}>
-          {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+        <PlacesAutocomplete
+          value={address}
+          onChange={setAddress}
+          onSelect={handleSelect}
+        >
+          {({
+            getInputProps,
+            suggestions,
+            getSuggestionItemProps,
+            loading,
+          }) => (
             <div className="w-full">
               <input
                 autoComplete="false"
@@ -104,7 +124,9 @@ const AddressInputMap = ({ onComplete }) => {
                         })}
                         key={suggestion.placeId}
                       >
-                        <span className="text-gray-700">{suggestion.description}</span>
+                        <span className="text-gray-700">
+                          {suggestion.description}
+                        </span>
                       </div>
                     );
                   })}
