@@ -23,11 +23,14 @@ import TextMessageModal from '@/app/_components/invoice/TextMessageModal';
 import SendEmailModal from '@/app/_components/invoice/SendEmailModal';
 import ShowCustomFields from '@/app/_components/ShowCustomFields';
 import ProductsView from '@/app/_components/products/ProductsView';
+import { useCustomRouter } from '@/hooks/use-custom-router';
+import CustomLink from '@/components/custom-link';
 
 
 
 export default function Page() {
-  const router = useRouter();
+  // const router = useRouter();
+  const { customPush } = useCustomRouter();
   const [sendtextmsg, setsendtextmsg] = useState(false)
   const [sendemail, setsendemail] = useState(false)
   const [menu, setmenu] = useState(false)
@@ -143,11 +146,14 @@ export default function Page() {
     <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary dark:text-dark-text'>
       <PageHeading>
         <div className='text-sm text-tprimary dark:text-dark-text'>
-          Back to : <Link href={"/invoices"} className='text-green-700 dark:text-dark-second-text'>invoices</Link>
+          Back to : <CustomLink href={"/invoices"} className='text-green-700 dark:text-dark-second-text'>invoices</CustomLink>
         </div>
         <div className="flex items-center gap-2">
           <CustomButton frontIcon={<CreditCard className='text-white' />} title={"Collect Payments"} variant={"primary"} />
-          <CustomButton onClick={() => router.push(`/invoices/edit?id=${invoice?.id}&client_id=${invoice?.client?.id}`)} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
+          <CustomButton onClick={() => {
+            // router.push(`/invoices/edit?id=${invoice?.id}&client_id=${invoice?.client?.id}`)
+            customPush(`/invoices/edit?id=${invoice?.id}&client_id=${invoice?.client?.id}`)
+        }} title={"Edit"} frontIcon={<PencilIcon className='w-4 h-4' />} />
           <CustomMenu open={menu} icon={<CustomButton onClick={() => setmenu(true)} title={"More Actions"} frontIcon={<MoreHorizontal className='w-5 h-5' />} />}>
             <MoreActionsMenuItems />
           </CustomMenu>
