@@ -1,18 +1,20 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import CustomButton from '@/components/CustomButton';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { nFormatter } from '@/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteTemplate, fetchTemplate } from '@/store/slices/client';
 import { Delete, Edit, Trash2 } from 'lucide-react';
 import { Button, IconButton } from '@mui/material';
+import { useCustomRouter } from '@/hooks/use-custom-router';
 
 function page() {
-  const router = useRouter();
+  // const router = useRouter();
   const dispatch = useDispatch();
   const [selectedtempletes, setSelectedtempletes] = useState([])
   const { templates } = useSelector(state => state.clients);
+  const { customPush } = useCustomRouter();
 
 
   const isSelectedCheck = id => selectedtempletes.some(item => item.id === id);
@@ -29,7 +31,7 @@ function page() {
     }
   }
 
-  const handleDelete = (id) =>{
+  const handleDelete = (id) => {
     dispatch(deleteTemplate(id));
   }
 
@@ -39,11 +41,15 @@ function page() {
 
   const handleQuoteCreate = () => {
     const templateIds = selectedtempletes.map(template => template.id);
-    if(!templateIds.length)
-      router.push(`/quotes/new`);
-    
+    if (!templateIds.length) {
+      customPush(`/quotes/new`);
+      return;
+    }
+
+
     const queryString = templateIds.join(',');
-    router.push(`/quotes/new?template=${queryString}`);
+    // router.push(`/quotes/new?template=${queryString}`);
+    customPush(`/quotes/new?template=${queryString}`);
   }
 
   return (
@@ -56,7 +62,8 @@ function page() {
               handleQuoteCreate()
             }} title={"Confirm & Create a quote"} />
             <CustomButton onClick={() => {
-              router.push(`/quotes/templates/new`)
+              // router.push(`/quotes/templates/new`)
+              customPush(`/quotes/templates/new`);
             }} title={"Create New Template"} />
           </div>
         </div>
@@ -72,7 +79,8 @@ function page() {
                 <h1 className="text-lg font-semibold">{
                   !template.default ? <div className="gap-3 flex items-center justify-center">
                     <IconButton onClick={() => {
-                      router.push(`/quotes/templates/edit?id=${template?.id}`)
+                      // router.push(`/quotes/templates/edit?id=${template?.id}`)
+                      customPush(`/quotes/templates/edit?id=${template?.id}`)
                     }}>
                       <Edit className='w-5 h-5' />
                     </IconButton>

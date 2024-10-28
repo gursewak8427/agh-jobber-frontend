@@ -6,7 +6,7 @@ import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, Delete, Divide, Hamm
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
@@ -21,11 +21,13 @@ import JobType from '@/components/JobType';
 import Heading from '@/components/Heading';
 import { toast } from 'react-toastify';
 import ProductsList, { defaultProductLineItem, updateProductsFn, updateProductsFnV2 } from '@/app/_components/products/ProductsList';
+import { useCustomRouter } from '@/hooks/use-custom-router';
 
 
 export default function Page() {
   const searchParams = useSearchParams();
   const client_id = searchParams.get("client_id");
+  const { customPush } = useCustomRouter();
 
   const [menu, setMenu] = useState("")
   const [selectedSalesPerson, setSalesPerson] = useState(null)
@@ -47,7 +49,7 @@ export default function Page() {
   const { clientslist, client, team, jobcount, jobcustomfields, loadingObj } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
-  const router = useRouter();
+  // const router = useRouter();
   const methods = useForm({
     defaultValues: {
       products: [defaultProductLineItem],
@@ -304,7 +306,8 @@ export default function Page() {
 
     dispatch(createJob(jsonData)).then(({ payload }) => {
       if (payload?.id) {
-        router.push(`/jobs/view/${payload?.id}`)
+        // router.push(`/jobs/view/${payload?.id}`)
+        customPush(`/jobs/view/${payload?.id}`)
       }
     });
   };
@@ -454,7 +457,8 @@ export default function Page() {
                         }
                         <div className="p-2 px-3">
                           <CustomButton onClick={() => {
-                            router?.push(`/clients/new`)
+                            // router?.push(`/clients/new`)
+                            customPush(`/clients/new`)
                           }} frontIcon={<PlusIcon className='w-4 h-4' />} title={"Create User"} />
                         </div>
                       </CustomMenu>
@@ -621,7 +625,8 @@ export default function Page() {
 
       <AddCustomFields open={open} onClose={() => setOpen(false)} />
       <SelectClient open={selectClientModal} onClose={() => setSelectClientModal(false)} onSelect={id => {
-        router.push(`/jobs/new?client_id=${id}`)
+        // router.push(`/jobs/new?client_id=${id}`)
+        customPush(`/jobs/new?client_id=${id}`)
         setSelectClientModal(false)
       }} clients={clientslist} />
 

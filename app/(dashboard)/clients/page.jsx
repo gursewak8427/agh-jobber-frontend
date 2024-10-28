@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { achivedClient, deleteClient, fetchClients } from "@/store/slices/client";
 import { formatUserDate } from "@/utils";
+import { useProgressBar } from "@/hooks/use-progress-bar";
 
 // const columns = [
 //   {
@@ -179,7 +180,7 @@ export default function Page() {
   React.useEffect(() => {
     dispatch(fetchClients({ page: 1, page_size: 20 }));
   }, [])
-
+  const progress = useProgressBar();
   React.useEffect(() => {
     console.log({ clients });
   }, [clients])
@@ -187,7 +188,16 @@ export default function Page() {
     <div className="flex flex-col gap-8 px-4 py-6 dark:text-dark-text dark:bg-dark-secondary">
       <PageHeading title={"Clients"}>
         <div className="flex items-center gap-2">
-          <CustomButton onClick={() => router.push("/clients/new")} title={"New Client"} variant={"primary"} />
+          <CustomButton onClick={() => {
+            progress.start();
+            React.startTransition(() => {
+              router.push("/clients/new");
+              progress.done();
+            });
+          }}
+            title={"New Client"}
+            variant={"primary"}
+          />
           <CustomButton title={"More Actions"} frontIcon={<MoreHorizontal />} />
         </div>
       </PageHeading>
@@ -284,7 +294,11 @@ export default function Page() {
             autoHeight
             columns={columns}
             onRowClick={({ row }) => {
-              router.push(`/clients/view/${row?.id}`)
+              progress.start();
+              React.startTransition(() => {
+                router.push(`/clients/view/${row?.id}`);
+                progress.done();
+              });
             }}
             rows={clients?.map(client => {
               return {
