@@ -64,33 +64,33 @@ export default function ClientCustomFields({ type = "client" }) {
         <div className="grid gap-2">
           <Dialog>
             {fields.map((field) => (
-              <div className="grid grid-cols-8" key={field.id}>
-                <GripVertical className="size-5" />
+              <div className="flex gap-2 pr-3 items-center" key={field.id}>
+                <GripVertical className="size-5 grow-0 shrink-0" />
                 {/* <DialogTrigger
                   className="text-green-600 hover:underline col-span-3"
                   asChild
                   onClick={() => setFieldData(field)}
                 > */}
-                <button
-                  className="hover:cursor-pointer text-left text-green-600 hover:underline col-span-3 w-fit"
-                  onClick={() => {
-                    setDialogOpen(type);
-                    setFieldData(field);
-                  }}
-                >
-                  {field.field_name}
-                </button>
-                {/* </DialogTrigger> */}
-                <div className="truncate col-span-3">
-                  Stores {field.field_type} value
+                <div className="grid grid-cols-2 grow">
+                  <button
+                    className="hover:cursor-pointer text-left text-green-600 hover:underline w-fit"
+                    onClick={() => {
+                      setDialogOpen(type);
+                      setFieldData(field);
+                    }}
+                  >
+                    {field.field_name}
+                  </button>
+                  {/* </DialogTrigger> */}
+                  <div className="truncate">
+                    Stores {field.field_type} value
+                  </div>
                 </div>
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="text-green-600" asChild>
-                    <span className="flex justify-end px-3">
-                      <Ellipsis className="size-5 hover:cursor-pointer" />
-                    </span>
+                  <DropdownMenuTrigger className="text-green-600">
+                    <Ellipsis className="size-5" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent>
+                  <DropdownMenuContent align="end">
                     <DropdownMenuItem>Archive</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
