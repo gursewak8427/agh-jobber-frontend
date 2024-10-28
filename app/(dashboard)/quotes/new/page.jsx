@@ -6,7 +6,7 @@ import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, Delete, Divide, Eye,
 import CustomButton from '@/components/CustomButton';
 import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import AddCustomFields from '@/app/_components/CustomFields';
@@ -19,6 +19,7 @@ import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_components/products/ProductsList';
 import { datadisclarmer } from './data';
+import { useCustomRouter } from '@/hooks/use-custom-router';
 
 const defaultFormValues = {
   products: [defaultProductLineItem],
@@ -32,6 +33,7 @@ export default function Page() {
   const searchParams = useSearchParams();
   const client_id = searchParams.get("client_id");
   const template_ids = searchParams.get("template");
+  const { customPush } = useCustomRouter();
 
   const [open, setOpen] = useState(false);
 
@@ -52,7 +54,7 @@ export default function Page() {
   const { clientslist, client, team, quotecount, quotecustomfields, loadingObj, quoteproducts } = useSelector(state => state.clients);
 
   const dispatch = useAppDispatch();
-  const router = useRouter();
+  // const router = useRouter();
   const methods = useForm();
   const {
     register,
@@ -252,7 +254,8 @@ export default function Page() {
 
     dispatch(createQuote(jsonData)).then(({ payload }) => {
       if (payload?.id) {
-        router.push(`/quotes/view/${payload?.id}`)
+        // router.push(`/quotes/view/${payload?.id}`)
+        customPush(`/quotes/view/${payload?.id}`)
       }
     });
   };
@@ -638,9 +641,12 @@ export default function Page() {
         onClose={() => setSelectClientModal(false)}
         onSelect={id => {
           if (template_ids) {
-            router.push(`/quotes/new?client_id=${id}&template=${template_ids}`);
+            
+            // router.push(`/quotes/new?client_id=${id}&template=${template_ids}`);
+            customPush(`/quotes/new?client_id=${id}&template=${template_ids}`)
           } else {
-            router.push(`/quotes/new?client_id=${id}`);
+            // router.push(`/quotes/new?client_id=${id}`);
+            customPush(`/quotes/new?client_id=${id}`)
           }
           setSelectClientModal(false)
         }}

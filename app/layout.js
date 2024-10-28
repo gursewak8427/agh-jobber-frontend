@@ -1,6 +1,7 @@
 import { Providers } from "@/store/providers";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
+import ProgressBarProvider from "@/components/progress-bar";
 
 export const metadata = {
   title: "Prosbro",
@@ -12,9 +13,11 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <ToastContainer />
-        <Providers>
-          {children}
-        </Providers>
+        <ProgressBarProvider>
+          <Providers>
+            {children}
+          </Providers>
+        </ProgressBarProvider>
       </body>
     </html>
   );

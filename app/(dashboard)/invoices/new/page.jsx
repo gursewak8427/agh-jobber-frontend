@@ -4,7 +4,7 @@ import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, Men
 import { useState } from 'react';
 import { BoxSelect, BoxSelectIcon, CameraIcon, ChevronDown, CreditCard, Delete, Divide, Eye, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, Plus, PlusIcon, Trash2, X } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
-import Link from 'next/link';
+// import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
@@ -18,6 +18,8 @@ import SelectProperty from '@/app/_components/property/SelectProperty';
 import NewProperty from '@/app/_components/property/NewProperty';
 import CustomMenu from '@/components/CustomMenu';
 import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_components/products/ProductsList';
+import { useCustomRouter } from '@/hooks/use-custom-router';
+import CustomLink from '@/components/custom-link';
 
 
 export default function Page() {
@@ -44,6 +46,7 @@ export default function Page() {
 
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { customPush } = useCustomRouter();
   const methods = useForm({
     defaultValues: {
       products: [defaultProductLineItem],
@@ -153,7 +156,8 @@ export default function Page() {
 
   useEffect(() => {
     if (!client_id) {
-      router.push(`/invoices`)
+      // router.push(`/invoices`)
+      customPush(`/invoices`)
       return;
     };
 
@@ -257,11 +261,12 @@ export default function Page() {
       "client_id": client_id,
     }
 
-    console.log({ jsonData })
-    return;
+    // console.log({ jsonData })
+    // return;
     dispatch(createInvoice(jsonData)).then(({ payload }) => {
       if (payload?.id) {
-        router.push(`/invoices/view/${payload?.id}`)
+        // router.push(`/invoices/view/${payload?.id}`)
+        customPush(`/invoices/view/${payload?.id}`)
       }
     })
     console.log({ jsonData });
@@ -270,7 +275,7 @@ export default function Page() {
   return (
     <div className='max-w-[1200px] mx-auto space-y-4'>
       <div className='text-sm text-tprimary dark:text-dark-text'>
-        Back to : <Link href={"/invoices"} className='text-green-700 dark:text-dark-second-text'>Invoices</Link>
+        Back to : <CustomLink href={"/invoices"} className='text-green-700 dark:text-dark-second-text'>Invoices</CustomLink>
       </div>
       <div className="p-8 border border-gray-200 rounded-xl border-t-8 border-t-green-700 space-y-4">
         {/* Header */}
@@ -410,7 +415,7 @@ export default function Page() {
 
                     {
                       clientView && <div>
-                        <p className='text-sm text-gray-600 dark:text-gray-400'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <Link href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</Link></p>
+                        <p className='text-sm text-gray-600 dark:text-gray-400'>Adjust what your client will see on this invoice. To change the default for ​all future invoices, visit the <CustomLink href={"#"} className='text-green-700 hover:text-green-800'>PDF Style.</CustomLink></p>
                         <div className="flex items-center flex-wrap">
                           <div className="flex gap-2 items-center select-none pr-2 py-2 mr-7">
                             <input

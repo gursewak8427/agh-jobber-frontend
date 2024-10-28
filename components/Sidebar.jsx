@@ -1,11 +1,11 @@
 "use client";
 
-import Link from 'next/link';
 import { Home, Calendar, Users, ClipboardList, FileText, Briefcase, DollarSign, BarChart2, PieChart, Clock, App, UserPlus, LayoutGrid, ArrowLeft, ArrowLeftCircle, ArrowLeftIcon, PlusCircle, LucidePlusCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@mui/material';
 import ChainCircleLogo from './logo';
 import { usePathname } from 'next/navigation';
+import CustomLink from './custom-link';
 
 const Section = ({ children, border }) => {
     return <section className={`py-2 px-3 w-full flex flex-col gap-1 ${border ? 'border-b border-gray-400' : ''}`}>
@@ -34,7 +34,7 @@ const Sidebar = () => {
         };
     }, []);
 
-    const iconProps = { className: `w-4 h-4 font-black ${!collapse ? 'mr-3' : ''}` }
+    const iconProps = { className: `size-5 font-black ${!collapse ? 'mr-3' : ''}` }
 
     const s1 = [{
         title: "Home",
@@ -107,12 +107,12 @@ const Sidebar = () => {
 
     const renderItems = arr => {
         return arr?.map((item, index) => {
-            return <Link href={item?.path}>
+            return <CustomLink href={item?.path} key={item?.path}>
                 <div className={`overflow-hidden line-clamp-1 max-h-10 h-10 flex items-center hover:bg-primary p-2 rounded-md dark:hover:bg-dark-hover ${pathname == item?.path && 'bg-gray-100 dark:bg-dark-secondary'}`}>
                     {item?.icon}
                     {!collapse && item?.title}
                 </div>
-            </Link>
+            </CustomLink>
         })
     }
 
@@ -133,26 +133,36 @@ const Sidebar = () => {
                             <div className="select-none absolute right-0 transform translate-x-[105%] flex bg-white dark:bg-dark-primary z-50 items-center border border-tprimary dark:border-white p-1 rounded-lg">
                                 <div className="absolute w-5 h-5 bg-white dark:bg-dark-primary transform -translate-x-[75%] rotate-45 border-l  border-tprimary dark:border-white border-b">
                                 </div>
-                                <div className='ml-4 flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
-                                    <Users className={`w-4 h-4 font-black`} />
-                                    Client
-                                </div>
-                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
-                                    <ClipboardList className={`w-4 h-4 font-black text-orange-500`} />
-                                    Request
-                                </div>
-                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
-                                    <FileText className={`w-4 h-4 font-black text-purple-500`} />
-                                    Quote
-                                </div>
-                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
-                                    <Briefcase className={`w-4 h-4 font-black text-green-500`} />
-                                    Job
-                                </div>
-                                <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
-                                    <DollarSign className={`w-4 h-4 font-black text-blue-500`} />
-                                    Invoice
-                                </div>
+                                <CustomLink href="/clients">
+                                    <div className='ml-4 flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
+                                        <Users className={`w-4 h-4 font-black`} />
+                                        Client
+                                    </div>
+                                </CustomLink>
+                                <CustomLink href="/requests">
+                                    <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
+                                        <ClipboardList className={`w-4 h-4 font-black text-orange-500`} />
+                                        Request
+                                    </div>
+                                </CustomLink>
+                                <CustomLink href="/quotes">
+                                    <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
+                                        <FileText className={`w-4 h-4 font-black text-purple-500`} />
+                                        Quote
+                                    </div>
+                                </CustomLink>
+                                <CustomLink href="/jobs">
+                                    <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
+                                        <Briefcase className={`w-4 h-4 font-black text-green-500`} />
+                                        Job
+                                    </div>
+                                </CustomLink>
+                                <CustomLink href="/invoices">
+                                    <div className='flex flex-col items-center p-2 px-3 cursor-pointer text-sm gap-1 rounded-lg w-[80px] hover:bg-primary dark:hover:bg-dark-hover'>
+                                        <DollarSign className={`w-4 h-4 font-black text-blue-500`} />
+                                        Invoice
+                                    </div>
+                                </CustomLink>
                             </div>
                         }
                     </div>

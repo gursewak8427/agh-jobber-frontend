@@ -12,10 +12,11 @@ import { createTemplate, createTemplateWith } from '@/store/slices/client';
 import { useAppDispatch } from '@/store/hooks';
 import CustomMenu from '@/components/CustomMenu';
 import ProductsList, { defaultProductLineItem, updateProductsFn } from '@/app/_components/products/ProductsList';
+import { useCustomRouter } from '@/hooks/use-custom-router';
 export default function Page() {
   const [menu, setMenu] = useState(null)
   const { loadingObj } = useSelector(state => state.clients);
-
+  const { customPush } = useCustomRouter();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const methods = useForm({
@@ -71,7 +72,8 @@ export default function Page() {
 
     dispatch(createTemplate(jsonData)).then(({ payload }) => {
       if (payload?.id) {
-        router.push(`/quotes/templates`)
+        // router.push(`/quotes/templates`)
+        customPush('/quotes/templates')
       }
     });
   };
@@ -113,7 +115,8 @@ export default function Page() {
 
     dispatch(createTemplateWith(jsonData)).then(({ payload }) => {
       if (payload?.id) {
-        router.push(`/quotes/new?template=${payload.id}`)
+        // router.push(`/quotes/new?template=${payload.id}`)
+        customPush(`/quotes/new?template=${payload.id}`)
       }
     });
   }
@@ -164,7 +167,7 @@ export default function Page() {
               </div>
 
               <div className="mt-4 space-y-2 flex justify-between">
-                <CustomButton title="Cancel" onClick={() => { router.back() }}></CustomButton>
+                <CustomButton title="Cancel" onClick={() => { customPush('/quotes/templates') }}></CustomButton>
                 {
                   <>
                     <div className="flex gap-2 items-center">
@@ -193,7 +196,7 @@ export default function Page() {
                   </>
                 }
               </div>
-              
+
             </div>
           </form>
         </FormProvider>
