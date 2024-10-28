@@ -1,6 +1,7 @@
 import clsx from "clsx";
-import Link from "next/link";
+// import Link from "next/link";
 import { usePathname } from "next/navigation";
+import CustomLink from "./custom-link";
 
 const categories = [
   {
@@ -72,7 +73,7 @@ export default function SettingsSidebar() {
             <ul className="space-y-1">
               {category.links.map((link, linkIdx) => (
                 <li key={linkIdx}>
-                  <Link
+                  <CustomLink
                     href={link.href}
                     className={clsx(
                       "text-sm hover:underline tracking-wide",
@@ -80,7 +81,7 @@ export default function SettingsSidebar() {
                     )}
                   >
                     {link.name}
-                  </Link>
+                  </CustomLink>
                 </li>
               ))}
             </ul>

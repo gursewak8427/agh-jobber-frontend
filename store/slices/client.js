@@ -14,41 +14,37 @@ export const fetchTeam = createAsyncThunk("fetchTeam", async (data, { rejectWith
 
 export const fetchCommunications = createAsyncThunk("fetchCommunications", async (data, { rejectWithValue }) => {
     try {
-        // const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/team/`);
-        // return response.data;
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clientcommunication/`);
+        return response.data;
 
-        return [{
-            id: 1,
-            client: /* id of client, it will auto populate */{
-                id: 5,
-                fname: "Gursewak",
-                lname: "Singh",
-                companyname: "Prismaple",
-            },
-            sentDate: '2024-10-22T10:22:12.382Z',
-            to: "brajesh_dev@yahoo.com",
-            subject: "We've received your requested changes",
-            status: "Sent",
-            type: "Quote changes requested",
-            openedDate: null,
-            message: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae, non."
-        },
-        {
-            id: 2,
-            client: /* id of client, it will auto populate */{
-                id: 6,
-                fname: "Gurjeet",
-                lname: "Singh",
-                companyname: "Prosbro",
-            },
-            sentDate: '2024-10-22T10:22:12.382Z',
-            to: "rahul_dev@yahoo.com",
-            subject: "Quote from AGH RENOVATION LIMITED - Oct 09, 2024",
-            status: "Opened",
-            type: "Quote Sent",
-            openedDate: '2024-10-08T10:22:12.382Z',
-            message: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae, non."
-        }]
+        // return [{
+        //     id: 1,
+        //     client:"Gursewak Singh",
+        //     sentDate: '2024-10-22T10:22:12.382Z',
+        //     to: "brajesh_dev@yahoo.com",
+        //     subject: "We've received your requested changes",
+        //     status: "Sent",
+        //     type: "Quote changes requested",
+        //     openedDate: null,
+        //     message: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae, non."
+        // },
+        // // {
+        // //     id: 2,
+        // //     client: /* id of client, it will auto populate */{
+        // //         id: 6,
+        // //         fname: "Gurjeet",
+        // //         lname: "Singh",
+        // //         companyname: "Prosbro",
+        // //     },
+        // //     sentDate: '2024-10-22T10:22:12.382Z',
+        // //     to: "rahul_dev@yahoo.com",
+        // //     subject: "Quote from AGH RENOVATION LIMITED - Oct 09, 2024",
+        // //     status: "Opened",
+        // //     type: "Quote Sent",
+        // //     openedDate: '2024-10-08T10:22:12.382Z',
+        // //     message: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae, non."
+        // // }
+        // ]
     } catch (error) {
 
     }
@@ -59,25 +55,25 @@ export const fetchCommunication = createAsyncThunk("fetchCommunication", async (
         // Here data is the 'id' of communication
 
         // Fetch //////
-        // const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/team/`);
-        // return response.data;
+        const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/clientcommunication/?id=${data}`);
+        return response.data;
 
-        return {
-            id: 1,
-            client: /* id of client, it will auto populate */{
-                id: 5,
-                fname: "Gursewak",
-                lname: "Singh",
-                companyname: "Prismaple",
-            },
-            sentDate: '2024-10-22T10:22:12.382Z',
-            to: "brajesh_dev@yahoo.com",
-            subject: "We've received your requested changes",
-            status: "Sent",
-            type: "Quote changes requested",
-            openedDate: null,
-            message: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae, non."
-        }
+        // return {
+        //     id: 1,
+        //     client: /* id of client, it will auto populate */{
+        //         id: 5,
+        //         fname: "Gursewak",
+        //         lname: "Singh",
+        //         companyname: "Prismaple",
+        //     },
+        //     sentDate: '2024-10-22T10:22:12.382Z',
+        //     to: "brajesh_dev@yahoo.com",
+        //     subject: "We've received your requested changes",
+        //     status: "Sent",
+        //     type: "Quote changes requested",
+        //     openedDate: null,
+        //     message: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae, non."
+        // }
     } catch (error) {
 
     }
