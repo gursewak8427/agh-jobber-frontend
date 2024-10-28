@@ -13,28 +13,77 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../_components/dialog";
+import { useSelector } from "react-redux";
+import { useState } from "react";
+import AddCustomFields from "@/app/_components/CustomFields";
 
-export default function ClientCustomFields() {
-  const fields = [{ name: "Custom Name", description: "Stores text value" }];
+export default function ClientCustomFields({ type = "client" }) {
+  const {
+    clientcustomfields,
+    propertycustomfields,
+    jobcustomfields,
+    invoicecustomfields,
+    quotecustomfields,
+  } = useSelector((state) => state.clients);
+  const [fieldData, setFieldData] = useState({});
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  let fields = [];
+  switch (type) {
+    case "client":
+      fields = clientcustomfields;
+      break;
+
+    case "property":
+      fields = propertycustomfields;
+      break;
+
+    case "job":
+      fields = jobcustomfields;
+      break;
+
+    case "invoice":
+      fields = invoicecustomfields;
+      break;
+
+    case "quote":
+      fields = quotecustomfields;
+      break;
+
+    default:
+      break;
+  }
+
   return (
     <div className="w-full shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
       <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-bold">Client Custom Fields</h3>
-        <CustomButton title={"Add field"} />
+        <h3 className="text-2xl font-bold capitalize">{type} Custom Fields</h3>
+        <CustomButton title={"Add field"} onClick={() => setDialogOpen(type)} />
       </div>
       {fields.length > 0 ? (
         <div className="grid gap-2">
           <Dialog>
             {fields.map((field) => (
-              <div className="grid grid-cols-8" key={field.name}>
+              <div className="grid grid-cols-8" key={field.id}>
                 <GripVertical className="size-5" />
-                <DialogTrigger
+                {/* <DialogTrigger
                   className="text-green-600 hover:underline col-span-3"
                   asChild
+                  onClick={() => setFieldData(field)}
+                > */}
+                <button
+                  className="hover:cursor-pointer text-left text-green-600 hover:underline col-span-3 w-fit"
+                  onClick={() => {
+                    setDialogOpen(type);
+                    setFieldData(field);
+                  }}
                 >
-                  <span className="hover:cursor-pointer">{field.name}</span>
-                </DialogTrigger>
-                <div className="truncate col-span-3">{field.description}</div>
+                  {field.field_name}
+                </button>
+                {/* </DialogTrigger> */}
+                <div className="truncate col-span-3">
+                  Stores {field.field_type} value
+                </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger className="text-green-600" asChild>
                     <span className="flex justify-end px-3">
@@ -67,6 +116,7 @@ export default function ClientCustomFields() {
           </div>
         </div>
       )}
+      <AddCustomFields open={dialogOpen} onClose={() => setDialogOpen(false)} />
     </div>
   );
 }
