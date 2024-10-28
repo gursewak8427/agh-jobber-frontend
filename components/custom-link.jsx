@@ -1,6 +1,6 @@
 "use client";
 import { useProgressBar } from "@/hooks/use-progress-bar";
-import { cn } from "@/utils/cn";
+import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { startTransition } from "react";
 
@@ -27,7 +27,7 @@ export default function CustomLink({
   return (
     <a
       onClick={navigateToDestination}
-      className={cn("hover:cursor-pointer", className)}
+      className={clsx("hover:cursor-pointer", className)}
       {...props}
     >
       {children}
