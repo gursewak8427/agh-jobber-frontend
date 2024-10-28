@@ -73,6 +73,9 @@ import CustomMenu from "@/components/CustomMenu";
 import { HeadingBox, SectionBox } from "@/app/_components";
 import { Loading } from "@/app/_components/loading";
 import SendEmailModal from "@/app/_components/client/SendEmailModal";
+import { useProgressBar } from "@/hooks/use-progress-bar";
+import CustomLink from "@/components/custom-link";
+import { useCustomRouter } from "@/hooks/use-custom-router";
 
 // Function to handle status rendering
 const getStatusBox = (status) => {
@@ -264,7 +267,8 @@ export default function Page() {
   const [sendemail, setsendemail] = useState("");
   const { client } = useAppSelector((store) => store.clients);
   const { id } = useParams();
-  const [email, setEmail] = useState(false);
+  const [email, setEmail] = useState(false)
+  const progress = useProgressBar();
 
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -287,62 +291,113 @@ export default function Page() {
   }, [client]);
 
   const MoreActionsMenuItems = ({ onClose }) => {
-    return (
-      <Fragment>
-        {/* Menu Items */}
-        <Typography
-          variant="subtitle1"
-          style={{ padding: "8px 16px", fontWeight: "bold" }}
-        >
-          Create new...
-        </Typography>
+    return (<Fragment>
+      {/* Menu Items */}
+      <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
+        Create new...
+      </Typography>
 
-        <MenuItem className="text-tprimary text-sm dark:text-dark-text">
-          <ListItemIcon>
-            <Download className="text-orange-700" size={16} />
-          </ListItemIcon>
-          Request
-        </MenuItem>
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+        <ListItemIcon>
+          <Download className="text-orange-700" size={16} />
+        </ListItemIcon>
+        Request
+      </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            onClose();
-            router.push(`/quotes/new?client_id=${id}`);
-          }}
-          className="text-tprimary text-sm dark:text-dark-text"
-        >
-          <ListItemIcon>
-            <PencilRuler className="text-purple-700" size={16} />
-          </ListItemIcon>
-          Quote
-        </MenuItem>
+      <MenuItem onClick={() => {
+        onClose();
+        progress.start();
+        React.startTransition(() => {
+          router.push(`/quotes/new?client_id=${id}`);
+          progress.done();
+        });
+      }} className="text-tprimary text-sm dark:text-dark-text">
+        <ListItemIcon>
+          <PencilRuler className="text-purple-700" size={16} />
+        </ListItemIcon>
+        Quote
+      </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            onClose();
-            router.push(`/jobs/new?client_id=${id}`);
-          }}
-          className="text-tprimary text-sm dark:text-dark-text"
-        >
-          <ListItemIcon>
-            <Hammer className="text-green-700" size={16} />
-          </ListItemIcon>
-          Job
-        </MenuItem>
+      <MenuItem onClick={() => {
+        onClose();
+        progress.start();
+        React.startTransition(() => {
+          router.push(`/jobs/new?client_id=${id}`);
+          progress.done();
+        });
+      }} className="text-tprimary text-sm dark:text-dark-text">
+        <ListItemIcon>
+          <Hammer className="text-green-700" size={16} />
+        </ListItemIcon>
+        Job
+      </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            onClose();
-            router.push(`/invoices/new?client_id=${id}`);
-          }}
-          className="text-tprimary text-sm dark:text-dark-text"
-        >
-          <ListItemIcon>
-            <ListIcon className="text-blue-700" size={16} />
-          </ListItemIcon>
-          Invoice
-        </MenuItem>
+      <MenuItem onClick={() => {
+        onClose();
+        progress.start();
+        React.startTransition(() => {
+          router.push(`/invoices/new?client_id=${id}`);
+          progress.done();
+        });
+      }} className="text-tprimary text-sm dark:text-dark-text">
+        <ListItemIcon>
+          <ListIcon className="text-blue-700" size={16} />
+        </ListItemIcon>
+        Invoice
+      </MenuItem>
 
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+        <ListItemIcon>
+          <CreditCard className="text-orange-700" size={16} />
+        </ListItemIcon>
+        Collect Payment
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+        <ListItemIcon>
+          <FileIcon className="text-blue-700" size={16} />
+        </ListItemIcon>
+        Task
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+        <ListItemIcon>
+          <Calendar className="text-yellow-700" size={16} />
+        </ListItemIcon>
+        Calendar Event
+      </MenuItem>
+
+      <Divider />
+
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+        <ListItemIcon>
+          <Home className="text-tprimary dark:text-dark-text" size={16} />
+        </ListItemIcon>
+        Property
+      </MenuItem>
+
+      <Divider />
+
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+        <ListItemIcon>
+          <ArchiveIcon className="text-tprimary dark:text-dark-text" size={16} />
+        </ListItemIcon>
+        Archive Client
+      </MenuItem>
+
+      <MenuItem className="text-tprimary text-sm dark:text-dark-text">
+        <ListItemIcon>
+          <Download className="text-tprimary dark:text-dark-text" size={16} />
+        </ListItemIcon>
+        Download VCard
+      </MenuItem>
+
+      <Divider />
+
+      <Typography variant="subtitle1" style={{ padding: '8px 16px', fontWeight: 'bold' }}>
+        Client hub
+      </Typography>
+      {email ? <>
         <MenuItem className="text-tprimary text-sm dark:text-dark-text">
           <ListItemIcon>
             <CreditCard className="text-orange-700" size={16} />
@@ -435,36 +490,22 @@ export default function Page() {
     <div className="w-full mx-auto space-y-4">
       <HeadingBox>
         <div className="text-sm text-tprimary dark:text-dark-text">
-          Back to:{" "}
-          <Link
-            href={"/clients"}
-            className="text-green-700 dark:text-dark-second-text"
-          >
-            Clients
-          </Link>
+
+          Back to: <CustomLink href={"/clients"} className="text-green-700 dark:text-dark-second-text">Clients</CustomLink>
         </div>
         <div className="flex gap-4">
-          <CustomButton
-            onClick={() => setsendemail(true)}
-            title={"Email"}
-            variant={"primary"}
-            frontIcon={<Mail className="w-4 h-4" />}
-          />
-          <CustomButton
-            onClick={() => router.push(`/clients/edit?id=${client?.id}`)}
+          <CustomButton onClick={() => setsendemail(true)} title={"Email"} variant={"primary"} frontIcon={<Mail className="w-4 h-4" />} />
+          <CustomButton onClick={() => {
+            progress.start();
+            React.startTransition(() => {
+              router.push("/clients/new");
+              progress.done();
+            });
+          }}
             title={"Edit"}
             frontIcon={<Pencil className="w-4 h-4" />}
           />
-          <CustomMenu
-            open={open == "more_actions"}
-            icon={
-              <CustomButton
-                onClick={() => setOpen("more_actions")}
-                title={"More Actions"}
-                frontIcon={<MoreHorizontal />}
-              />
-            }
-          >
+          <CustomMenu open={open == "more_actions"} icon={<CustomButton onClick={() => setOpen("more_actions")} title={"More Actions"} frontIcon={<MoreHorizontal />} />}>
             <MoreActionsMenuItems onClose={() => setOpen(null)} />
           </CustomMenu>
         </div>
@@ -490,23 +531,27 @@ export default function Page() {
                 Properties
               </div>
               <div className="flex gap-4">
-                <CustomButton
-                  onClick={() =>
-                    router.push(`/properties/new?client_id=${client?.id}`)
-                  }
-                  title={"New Property"}
-                  frontIcon={<Plus className="w-4 h-4" />}
-                />
+                <CustomButton onClick={() => {
+                  progress.start();
+                  React.startTransition(() => {
+                    router.push(`/properties/new?client_id=${client?.id}`);
+                    progress.done();
+                  });
+                }} title={"New Property"} frontIcon={<Plus className="w-4 h-4" />} />
               </div>
             </HeadingBox>
             <table className="w-full text-tprimary dark:text-dark-text">
               <tbody>
-                {client?.property?.map((property, index) => {
-                  return (
-                    <tr
-                      onClick={() =>
-                        router.push(`/client/${id}/properties/${property.id}`)
-                      }
+                {
+                  client?.property?.map((property, index) => {
+                    return <tr
+                      onClick={() => {
+                        progress.start();
+                        React.startTransition(() => {
+                          router.push(`/client/${id}/properties/${property.id}`);
+                          progress.done();
+                        });
+                      }}
                       className="cursor-pointer hover:bg-primary-dark dark:hover:bg-dark-hover"
                     >
                       <td className="py-4 px-2">
@@ -840,20 +885,20 @@ export default function Page() {
                     <MessageCircle />
                   </div>
                   <div className="">
-                    <p className="">Sent Sep 18, 2024</p>
-                    <p>Quote from AGH RENOVATION LIMITED</p>
+                    <p className="">Click View all</p>
+                    {/* <p className="">Sent Sep 18, 2024</p> */}
+                    {/* <p>Quote from AGH RENOVATION LIMITED</p> */}
                   </div>
                 </div>
                 <div className="my-1 flex gap-2">
                   <CustomButton title={"View Communication"} />
-                  <CustomButton
-                    title={"View All"}
-                    onClick={() => {
-                      router.push(
-                        `/reports/client-communications/${client?.id}`
-                      );
-                    }}
-                  />
+                  <CustomButton title={"View All"} onClick={() => {
+                    progress.start();
+                    React.startTransition(() => {
+                      router.push(`/reports/client-communications/${client?.id}`);
+                      progress.done();
+                    });
+                  }} />
                 </div>
               </div>
             </div>

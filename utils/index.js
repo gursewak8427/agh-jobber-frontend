@@ -13,7 +13,20 @@ export const primaryEmail = (data) => {
     }
     return null;
 };
-export const formatUserDate = date => moment(date).format('MMM DD, YYYY');
+export const formatUserDateOther = date => moment(date).format('MMM DD, YYYY');
+
+export const formatUserDate = (date) => {
+  const formattedDate = moment(date, 'YYYY-MM-DD', true);
+
+  // Check if the date is valid
+  if (formattedDate.isValid()) {
+    return formattedDate.format('MMM DD, YYYY');
+  } else {
+    // Return an empty string if the date is invalid
+    return '';
+  }
+};
+
 export const formatTime = time => {
     if (!time) {
         return 'NA';

@@ -8,18 +8,19 @@ import PageHeading from '@/components/PageHeading';
 import CustomTable from '@/components/CustomTable';
 import Link from 'next/link';
 import CustomButton from '@/components/CustomButton';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { archivedJob, deleteJob, fetchJobs } from '@/store/slices/client';
 import { formatUserDate } from '@/utils';
+import { useCustomRouter } from '@/hooks/use-custom-router';
 
 export default function Page() {
-  const router = useRouter();
+  // const router = useRouter();
   const { jobs, loadingList } = useSelector(state => state.clients);
   const dispatch = useDispatch();
-
+  const { customPush } = useCustomRouter();
 
   const columns = [
     {
@@ -113,7 +114,11 @@ export default function Page() {
     <div className="flex flex-col gap-8 px-4 py-6">
       <PageHeading title={"Jobs"}>
         <div className="flex items-center gap-2">
-          <CustomButton onClick={() => router.push("/jobs/new")} title={"New job"} variant={"primary"} />
+          <CustomButton onClick={() => {
+            customPush("/jobs/new")
+            // router.push("/jobs/new")
+          }}
+            title={"New job"} variant={"primary"} />
           <CustomButton title={"More Actions"} frontIcon={<MoreHorizontal />} />
         </div>
       </PageHeading>
@@ -242,7 +247,8 @@ export default function Page() {
             autoHeight
             columns={columns}
             onRowClick={({ row }) => {
-              router.push(`/jobs/view/${row?.id}`)
+              // router.push(`/jobs/view/${row?.id}`)
+              customPush(`/jobs/view/${row?.id}`)
             }}
             rows={jobs?.map(job => {
               return {

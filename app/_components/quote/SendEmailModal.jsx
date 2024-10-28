@@ -5,7 +5,7 @@ import CustomButton from '@/components/CustomButton'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { sentQuoteEmail } from '@/store/slices/client'
-import { formatUserDate, getAddress, getClientName, primaryEmail } from '@/utils'
+import { formatUserDate, formatUserDateOther, getAddress, getClientName, primaryEmail } from '@/utils'
 
 const SendEmailModal = ({ open, onClose, client, quote }) => {
     const dispatch = useDispatch()
@@ -32,8 +32,9 @@ const SendEmailModal = ({ open, onClose, client, quote }) => {
     useEffect(() => {
         setValue(`email`, primaryEmail(quote))
         setValue(`subject`, `Quote from ${profile.company_name} - ${new Date().toDateString()}`)
-        setValue(`message`, `Hi ${getClientName(client)},\n\nThank you for asking us to quote on your project.${getAddress(quote?.property)}.\n\nThe quote total is $${quote.costs} as of ${formatUserDate(quote?.createdAt)}.\n\nIf you have any questions or concerns regarding this quote, please don't hesitate to get in touch with us at ${profile.email}.\n\nSincerely,\n\n${profile.company_name}`
+        setValue(`message`, `Hi ${getClientName(client)},\n\nThank you for asking us to quote on your project.${getAddress(quote?.property)}.\n\nThe quote total is $${quote.costs} as of ${formatUserDateOther(quote?.createdAt)}.\n\nIf you have any questions or concerns regarding this quote, please don't hesitate to get in touch with us at ${profile.email}.\n\nSincerely,\n\n${profile.company_name}`
         )
+        console.log(quote?.createdAt);
     }, [open])
 
     const handleClose = () => {
