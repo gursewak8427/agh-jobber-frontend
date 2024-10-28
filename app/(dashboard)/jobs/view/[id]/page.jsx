@@ -4,7 +4,7 @@ import { Button, TextField, IconButton, Avatar, Rating, Divider, Typography, Men
 import { useState } from 'react';
 import { Archive, Bell, BoxSelect, BoxSelectIcon, CameraIcon, Check, ChevronDown, Copy, Delete, Divide, DollarSign, Download, Eye, FileIcon, FileSignature, FileSignatureIcon, FileText, Hammer, Mail, MessageCircle, MessageSquare, MessageSquareText, Minus, MoreHorizontal, PencilIcon, PencilLine, Plus, PlusIcon, Printer, Save, SignatureIcon, Star, Trash2 } from 'lucide-react';
 import CustomButton from '@/components/CustomButton';
-import Link from 'next/link';
+// import Link from 'next/link';
 import SelectClient from '@/app/_components/client/SelectClient';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
@@ -31,12 +31,15 @@ import ProductsView from '@/app/_components/products/ProductsView';
 import Profitability from '@/app/_components/job/Profitability';
 import CustomModal from '@/components/CustomModal';
 import QuoteViewSkelton from '@/app/_components/QuoteViewSkelton';
+import { useCustomRouter } from '@/hooks/use-custom-router';
+import CustomLink from '@/components/custom-link';
 
 
 export default function Page() {
   const [sendtextmsg, setsendtextmsg] = useState(false)
   const [isServiceEdit, setIsServiceEdit] = useState(false)
   const [sendemail, setsendemail] = useState(false)
+  // const { customPush } = useCustomRouter();
 
   const [newtimeentry, setnewtimeentry] = useState(false)
   const [newexpense, setnewexpense] = useState(false)
@@ -358,7 +361,7 @@ export default function Page() {
     <div className='max-w-[1200px] mx-auto space-y-4 text-tprimary dark:text-dark-text'>
       <PageHeading>
         <div className='text-sm text-tprimary dark:text-dark-text'>
-          Back to : <Link href={"/jobs"} className='text-green-700 dark:text-dark-second-text'>Jobs</Link>
+          Back to : <CustomLink href={"/jobs"} className='text-green-700 dark:text-dark-second-text'>Jobs</CustomLink>
         </div>
         <div className="flex items-center gap-2">
           <CustomButton onClick={() => handlelatevisit(job.id)} loading={loadingObj.latevisit} title={"Show late visit"} variant={"primary"} />
@@ -574,7 +577,7 @@ export default function Page() {
                               <td className='py-4 text-right'>
                                 <div className="flex w-full items-center justify-center">
                                   {
-                                    expense?.receipt && <Link onClick={e => e?.stopPropagation()} href={process?.env?.NEXT_PUBLIC_IMAGE_URL + expense?.receipt} target='blank'><CustomButton frontIcon={<Download className='w-4 h-4' />} title={"Recipt"} /></Link>
+                                    expense?.receipt && <CustomLink onClick={e => e?.stopPropagation()} href={process?.env?.NEXT_PUBLIC_IMAGE_URL + expense?.receipt} target='blank'><CustomButton frontIcon={<Download className='w-4 h-4' />} title={"Recipt"} /></CustomLink>
                                   }
                                 </div>
                               </td>

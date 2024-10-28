@@ -11,12 +11,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { achivedQuote, deleteQuote, fetchQuotes } from '@/store/slices/client';
 import { DataGrid } from '@mui/x-data-grid';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { formatUserDate } from '@/utils';
+import { useCustomRouter } from '@/hooks/use-custom-router';
+import CustomLink from '@/components/custom-link';
 
 
 export default function Page() {
-
+  const { customPush } = useCustomRouter();
   const columns = [
     {
       field: "name",
@@ -111,10 +113,10 @@ export default function Page() {
     }
   }
 
-  const router = useRouter()
+  // const router = useRouter()
   const dispatch = useDispatch();
 
-  const [rows, setRows] = useState([])
+  // const [rows, setRows] = useState([])
   const { quotes, loadingList } = useSelector(state => state.clients)
 
   useEffect(() => {
@@ -132,7 +134,7 @@ export default function Page() {
   return (
     <div className="flex flex-col gap-8 px-4 py-6">
       <PageHeading title={"Quotes"}>
-        <Link href={"/quotes/templates"} className='bg-green-700 px-4 py-2 rounded-md text-white font-semibold'>New Quote</Link>
+        <CustomLink href={"/quotes/templates"} className='bg-green-700 px-4 py-2 rounded-md text-white font-semibold'>New Quote</CustomLink>
       </PageHeading>
 
       <div className="flex flex-wrap gap-4 bg-gray-50 text-sm text-tprimary dark:bg-dark-secondary dark:text-dark-text">
@@ -249,7 +251,8 @@ export default function Page() {
             }}
             autoHeight
             onRowClick={({ row }) => {
-              router.push(`/quotes/view/${row?.id}`)
+              // router.push(`/quotes/view/${row?.id}`)
+              customPush(`/quotes/view/${row?.id}`)
             }}
             rows={getRows(quotes)}
             columns={columns}

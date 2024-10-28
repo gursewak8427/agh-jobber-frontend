@@ -12,15 +12,17 @@ import PageHeading from '@/components/PageHeading';
 import CustomTable from '@/components/CustomTable';
 import Link from 'next/link';
 import CustomButton from '@/components/CustomButton';
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { archivedInvoice, deleteInvoice, fetchallClients, fetchClients, fetchInvoices } from "@/store/slices/client";
 import { useAppDispatch } from "@/store/hooks";
 import SelectClient from "@/app/_components/client/SelectClient";
 import { formatUserDate } from "@/utils";
+import { useCustomRouter } from "@/hooks/use-custom-router";
 
 
 export default function Page() {
+  const { customPush } = useCustomRouter();
   const columns = [
     {
       field: "name",
@@ -111,7 +113,7 @@ export default function Page() {
         break;
     }
   }
-  const router = useRouter();
+  // const router = useRouter();
 
   const dispatch = useAppDispatch();
   const { clientslist, invoices, loadingList } = useSelector(state => state.clients);
@@ -236,7 +238,8 @@ export default function Page() {
             autoHeight
             columns={columns}
             onRowClick={({ row }) => {
-              router.push(`/invoices/view/${row?.id}`)
+              // router.push(`/invoices/view/${row?.id}`)
+              customPush(`/invoices/view/${row?.id}`)
             }}
             rows={invoices?.map(invoice => {
               return {
@@ -284,7 +287,8 @@ export default function Page() {
       </div>
 
       <SelectClient open={open == "select_client"} onClose={() => setOpen(null)} onSelect={id => {
-        router.push(`/invoices/new?client_id=${id}`)
+        // router.push(`/invoices/new?client_id=${id}`)
+        customPush(`/invoices/new?client_id=${id}`)
       }} clients={clientslist} />
     </div>
   );

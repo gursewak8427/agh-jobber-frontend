@@ -73,6 +73,9 @@ import CustomMenu from "@/components/CustomMenu";
 import { HeadingBox, SectionBox } from "@/app/_components";
 import { Loading } from "@/app/_components/loading";
 import SendEmailModal from "@/app/_components/client/SendEmailModal";
+import { useProgressBar } from "@/hooks/use-progress-bar";
+import CustomLink from "@/components/custom-link";
+import { useCustomRouter } from "@/hooks/use-custom-router";
 
 // Function to handle status rendering
 const getStatusBox = status => {
@@ -245,6 +248,8 @@ export default function Page() {
   const { client } = useAppSelector(store => store.clients)
   const { id } = useParams();
   const [email, setEmail] = useState(false)
+  const progress = useProgressBar();
+
 
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -282,7 +287,11 @@ export default function Page() {
 
       <MenuItem onClick={() => {
         onClose();
-        router.push(`/quotes/new?client_id=${id}`)
+        progress.start();
+        React.startTransition(() => {
+          router.push(`/quotes/new?client_id=${id}`);
+          progress.done();
+        });
       }} className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
           <PencilRuler className="text-purple-700" size={16} />
@@ -292,7 +301,11 @@ export default function Page() {
 
       <MenuItem onClick={() => {
         onClose();
-        router.push(`/jobs/new?client_id=${id}`)
+        progress.start();
+        React.startTransition(() => {
+          router.push(`/jobs/new?client_id=${id}`);
+          progress.done();
+        });
       }} className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
           <Hammer className="text-green-700" size={16} />
@@ -302,7 +315,11 @@ export default function Page() {
 
       <MenuItem onClick={() => {
         onClose();
-        router.push(`/invoices/new?client_id=${id}`)
+        progress.start();
+        React.startTransition(() => {
+          router.push(`/invoices/new?client_id=${id}`);
+          progress.done();
+        });
       }} className="text-tprimary text-sm dark:text-dark-text">
         <ListItemIcon>
           <ListIcon className="text-blue-700" size={16} />
@@ -391,11 +408,20 @@ export default function Page() {
     <div className="w-full mx-auto space-y-4">
       <HeadingBox>
         <div className="text-sm text-tprimary dark:text-dark-text">
-          Back to: <Link href={"/clients"} className="text-green-700 dark:text-dark-second-text">Clients</Link>
+          Back to: <CustomLink href={"/clients"} className="text-green-700 dark:text-dark-second-text">Clients</CustomLink>
         </div>
         <div className="flex gap-4">
           <CustomButton onClick={() => setsendemail(true)} title={"Email"} variant={"primary"} frontIcon={<Mail className="w-4 h-4" />} />
-          <CustomButton onClick={() => router.push("/clients/new")} title={"Edit"} frontIcon={<Pencil className="w-4 h-4" />} />
+          <CustomButton onClick={() => {
+            progress.start();
+            React.startTransition(() => {
+              router.push("/clients/new");
+              progress.done();
+            });
+          }}
+            title={"Edit"}
+            frontIcon={<Pencil className="w-4 h-4" />}
+          />
           <CustomMenu open={open == "more_actions"} icon={<CustomButton onClick={() => setOpen("more_actions")} title={"More Actions"} frontIcon={<MoreHorizontal />} />}>
             <MoreActionsMenuItems onClose={() => setOpen(null)} />
           </CustomMenu>
@@ -420,7 +446,13 @@ export default function Page() {
                 Properties
               </div>
               <div className="flex gap-4">
-                <CustomButton onClick={() => router.push(`/properties/new?client_id=${client?.id}`)} title={"New Property"} frontIcon={<Plus className="w-4 h-4" />} />
+                <CustomButton onClick={() => {
+                  progress.start();
+                  React.startTransition(() => {
+                    router.push(`/properties/new?client_id=${client?.id}`);
+                    progress.done();
+                  });
+                }} title={"New Property"} frontIcon={<Plus className="w-4 h-4" />} />
               </div>
             </HeadingBox>
             <table className="w-full text-tprimary dark:text-dark-text">
@@ -428,7 +460,13 @@ export default function Page() {
                 {
                   client?.property?.map((property, index) => {
                     return <tr
-                      onClick={() => router.push(`/client/${id}/properties/${property.id}`)}
+                      onClick={() => {
+                        progress.start();
+                        React.startTransition(() => {
+                          router.push(`/client/${id}/properties/${property.id}`);
+                          progress.done();
+                        });
+                      }}
                       className="cursor-pointer hover:bg-primary-dark dark:hover:bg-dark-hover"
                     >
                       <td className="py-4 px-2">
@@ -696,7 +734,11 @@ export default function Page() {
                 <div className="my-1 flex gap-2">
                   <CustomButton title={"View Communication"} />
                   <CustomButton title={"View All"} onClick={() => {
-                    router.push(`/reports/client-communications/${client?.id}`)
+                    progress.start();
+                    React.startTransition(() => {
+                      router.push(`/reports/client-communications/${client?.id}`);
+                      progress.done();
+                    });
                   }} />
                 </div>
               </div>
