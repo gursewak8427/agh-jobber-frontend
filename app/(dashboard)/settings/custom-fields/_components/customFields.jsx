@@ -6,18 +6,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../_components/dropdown";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../../_components/dialog";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import AddCustomFields from "@/app/_components/CustomFields";
 
-export default function ClientCustomFields({ type = "client" }) {
+export default function CustomFieldsCard({ type = "client" }) {
   const {
     clientcustomfields,
     propertycustomfields,
@@ -55,53 +48,38 @@ export default function ClientCustomFields({ type = "client" }) {
   }
 
   return (
-    <div className="w-full shadow-md rounded-lg p-6 border border-ct-text-secondary space-y-4 animate-fadeIn">
+    <div className="w-full shadow-md rounded-lg p-6 pb-4 border border-ct-text-secondary space-y-4 animate-fadeIn">
       <div className="flex items-center justify-between">
         <h3 className="text-2xl font-bold capitalize">{type} Custom Fields</h3>
         <CustomButton title={"Add field"} onClick={() => setDialogOpen(type)} />
       </div>
       {fields.length > 0 ? (
         <div className="grid gap-2">
-          <Dialog>
-            {fields.map((field) => (
-              <div className="flex gap-2 pr-3 items-center" key={field.id}>
-                <GripVertical className="size-5 grow-0 shrink-0" />
-                {/* <DialogTrigger
-                  className="text-green-600 hover:underline col-span-3"
-                  asChild
-                  onClick={() => setFieldData(field)}
-                > */}
-                <div className="grid grid-cols-2 grow">
-                  <button
-                    className="hover:cursor-pointer text-left text-green-600 hover:underline w-fit"
-                    onClick={() => {
-                      setDialogOpen(type);
-                      setFieldData(field);
-                    }}
-                  >
-                    {field.field_name}
-                  </button>
-                  {/* </DialogTrigger> */}
-                  <div className="truncate">
-                    Stores {field.field_type} value
-                  </div>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="text-green-600">
-                    <Ellipsis className="size-5" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Archive</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          {fields.map((field) => (
+            <div className="flex gap-2 pr-3 items-center" key={field.id}>
+              <GripVertical className="size-5 grow-0 shrink-0" />
+              <div className="grid grid-cols-2 grow">
+                <button
+                  className="hover:cursor-pointer text-left text-green-600 hover:underline w-fit"
+                  onClick={() => {
+                    setDialogOpen(type);
+                    setFieldData(field);
+                  }}
+                >
+                  {field.field_name}
+                </button>
+                <div className="truncate">Stores {field.field_type} value</div>
               </div>
-            ))}
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{"{{Field Name}}"}</DialogTitle>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="text-green-600">
+                  <Ellipsis className="size-5" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>Archive</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="flex items-center gap-4">

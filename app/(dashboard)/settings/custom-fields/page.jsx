@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import ClientCustomFields from "./_components/customClientFields";
+import CustomFieldsCard from "./_components/customFields";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchClientsCustomFields,
@@ -12,13 +12,6 @@ import {
 
 export default function CustomFields() {
   const dispatch = useDispatch();
-  const {
-    clientcustomfields,
-    propertycustomfields,
-    jobcustomfields,
-    invoicecustomfields,
-    quotecustomfields,
-  } = useSelector((state) => state.clients);
   useEffect(() => {
     dispatch(fetchClientsCustomFields());
     dispatch(fetchPropertyCustomFields());
@@ -35,11 +28,11 @@ export default function CustomFields() {
           fields.
         </p>
       </div>
-      <ClientCustomFields type="client" />
-      <ClientCustomFields type="property" />
-      <ClientCustomFields type="job" />
-      <ClientCustomFields type="invoice" />
-      <ClientCustomFields type="quote" />
+      <CustomFieldsCard type="client" />
+      <CustomFieldsCard type="property" />
+      <CustomFieldsCard type="job" />
+      <CustomFieldsCard type="invoice" />
+      <CustomFieldsCard type="quote" />
     </div>
   );
 }
