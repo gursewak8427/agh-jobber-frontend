@@ -124,6 +124,15 @@ export const fetchClientsCustomFields = createAsyncThunk("fetchClientsCustomFiel
     }
 });
 
+export const archivedClientsCustomFields = createAsyncThunk("archivedClientsCustomFields", async (data, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_API_URL}/customclientfield/?id=${data}`);
+        return response.data;
+    } catch (error) {
+        return handleAsyncThunkError(error, rejectWithValue);
+    }
+});
+
 export const createClientsCustomFields = createAsyncThunk("createClientsCustomFields", async (data, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post(`${process.env.NEXT_PUBLIC_API_URL}/customclientfield/`, data);
@@ -819,6 +828,18 @@ const clientSlice = createSlice({
                 state.clientcustomfields = action.payload;
             })
             .addCase(fetchClientsCustomFields.rejected, (state, action) => {
+                state.loadingList = false;
+                state.errorList = action.payload?.message || 'Failed to fetch clients';
+            });
+        builder
+            .addCase(archivedClientsCustomFields.pending, (state) => {
+                state.loadingObj['archiveclientcustomfiled'] = true;
+            })
+            .addCase(archivedClientsCustomFields.fulfilled, (state, action) => {
+                delete state.loadingObj['archiveclientcustomfiled']
+                state.clientcustomfields = action.payload;
+            })
+            .addCase(archivedClientsCustomFields.rejected, (state, action) => {
                 state.loadingList = false;
                 state.errorList = action.payload?.message || 'Failed to fetch clients';
             });
