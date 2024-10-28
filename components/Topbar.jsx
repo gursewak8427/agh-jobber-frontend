@@ -4,13 +4,15 @@ import { Avatar, Divider, IconButton, MenuItem, Typography } from '@mui/material
 import RightSidebar from './RightSidebar';
 import CustomMenu from './CustomMenu';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { darkmodeState } from '@/store/slices/client';
+import { useCustomRouter } from '@/hooks/use-custom-router';
 
 
 const Topbar = () => {
-    const router = useRouter();
+    // const router = useRouter();
+    const { customPush } = useCustomRouter();
     const dispatch = useDispatch()
     const { profile, darkMode } = useSelector(state => state.clients)
     const [state, setState] = useState({
@@ -133,7 +135,8 @@ const Topbar = () => {
     const logoutNow = async () => {
         localStorage.removeItem('token')
         await axios.post('/api/logout')
-        router.push("/auth/login")
+        // router.push("/auth/login")
+        customPush('/auth/login')
     }
 
     const onSetDarkMode = () => {
@@ -175,7 +178,8 @@ const Topbar = () => {
                         </MenuItem>
                         <Divider />
                         <MenuItem onClick={() => {
-                            router.push('/settings/company')
+                            // router.push('/settings/company')
+                            customPush('/settings/company')
                         }}>Settings</MenuItem>
                         <MenuItem onClick={null}>Account and Billing</MenuItem>
                         <MenuItem onClick={null}>Manage Team</MenuItem>
