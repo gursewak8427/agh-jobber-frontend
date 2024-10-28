@@ -161,7 +161,7 @@ export default function Page() {
     dispatch(fetchQuote(id))
   }, [])
 
-  console.log({ quote })
+  console.log(quote?.disclaimer)
 
 
   return (

@@ -727,8 +727,9 @@ export default function Page() {
                     <MessageCircle />
                   </div>
                   <div className="">
-                    <p className="">Sent Sep 18, 2024</p>
-                    <p>Quote from AGH RENOVATION LIMITED</p>
+                    <p className="">Click View all</p>
+                    {/* <p className="">Sent Sep 18, 2024</p> */}
+                    {/* <p>Quote from AGH RENOVATION LIMITED</p> */}
                   </div>
                 </div>
                 <div className="my-1 flex gap-2">

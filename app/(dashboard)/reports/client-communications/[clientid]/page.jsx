@@ -4,34 +4,35 @@ import CustomButton from '@/components/CustomButton'
 import CustomModal from '@/components/CustomModal'
 import PageHeading from '@/components/PageHeading'
 import { fetchCommunication, fetchCommunications } from '@/store/slices/client'
-import { Divider, IconButton } from '@mui/material'
+import { formatUserDate } from '@/utils'
+import { CircularProgress, Divider, IconButton } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { FileIcon, MessageCircleIcon } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 const page = () => {
-    const [view, setView] = useState(true)
+    const [view, setView] = useState(false)
     const dispatch = useDispatch();
     const { loadingObj, communications, communication } = useSelector(state => state.clients)
-
+    const [loadingRow, setLoadingRow] = useState(null);
     const columns = [
         {
             field: "name",
             headerName: "Client Name",
             flex: 1, // Allow the column to take available space
             minWidth: 150,
-            renderCell: (params) => <>{params?.row?.client?.fname ? params?.row?.client?.fname + ' ' + params?.row?.client?.lname : params?.row?.client?.companyname}</>,
+            renderCell: (params) => <>{params?.row?.client}</>,
         },
         {
             field: "sentDate",
             headerName: "Sent Date",
             flex: 1,
             minWidth: 200,
-            renderCell: (params) => new Date(params?.row?.sentDate)?.toLocaleDateString() || "--",
+            renderCell: (params) => formatUserDate(params?.row?.sent_date) || "--",
         },
         {
-            field: "to",
+            field: "toemail",
             headerName: "To",
             flex: 1,
             minWidth: 150,
@@ -55,11 +56,11 @@ const page = () => {
             minWidth: 150,
         },
         {
-            field: "openedDate",
+            field: "opendate",
             headerName: "Opened date",
             flex: 1,
             minWidth: 150,
-            renderCell: (params) => new Date(params?.row?.sentDate)?.toLocaleDateString() || "--",
+            renderCell: (params) => formatUserDate(params?.row?.opendate) || "--",
         },
         {
             field: "actions",
@@ -68,23 +69,51 @@ const page = () => {
             minWidth: 150,
             renderCell: (params) => <div>
                 <IconButton onClick={() => {
-                    setView(params?.row?.id)
+                    // setView(params?.row?.id)
+                    handleFetchCommunication(params?.row?.id)
                 }}>
-                    <MessageCircleIcon />
+                    {
+                        loadingRow === params?.row?.id ? <CircularProgress size={20} color='success' /> : <MessageCircleIcon />
+                    }
                 </IconButton>
             </div>,
         },
     ];
 
-    useEffect(() => {
-        if (view) {
-            dispatch(fetchCommunication(view))
-        }
-    }, [view])
+    const handleFetchCommunication = (id) => {
+        // Set the loading state for the specific row
+        setLoadingRow(id);
+        dispatch(fetchCommunication(id)).then(() => {
+            setView(true);
+            // Reset loading state after fetching is done
+            setLoadingRow(null);
+        });
+    };
+
 
     useEffect(() => {
         dispatch(fetchCommunications())
     }, [])
+
+    const getFinalMessage = (content) => {
+        // Handle empty or undefined content
+        if (!content) return "None";
+
+        // Replace single quotes with double quotes to make it valid JSON
+        // const modifiedContent = content.replace(/'/g, '"');
+        // console.log(modifiedContent);
+
+        try {
+            // Parse the modified content
+            const parsedContent = JSON.parse(content);
+
+            // Return the message if it exists, otherwise return "None"
+            return parsedContent?.message || "None";
+        } catch (error) {
+            console.error("JSON parsing error:", error);
+            return "Invalid content format";
+        }
+    };
 
     return (
         <div className="flex flex-col gap-8 px-4 py-6">
@@ -202,13 +231,13 @@ const page = () => {
 
             <CustomModal show={view} onClose={() => setView(false)}>
                 {/* {JSON.stringify(communication)} */}
-                <ModalHeading onClose={() => setView(false)}>Email Communication</ModalHeading>
+                <ModalHeading onClose={() => setView(false)}>Email & SMS Communication</ModalHeading>
                 <br />
                 <div className="text-sm dark:text-white text-gray-600">
                     <div className="grid grid-cols-2">
                         <div className="text-left mb-4">
                             <p className="">Sent on</p>
-                            <p className="">{new Date(communication?.sentDate)?.toLocaleDateString()}</p>
+                            <p className="">{formatUserDate(communication?.sent_date)}</p>
                         </div>
 
                         <div className="text-sm text-left mb-4 border-l-2 pl-4">
@@ -220,7 +249,7 @@ const page = () => {
                     <br />
 
                     <div className="">
-                        <p className=""><b>To</b>: {communication?.to}</p>
+                        <p className=""><b>To</b>: {communication?.toemail}</p>
                     </div>
                     <Divider className='my-2' />
 
@@ -235,14 +264,15 @@ const page = () => {
                     <Divider className='my-2' />
 
                     <div className="">
-                        <p className=""><b>Subject</b>: {communication?.Subject || "None"}</p>
+                        <p className=""><b>Subject</b>: {communication?.subject || "None"}</p>
                     </div>
                     <Divider className='my-2' />
 
-                    <div className="">
-                        {communication?.message || "None"}
-                    </div>
-
+                    <div
+                        className=""
+                        dangerouslySetInnerHTML={{ __html: getFinalMessage(communication?.content) }}
+                    />
+                    {/* 
                     <Divider className='my-2' />
 
                     <div className="">
@@ -255,7 +285,7 @@ const page = () => {
                                 <span className="ml-2 ">quote_74.pdf</span>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </CustomModal>
         </div>
