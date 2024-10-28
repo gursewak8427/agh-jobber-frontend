@@ -102,14 +102,16 @@ const AddCustomFields = ({ open, onClose, }) => {
                             <select
                                 id="fieldType"
                                 disabled
+                                defaultValue={open === 'client' ? 'allclients' : open === 'property' ? 'allproperties' : open === 'job' ? 'alljobs' : open === 'invoice' ? 'allinvoices' : open === 'quote' ? 'allquotes' : undefined}
                                 {...register('appliesTo')}
                                 className="border border-gray-300 rounded p-2 focus:outline-none focus:border-green-700 bg-gray-300 dark:bg-dark-hover dark:text-dark-text"
                             >
-                                {
-                                    open == "client" ?
-                                        <option value="allclients">All Clients</option> :
-                                        <option value="allproperties">All Properties</option>
-                                }
+                                <option value="allclients">All Clients</option>   
+                                <option value="allproperties">All Properties</option>   
+                                <option value="alljobs">All Jobs</option>   
+                                <option value="allinvoices">All Invoices</option>   
+                                <option value="allquotes">All Quotes</option>   
+                                
                                 {/* Add other field types as required */}
                             </select>
                         </div>

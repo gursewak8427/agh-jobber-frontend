@@ -1,19 +1,24 @@
-"use client"
+"use client";
 import { useEffect } from "react";
-import ClientCustomFields from "./_components/customClientFields";
+import CustomFieldsCard from "./_components/customFields";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchClientsCustomFields, fetchInvoiceCustomFields, fetchJobCustomFields, fetchPropertyCustomFields, fetchQuoteCustomFields } from "@/store/slices/client";
+import {
+  fetchClientsCustomFields,
+  fetchInvoiceCustomFields,
+  fetchJobCustomFields,
+  fetchPropertyCustomFields,
+  fetchQuoteCustomFields,
+} from "@/store/slices/client";
 
 export default function CustomFields() {
   const dispatch = useDispatch();
-  const { clientcustomfields, propertycustomfields, jobcustomfields, invoicecustomfields, quotecustomfields } = useSelector(state => state.clients);
   useEffect(() => {
     dispatch(fetchClientsCustomFields());
     dispatch(fetchPropertyCustomFields());
     dispatch(fetchJobCustomFields());
     dispatch(fetchInvoiceCustomFields());
     dispatch(fetchQuoteCustomFields());
-  }, [])
+  }, []);
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -23,10 +28,11 @@ export default function CustomFields() {
           fields.
         </p>
       </div>
-      <ClientCustomFields />
-      <ClientCustomFields />
-      <ClientCustomFields />
-      <ClientCustomFields />
+      <CustomFieldsCard type="client" />
+      <CustomFieldsCard type="property" />
+      <CustomFieldsCard type="job" />
+      <CustomFieldsCard type="invoice" />
+      <CustomFieldsCard type="quote" />
     </div>
   );
 }
